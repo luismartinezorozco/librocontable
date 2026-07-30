@@ -315,20 +315,30 @@
             </div>
             <div class="flex-1 flex flex-col items-center justify-center p-6">
                 <div class="w-full max-w-sm aspect-[3/4] border-2 border-dashed border-white/30 rounded-[32px] flex flex-col items-center justify-center relative overflow-hidden group">
-                    <input type="file" id="image-input" accept="image/*" capture="environment" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10" onchange="window.processImage(this)">
                     
-                    <div id="scanner-ui-idle" class="flex flex-col items-center text-center px-6">
-                        <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <i class="ph-bold ph-camera text-4xl text-white"></i>
+                    <div id="scanner-ui-idle" class="flex flex-col items-center text-center px-6 w-full">
+                        <div class="flex gap-4 w-full mb-6">
+                            <!-- Botón Cámara -->
+                            <label class="flex-1 bg-white/10 hover:bg-white/20 transition-all rounded-3xl p-6 flex flex-col items-center justify-center cursor-pointer group shadow-lg">
+                                <i class="ph-bold ph-camera text-4xl text-white mb-3 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-white font-bold text-sm">Cámara</span>
+                                <input type="file" accept="image/*" capture="environment" class="hidden" onchange="window.processImage(this)">
+                            </label>
+                            
+                            <!-- Botón Galería -->
+                            <label class="flex-1 bg-white/10 hover:bg-white/20 transition-all rounded-3xl p-6 flex flex-col items-center justify-center cursor-pointer group shadow-lg">
+                                <i class="ph-bold ph-image text-4xl text-white mb-3 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-white font-bold text-sm">Galería</span>
+                                <input type="file" accept="image/*" class="hidden" onchange="window.processImage(this)">
+                            </label>
                         </div>
-                        <p class="text-white font-bold text-lg">Toca para capturar</p>
-                        <p class="text-white/60 text-sm mt-2">Sube una factura o recibo. La IA extraerá los datos automáticamente.</p>
+                        <p class="text-white/60 text-sm">La IA extraerá los datos automáticamente de tu recibo o captura de pantalla.</p>
                     </div>
 
                     <div id="scanner-ui-loading" class="hidden flex-col items-center text-center">
                         <i class="ph-bold ph-spinner-gap text-5xl text-purple-400 animate-spin mb-4"></i>
                         <p class="text-white font-bold text-lg">Analizando factura...</p>
-                        <p class="text-white/60 text-sm mt-2">La Inteligencia Artificial está leyendo los montos.</p>
+                        <p class="text-white/60 text-sm mt-2">La Inteligencia Artificial está leyendo los montos y detalles.</p>
                     </div>
                 </div>
             </div>
