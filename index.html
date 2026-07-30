@@ -225,15 +225,15 @@
                     <label class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium cursor-pointer shadow-sm hover:bg-blue-700 transition flex items-center gap-2">
                         <i class="ph ph-scan"></i>
                         Escanear
-                        <!-- Input file oculto para simular subida -->
-                        <input type="file" class="hidden" accept="image/*,.pdf" onchange="simulateInvoiceReading(this)">
+                        <!-- Input file oculto ahora configurado para usar IA -->
+                        <input type="file" class="hidden" accept="image/*" onchange="processInvoiceWithAI(this)">
                     </label>
                 </div>
 
                 <!-- Loader oculto para el escaneo -->
                 <div id="scan-loader" class="hidden flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm mb-6 border border-gray-100">
                     <i class="ph ph-spinner animate-spin text-3xl text-blue-600 mb-2"></i>
-                    <p class="text-sm text-gray-600">Procesando factura y extrayendo datos...</p>
+                    <p class="text-sm text-gray-600">Analizando factura con Inteligencia Artificial...</p>
                 </div>
 
                 <!-- Tabla de Contabilidad Clásica -->
@@ -660,44 +660,113 @@
             showCustomAlert('¡Éxito!', 'Registro guardado correctamente en el libro.', 'ph-check-circle', 'text-green-500', 'bg-green-100');
         }
 
-        // --- LÓGICA DE LECTURA DE FACTURA (SIMULACIÓN) ---
-        function simulateInvoiceReading(input) {
+        async function processInvoiceWithAI(input) {
             if (!input.files || input.files.length === 0) return;
             
             const file = input.files[0];
             const loader = document.getElementById('scan-loader');
             
-            // Mostrar loader
+            // Mostrar estado de carga
             loader.classList.remove('hidden');
             loader.classList.add('flex');
             
-            // Simular tiempo de procesamiento OCR (2 segundos)
-            setTimeout(() => {
+            try {
+                // Leer archivo y convertirlo a Base64
+                const base64Data = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+                    reader.onerror = (e) => reject(e);
+                    reader.readAsDataURL(file);
+                });
+
+                const mimeType = file.type;
+                
+                // Prompt estructurado para la IA
+                const prompt = "Analiza esta factura o recibo. Extrae la siguiente información estructurada en JSON: 1. amount: El monto total de la compra o pago (solo números, formato decimal). 2. description: El nombre del comercio o una breve descripción del gasto (ej. 'Restaurante El Rincón', 'Compra de suministros'). 3. category: Clasifica el gasto EXCLUSIVAMENTE en una de estas categorías exactas: 'Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros'. Si no estás seguro, usa 'Otros'. 4. date: La fecha de emisión de la factura en formato YYYY-MM-DD. Si no encuentras la fecha, usa la fecha actual.";
+
+                const payload = {
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: mimeType,
+                                        data: base64Data
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                amount: { type: "NUMBER" },
+                                description: { type: "STRING" },
+                                category: { type: "STRING" },
+                                date: { type: "STRING" }
+                            },
+                            required: ["amount", "description", "category", "date"]
+                        }
+                    }
+                };
+
+                const apiKey = ""; // API Key proveída automáticamente por el entorno inmersivo
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                // Ocultar estado de carga
                 loader.classList.add('hidden');
                 loader.classList.remove('flex');
-                
-                // Generar datos aleatorios creíbles para una factura
-                const mockAmount = (Math.random() * 500 + 50).toFixed(2);
-                const mockCategories = ['Servicios', 'Inventario', 'Operaciones'];
-                const mockCat = mockCategories[Math.floor(Math.random() * mockCategories.length)];
-                const mockDesc = `Factura Escaneada - ${file.name.substring(0, 10)}...`;
 
-                // Auto-completar formulario
-                document.getElementById('form-amount').value = mockAmount;
-                document.getElementById('form-desc').value = mockDesc;
-                document.getElementById('form-category').value = mockCat;
-                document.getElementById('form-date').valueAsDate = new Date(); // Hoy
-                
-                // Mostrar mensaje de éxito en el form
-                document.getElementById('scan-success-msg').classList.remove('hidden');
-                
-                // Abrir modal configurado como gasto (generalmente las facturas que se suben son compras)
-                openFormModal('expense', true);
-                
-                // Limpiar input file para permitir subir el mismo archivo de nuevo si es necesario
+                if (result.candidates && result.candidates.length > 0) {
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    const extractedData = JSON.parse(jsonText);
+
+                    // Auto-completar formulario con los datos extraídos
+                    document.getElementById('form-amount').value = extractedData.amount || '';
+                    document.getElementById('form-desc').value = extractedData.description || '';
+                    
+                    // Validar que la categoría leída pertenezca al select disponible
+                    const validCategories = ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Ventas', 'Aportes', 'Otros'];
+                    const categoryToSet = validCategories.includes(extractedData.category) ? extractedData.category : 'Otros';
+                    document.getElementById('form-category').value = categoryToSet;
+                    
+                    // Asignar fecha extraída
+                    if (extractedData.date) {
+                        document.getElementById('form-date').value = extractedData.date;
+                    } else {
+                        document.getElementById('form-date').valueAsDate = new Date();
+                    }
+                    
+                    // Notificar éxito
+                    document.getElementById('scan-success-msg').classList.remove('hidden');
+                    
+                    // Abrir el modal de guardado (por defecto un gasto, ya que es una factura)
+                    openFormModal('expense', true);
+                } else {
+                    throw new Error("No se pudo extraer la información de la imagen.");
+                }
+
+            } catch (error) {
+                console.error("Error procesando factura con IA:", error);
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                showCustomAlert('Error de Lectura', 'No pudimos analizar la factura correctamente. Intenta con una imagen que tenga mejor iluminación.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
+            } finally {
+                // Limpiar el input para permitir subir otro archivo luego
                 input.value = '';
-
-            }, 2000);
+            }
         }
 
         // --- UTILIDADES ---
