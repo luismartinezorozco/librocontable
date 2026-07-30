@@ -833,16 +833,13 @@
             try {
                 const compressedBase64 = await compressImageForOCR(file);
                 const prompt = `Analiza la imagen. Si es un cobro, factura de venta o ingreso para mi, clasifícalo como "income". Si es ticket de compra, servicios o dinero que gasté, es "expense".
-Devuelve SOLO JSON con este formato (nada de texto antes ni después):
-{
-  "type": "income" o "expense",
-  "amount": numero sin comas ni signos,
-  "description": "Comercio o Servicio",
-  "category": "Una de estas (Operaciones, Inventario, Servicios, Nómina, Otros Gastos, Ventas, Aportes, Rendimientos, Otros Ingresos)",
-  "date": "YYYY-MM-DD"
-}`;
+Devuelve SOLO JSON con:
+- "type": "income" o "expense"
+- "amount": Monto total (numero sin comas).
+- "description": Comercio/Servicio (max 20 caracteres).
+- "category": Si expense (Operaciones, Inventario, Servicios, Nómina, Otros Gastos). Si income (Ventas, Aportes, Rendimientos, Otros Ingresos).
+- "date": YYYY-MM-DD`;
 
-                // Cambio a gemini-2.5-flash: Más rápido y preciso extrayendo JSON desde imágenes sin errores de formato.
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
@@ -850,7 +847,8 @@ Devuelve SOLO JSON con este formato (nada de texto antes ni después):
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        model: "google/gemini-2.5-flash", 
+                        model: "openai/gpt-4o-mini", 
+                        response_format: { type: "json_object" },
                         messages: [
                             {
                                 role: "user",
@@ -863,20 +861,11 @@ Devuelve SOLO JSON con este formato (nada de texto antes ni después):
                     })
                 });
 
-                if (!response.ok) {
-                    const err = await response.json();
-                    console.error("API error", err);
-                    throw new Error("Error API AI.");
-                }
+                if (!response.ok) throw new Error("Error API AI.");
 
                 const data = await response.json();
-                const content = data.choices[0].message.content;
-                
-                // Extracción segura del JSON mediante expresiones regulares por si la IA añade texto.
-                const jsonMatch = content.match(/\{[\s\S]*\}/);
-                if(!jsonMatch) throw new Error("La IA no devolvió un formato JSON válido");
-
-                const ext = JSON.parse(jsonMatch[0]);
+                let resultText = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                const ext = JSON.parse(resultText);
 
                 const txType = ext.type === 'income' ? 'income' : 'expense';
                 window.openFormModal(txType, true);
