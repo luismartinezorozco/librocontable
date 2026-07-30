@@ -370,36 +370,88 @@
 
     </div>
 
-    <script>
-        // --- ESTADO INICIAL (Vacío desde Cero) ---
-        // Estructura: { id, date, description, category, type ('expense' o 'income'), amount }
-        let transactions = [];
+    <!-- Convertimos a type="module" para soportar las importaciones de Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        
+        // 🔑 TU CLAVE DE API DE GEMINI AQUÍ (Necesaria para escanear facturas fuera de esta plataforma)
+        // Consíguela gratis en: https://aistudio.google.com/app/apikey
+        const GEMINI_API_KEY = "AQ.Ab8RN6LGQQfwOtM1bPAyg7UTcYARP7K3o_6By1u8ZamVsT1wmw"; 
+
+        // Configuración de Firebase (Tus credenciales)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg",
+            authDomain: "librocontable-6dcdc.firebaseapp.com",
+            projectId: "librocontable-6dcdc",
+            storageBucket: "librocontable-6dcdc.firebasestorage.app",
+            messagingSenderId: "1015207314787",
+            appId: "1:1015207314787:web:4e5bc42a03fa9697683f56"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let userId = null;
+
+        // Estado local de la aplicación
+        let transactions = [];
         let donutChart = null;
         let currentTotalBalance = 0;
 
-        // --- INICIALIZACIÓN ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Setear fecha de hoy en el form
-            document.getElementById('form-date').valueAsDate = new Date();
-            updateApp();
-        });
+        
+        // Iniciar Sesión Anónima y Cargar Datos
+        async function initApp() {
+            try {
+                const userCredential = await signInAnonymously(auth);
+                userId = userCredential.user.uid;
+                
+                // Preparar UI inicial
+                document.getElementById('form-date').valueAsDate = new Date();
+                
+                // Empezar a escuchar la base de datos en tiempo real
+                startDatabaseListener();
+            } catch (error) {
+                console.error("Error al autenticar:", error);
+                showCustomAlert('Error de Conexión', 'No se pudo conectar a los servidores en la nube.', 'ph-wifi-slash', 'text-red-500', 'bg-red-100');
+            }
+        }
+
+        function startDatabaseListener() {
+            if (!userId) return;
+            
+            // Ruta estricta de colecciones en Firestore
+            const path = collection(db, 'artifacts', 'librocontable', 'users', userId, 'transactions');
+            const q = query(path);
+
+            onSnapshot(q, (snapshot) => {
+                transactions = [];
+                snapshot.forEach((doc) => {
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+                updateApp(); // Refrescar la UI cada vez que la base de datos cambie
+            }, (error) => {
+                console.error("Error sincronizando datos:", error);
+                showCustomAlert('Aviso', 'Perdimos la conexión en tiempo real.', 'ph-warning', 'text-yellow-500', 'bg-yellow-100');
+            });
+        }
 
         // --- FUNCIONES PRINCIPALES DE ACTUALIZACIÓN ---
         function updateApp() {
-            // Ordenar transacciones por fecha ascendente para el libro contable
+            // Ordenar transacciones por fecha ascendente en memoria
             transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
             
             renderDashboard();
             renderAccountingTable();
         }
 
-        // --- RENDER DASHBOARD ---
         function renderDashboard() {
             let totalIncome = 0;
             let totalExpense = 0;
 
-            // Calcular totales
             transactions.forEach(t => {
                 if (t.type === 'income') totalIncome += t.amount;
                 if (t.type === 'expense') totalExpense += t.amount;
@@ -407,18 +459,16 @@
 
             currentTotalBalance = totalIncome - totalExpense;
 
-            // Actualizar UI Textos
             document.getElementById('main-balance').textContent = formatCurrency(currentTotalBalance);
-            document.getElementById('chart-total').textContent = formatCurrency(totalIncome + totalExpense); // Volumen total para el gráfico
+            document.getElementById('chart-total').textContent = formatCurrency(totalIncome + totalExpense); 
             document.getElementById('legend-income').textContent = formatCurrency(totalIncome);
             document.getElementById('legend-expense').textContent = formatCurrency(totalExpense);
 
-            // Actualizar Gráfico
             renderChart(totalIncome, totalExpense);
 
-            // Renderizar Lista Reciente (últimos 4, orden descendente)
             const recentList = document.getElementById('recent-transactions-list');
             recentList.innerHTML = '';
+            // Clonar y ordenar descendente para mostrar los más nuevos primero
             const recentTx = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
             
             if (recentTx.length === 0) {
@@ -451,7 +501,6 @@
             });
         }
 
-        // --- RENDER LIBRO CONTABLE (TABLA) ---
         function renderAccountingTable() {
             const tbody = document.getElementById('accounting-tbody');
             tbody.innerHTML = '';
@@ -466,7 +515,6 @@
             transactions.forEach((tx, index) => {
                 const isExpense = tx.type === 'expense';
                 
-                // Actualizar balance acumulado
                 if (isExpense) {
                     runningBalance -= tx.amount;
                 } else {
@@ -495,24 +543,21 @@
             });
         }
 
-        // --- LÓGICA DEL GRÁFICO (Chart.js) ---
         function renderChart(income, expense) {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
             
             let chartData, chartColors, chartLabels;
 
-            // Manejo elegante del estado vacío (0 ingresos y 0 gastos)
             if (income === 0 && expense === 0) {
-                chartData = [1]; // Un solo bloque de datos para dibujar un anillo completo
-                chartColors = ['#e5e7eb']; // Gris claro para indicar que está vacío
+                chartData = [1];
+                chartColors = ['#e5e7eb']; 
                 chartLabels = ['Sin movimientos'];
             } else {
                 chartData = [income, expense];
-                chartColors = ['#34d399', '#f472b6']; // Verde y Rosa
+                chartColors = ['#34d399', '#f472b6'];
                 chartLabels = ['Ingresos', 'Gastos'];
             }
 
-            // Datos para el gráfico inspirado en el diseño
             const data = {
                 labels: chartLabels,
                 datasets: [{
@@ -520,7 +565,7 @@
                     backgroundColor: chartColors,
                     borderWidth: 0,
                     hoverOffset: 4,
-                    cutout: '75%' // Hace el donut más delgado
+                    cutout: '75%' 
                 }]
             };
 
@@ -541,8 +586,10 @@
                                     label: function(context) {
                                         let label = context.label || '';
                                         if (label) { label += ': '; }
-                                        if (context.parsed !== null) {
+                                        if (context.parsed !== null && context.dataset.backgroundColor[0] !== '#e5e7eb') {
                                             label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+                                        } else if(context.dataset.backgroundColor[0] === '#e5e7eb'){
+                                            return "Agrega tu primer registro";
                                         }
                                         return label;
                                     }
@@ -554,16 +601,10 @@
             }
         }
 
-        // --- STREAMING_CHUNK:Lógica de Navegación e Interacción de UI ---
-
         function switchTab(tabId) {
-            // Ocultar todas las secciones
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            
-            // Mostrar la seleccionada
             document.getElementById(`view-${tabId}`).classList.add('active');
 
-            // Actualizar UI de navegación inferior
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-brand-dark');
                 btn.classList.add('text-gray-400');
@@ -577,7 +618,6 @@
             const activeSpan = activeBtn.querySelector('span');
             if(activeSpan) { activeSpan.classList.remove('opacity-0'); activeSpan.classList.add('opacity-100'); }
 
-            // Actualizar fondos de iconos en nav
             document.getElementById('icon-bg-dashboard').className = 'p-2 rounded-xl transition-all duration-300 bg-transparent text-current';
             document.getElementById('icon-bg-libro').className = 'p-2 rounded-xl transition-all duration-300 bg-transparent text-current';
             
@@ -585,13 +625,10 @@
             iconBg.className = 'p-2 bg-gray-900 text-white rounded-xl shadow-md transition-all duration-300';
         }
 
-        // --- LÓGICA DEL FORMULARIO Y MODAL ---
-        
         function openFormModal(type = 'expense', isAutoFill = false) {
             const modal = document.getElementById('transaction-modal');
             const content = document.getElementById('modal-content');
             
-            // Reset form unless it's an autofill from invoice
             if(!isAutoFill) {
                 document.getElementById('transaction-form').reset();
                 document.getElementById('form-date').valueAsDate = new Date();
@@ -601,10 +638,7 @@
             setFormType(type);
             
             modal.classList.remove('hidden');
-            // Timeout para permitir que display block aplique antes de la transición
-            setTimeout(() => {
-                content.classList.remove('translate-y-full');
-            }, 10);
+            setTimeout(() => { content.classList.remove('translate-y-full'); }, 10);
         }
 
         function closeFormModal() {
@@ -612,9 +646,7 @@
             const content = document.getElementById('modal-content');
             
             content.classList.add('translate-y-full');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300); // Esperar a que termine la transición
+            setTimeout(() => { modal.classList.add('hidden'); }, 300); 
         }
 
         function setFormType(type) {
@@ -631,9 +663,14 @@
             }
         }
 
-        function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
             
+            if (!userId) {
+                showCustomAlert('Error', 'No hay conexión con la base de datos.', 'ph-wifi-slash', 'text-red-500', 'bg-red-100');
+                return;
+            }
+
             const type = document.getElementById('form-type').value;
             const amount = parseFloat(document.getElementById('form-amount').value);
             const desc = document.getElementById('form-desc').value;
@@ -646,32 +683,45 @@
             }
 
             const newTx = {
-                id: Date.now(),
                 date: date,
                 description: desc,
                 category: category,
                 type: type,
-                amount: amount
+                amount: amount,
+                timestamp: new Date().toISOString() // Para tener registro exacto de creación
             };
 
-            transactions.push(newTx);
-            updateApp();
-            closeFormModal();
-            showCustomAlert('¡Éxito!', 'Registro guardado correctamente en el libro.', 'ph-check-circle', 'text-green-500', 'bg-green-100');
+            try {
+                // Guardar en Firestore (esto disparará onSnapshot y actualizará la UI)
+                const path = collection(db, 'artifacts', 'librocontable', 'users', userId, 'transactions');
+                await addDoc(path, newTx);
+                
+                closeFormModal();
+                showCustomAlert('¡Éxito!', 'Registro guardado en la nube.', 'ph-cloud-check', 'text-green-500', 'bg-green-100');
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                showCustomAlert('Error', 'Ocurrió un problema guardando el registro.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
+            }
         }
 
         async function processInvoiceWithAI(input) {
             if (!input.files || input.files.length === 0) return;
             
+            // Verificación de API Key para sitios externos
+            const activeApiKey = GEMINI_API_KEY || ""; // Fallback automático si está en Canvas
+            if(!activeApiKey && window.location.hostname !== "localhost" && !window.location.hostname.includes("google")) {
+                showCustomAlert('Falta Configuración', 'Debes añadir tu API Key de Gemini en el código fuente para usar esta función en tu web.', 'ph-key', 'text-yellow-500', 'bg-yellow-100');
+                input.value = '';
+                return;
+            }
+
             const file = input.files[0];
             const loader = document.getElementById('scan-loader');
             
-            // Mostrar estado de carga
             loader.classList.remove('hidden');
             loader.classList.add('flex');
             
             try {
-                // Leer archivo y convertirlo a Base64
                 const base64Data = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result.split(',')[1]);
@@ -680,24 +730,11 @@
                 });
 
                 const mimeType = file.type;
-                
-                // Prompt estructurado para la IA
                 const prompt = "Analiza esta factura o recibo. Extrae la siguiente información estructurada en JSON: 1. amount: El monto total de la compra o pago (solo números, formato decimal). 2. description: El nombre del comercio o una breve descripción del gasto (ej. 'Restaurante El Rincón', 'Compra de suministros'). 3. category: Clasifica el gasto EXCLUSIVAMENTE en una de estas categorías exactas: 'Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros'. Si no estás seguro, usa 'Otros'. 4. date: La fecha de emisión de la factura en formato YYYY-MM-DD. Si no encuentras la fecha, usa la fecha actual.";
 
                 const payload = {
                     contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                { text: prompt },
-                                {
-                                    inlineData: {
-                                        mimeType: mimeType,
-                                        data: base64Data
-                                    }
-                                }
-                            ]
-                        }
+                        { role: "user", parts: [ { text: prompt }, { inlineData: { mimeType: mimeType, data: base64Data } } ] }
                     ],
                     generationConfig: {
                         responseMimeType: "application/json",
@@ -714,8 +751,7 @@
                     }
                 };
 
-                const apiKey = ""; // API Key proveída automáticamente por el entorno inmersivo
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${activeApiKey}`;
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -724,8 +760,6 @@
                 });
 
                 const result = await response.json();
-
-                // Ocultar estado de carga
                 loader.classList.add('hidden');
                 loader.classList.remove('flex');
 
@@ -733,26 +767,20 @@
                     const jsonText = result.candidates[0].content.parts[0].text;
                     const extractedData = JSON.parse(jsonText);
 
-                    // Auto-completar formulario con los datos extraídos
                     document.getElementById('form-amount').value = extractedData.amount || '';
                     document.getElementById('form-desc').value = extractedData.description || '';
                     
-                    // Validar que la categoría leída pertenezca al select disponible
                     const validCategories = ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Ventas', 'Aportes', 'Otros'];
                     const categoryToSet = validCategories.includes(extractedData.category) ? extractedData.category : 'Otros';
                     document.getElementById('form-category').value = categoryToSet;
                     
-                    // Asignar fecha extraída
                     if (extractedData.date) {
                         document.getElementById('form-date').value = extractedData.date;
                     } else {
                         document.getElementById('form-date').valueAsDate = new Date();
                     }
                     
-                    // Notificar éxito
                     document.getElementById('scan-success-msg').classList.remove('hidden');
-                    
-                    // Abrir el modal de guardado (por defecto un gasto, ya que es una factura)
                     openFormModal('expense', true);
                 } else {
                     throw new Error("No se pudo extraer la información de la imagen.");
@@ -762,21 +790,20 @@
                 console.error("Error procesando factura con IA:", error);
                 loader.classList.add('hidden');
                 loader.classList.remove('flex');
-                showCustomAlert('Error de Lectura', 'No pudimos analizar la factura correctamente. Intenta con una imagen que tenga mejor iluminación.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
+                showCustomAlert('Error de Lectura', 'No pudimos analizar la factura. Asegúrate de tener una API Key válida o intenta con una imagen más clara.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
             } finally {
-                // Limpiar el input para permitir subir otro archivo luego
                 input.value = '';
             }
         }
 
-        // --- UTILIDADES ---
         function formatCurrency(amount) {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
         }
 
         function formatDateMsg(dateString) {
             const options = { month: 'short', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('es-ES', options);
+            // Manejar posibles desfaces de zona horaria añadiendo hora genérica al parsear
+            return new Date(dateString + 'T12:00:00').toLocaleDateString('es-ES', options);
         }
 
         function getIconForCategory(category) {
@@ -792,23 +819,19 @@
             return icons[category] || 'ph-receipt';
         }
 
-        // --- SISTEMA DE ALERTA PERSONALIZADO (Reemplazo de alert()) ---
         function showCustomAlert(title, message, iconClass, iconColorClass, iconBgClass) {
             const alertModal = document.getElementById('custom-alert');
             const alertBox = document.getElementById('alert-box');
-            const titleEl = document.getElementById('alert-title');
-            const msgEl = document.getElementById('alert-message');
-            const iconContainer = document.getElementById('alert-icon');
-
-            titleEl.textContent = title;
-            msgEl.textContent = message;
             
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-message').textContent = message;
+            
+            const iconContainer = document.getElementById('alert-icon');
             iconContainer.className = `w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl ${iconColorClass} ${iconBgClass}`;
             iconContainer.innerHTML = `<i class="ph ${iconClass}"></i>`;
 
             alertModal.classList.remove('hidden');
-            // Trigger reflow
-            void alertModal.offsetWidth;
+            void alertModal.offsetWidth; // Trigger reflow
             alertModal.classList.remove('opacity-0');
             alertBox.classList.remove('scale-95');
         }
@@ -820,10 +843,21 @@
             alertModal.classList.add('opacity-0');
             alertBox.classList.add('scale-95');
             
-            setTimeout(() => {
-                alertModal.classList.add('hidden');
-            }, 300);
+            setTimeout(() => { alertModal.classList.add('hidden'); }, 300);
         }
+
+        // Ya que usamos un módulo, debemos atar las funciones invocadas en el HTML al objeto 'window' global
+        window.switchTab = switchTab;
+        window.openFormModal = openFormModal;
+        window.closeFormModal = closeFormModal;
+        window.setFormType = setFormType;
+        window.handleFormSubmit = handleFormSubmit;
+        window.processInvoiceWithAI = processInvoiceWithAI;
+        window.showCustomAlert = showCustomAlert;
+        window.closeAlert = closeAlert;
+
+        // Arrancamos la aplicación
+        initApp();
 
     </script>
 </body>
