@@ -280,20 +280,20 @@
                 </button>
             </div>
         </div>
-    </div>
-
-    <!-- SCRIPT PRINCIPAL TIPO MODULE PARA FIREBASE Y LÓGICA -->
+    <!-- LÓGICA JAVASCRIPT Y FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        
-        // La API Key Oficial más reciente de Google AI Studio (formato AQ... soportado)
-        // No requiere OAuth 2.0 ni tokens Bearer al enviarse como Query Parameter.
-        const GEMINI_API_KEY = "AQ.Ab8RN6KHasr1Smyt5TiO6zfj7X0xVhTDnZZzgdGYmqvA8qAsDg";
+        // Importar el SDK oficial actual (2026) de Google Gen AI 
+        // Esto soluciona el error de "OAuth 2 access token" con las nuevas llaves AQ...
+        import { GoogleGenAI } from 'https://esm.run/@google/genai';
 
-        // Credenciales de Firebase (Manteniendo las de producción)
+        // Tu clave API AQ...
+        const GEMINI_API_KEY = "AQ.Ab8RN6LGQQfwOtM1bPAyg7UTcYARP7K3o_6By1u8ZamVsT1wmw"; 
+        
+        // Configuración de Firebase (Tus credenciales)
         const firebaseConfig = {
             apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg",
             authDomain: "librocontable-6dcdc.firebaseapp.com",
@@ -370,18 +370,15 @@
             }
         }
 
-        
-        // Convierte el archivo nativo a Base64 requerido por la API de Google
-        const fileToBase64 = (file) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
-
-        // Nueva implementación: API REST Oficial sin OAuth (Autenticación por Query Params)
         async function processInvoiceWithAI(input) {
             if (!input.files || input.files.length === 0) return;
+
+            const activeApiKey = GEMINI_API_KEY ? GEMINI_API_KEY.trim() : "";
+            if (!activeApiKey || activeApiKey === "TU_API_KEY_DE_GOOGLE_AI_STUDIO_AQUI") {
+                showCustomAlert('Clave Ausente', 'Por favor, configura tu API Key de Gemini en el código fuente.', 'ph-key', 'text-yellow-500', 'bg-yellow-100');
+                input.value = '';
+                return;
+            }
 
             const file = input.files[0];
             const loader = document.getElementById('scan-loader');
@@ -392,80 +389,74 @@
             successMsg.classList.add('hidden');
 
             try {
-                // 1. Preparar la imagen
-                const base64Data = await fileToBase64(file);
-                
-                // 2. Definir el prompt y forzar esquema JSON (evita el parse error clásico de Markdown)
-                const prompt = `Analiza la imagen adjunta correspondiente a una factura, ticket o recibo. 
-Extrae los siguientes datos exactos:
-- amount: el monto total a pagar (solo el número, usa punto decimal).
-- description: el nombre del comercio, tienda, o concepto de la compra.
-- category: selecciona obligatoriamente UNA sola categoría de la siguiente lista: ["Operaciones", "Inventario", "Servicios", "Nómina", "Ventas", "Aportes", "Otros"]. Si no estás seguro, usa "Otros".
-- date: la fecha de la factura en formato estricto YYYY-MM-DD. Si no es visible, usa la fecha actual.
-
-Responde ÚNICA Y EXCLUSIVAMENTE con el objeto JSON estructurado, sin bloques de código ni texto adicional.`;
-
-                const requestBody = {
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            { inline_data: { mime_type: file.type, data: base64Data } }
-                        ]
-                    }],
-                    // Forzar respuesta en Application JSON a nivel modelo (nueva característica Google AI Studio)
-                    generationConfig: {
-                        responseMimeType: "application/json"
-                    }
-                };
-
-                // 3. Endpoint Oficial para Gemini 1.5 Flash (El modelo más veloz y optimizado para multimodality)
-                // Se elimina toda cabecera 'Authorization: Bearer' para evadir restricciones de CORS y OAuth 2.0.
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
+                // Convertir la imagen a Base64
+                const base64Image = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
                 });
 
-                const data = await response.json();
+                const prompt = `Analiza la imagen adjunta que es una factura o recibo. 
+                                Extrae los siguientes datos:
+                                - Monto total (sólo números, ej: 150.50)
+                                - Descripción corta (Nombre del comercio o servicio)
+                                - Categoriza el gasto (DEBE ser exactamente una de estas palabras: Operaciones, Inventario, Servicios, Nómina, Ventas, Aportes, Otros)
+                                - Fecha en formato YYYY-MM-DD.
+                                
+                                Devuelve SOLO un objeto JSON válido con esta estructura:
+                                {"amount": number, "description": "string", "category": "string", "date": "string"}`;
 
-                if (!response.ok) {
-                    throw new Error(data.error?.message || "Error desconocido en la API de Google.");
-                }
+                // Instanciar el nuevo SDK oficial de Google Gen AI (resuelve el error 401 de OAuth)
+                const ai = new GoogleGenAI({ apiKey: activeApiKey });
 
-                // 4. Mapear resultados al Formulario
-                if (data.candidates && data.candidates[0].content.parts.length > 0) {
-                    const jsonString = data.candidates[0].content.parts[0].text;
-                    const result = JSON.parse(jsonString);
+                const response = await ai.models.generateContent({
+                    model: 'gemini-1.5-flash',
+                    contents: [
+                        { text: prompt },
+                        { inlineData: { mimeType: file.type, data: base64Image } }
+                    ],
+                    config: {
+                        responseMimeType: "application/json"
+                    }
+                });
 
-                    document.getElementById('form-amount').value = result.amount || '';
-                    document.getElementById('form-desc').value = result.description || 'Factura Escaneada';
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+
+                if (response && response.text) {
+                    const extractedData = JSON.parse(response.text);
+
+                    document.getElementById('form-amount').value = extractedData.amount || '';
+                    document.getElementById('form-desc').value = extractedData.description || '';
                     
                     const validCategories = ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Ventas', 'Aportes', 'Otros'];
-                    document.getElementById('form-category').value = validCategories.includes(result.category) ? result.category : 'Otros';
-                    
-                    if (result.date) {
-                        document.getElementById('form-date').value = result.date;
+                    const categoryToSet = validCategories.includes(extractedData.category) ? extractedData.category : 'Otros';
+                    document.getElementById('form-category').value = categoryToSet;
+
+                    if (extractedData.date) {
+                        document.getElementById('form-date').value = extractedData.date;
                     } else {
                         document.getElementById('form-date').valueAsDate = new Date();
                     }
 
-                    successMsg.classList.remove('hidden');
+                    document.getElementById('scan-success-msg').classList.remove('hidden');
                     openFormModal('expense', true);
                 } else {
-                    throw new Error("El modelo de IA no retornó resultados válidos.");
+                    throw new Error("La IA no devolvió los datos requeridos.");
                 }
 
             } catch (error) {
-                console.error("Fallo del Escáner de IA:", error);
-                showCustomAlert('Error de Lectura', error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-100');
-            } finally {
+                console.error("Error detallado de IA:", error);
                 loader.classList.add('hidden');
                 loader.classList.remove('flex');
-                input.value = ''; // Limpiar el input para permitir resubir la misma imagen
+                if (error.message.includes("API Key")) {
+                     showCustomAlert('Configuración Requerida', error.message, 'ph-key', 'text-yellow-500', 'bg-yellow-100');
+                } else {
+                     showCustomAlert('Fallo al Escanear', `Motivo: ${error.message}`, 'ph-warning-octagon', 'text-red-500', 'bg-red-100');
+                }
+            } finally {
+                input.value = '';
             }
         }
 
