@@ -110,7 +110,6 @@
                         <button onclick="switchTab('ledger')" class="text-sm text-gray-500 hover:text-black">Ver Todo</button>
                     </div>
                     <div id="tx-list" class="flex flex-col gap-2">
-                        <!-- Las transacciones se inyectan aquí -->
                         <p class="text-center text-gray-400 text-sm py-4">Cargando...</p>
                     </div>
                 </div>
@@ -125,16 +124,15 @@
                     </button>
                 </div>
 
-                <!-- Escáner IA Integrado -->
+                <!-- Escáner IA (OpenRouter) -->
                 <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-6 flex justify-between items-center">
                     <div>
                         <h4 class="font-semibold text-blue-900 text-sm">Registro Inteligente</h4>
-                        <p class="text-xs text-blue-700 mt-1">Extrae datos con Gemini 1.5 Flash.</p>
+                        <p class="text-xs text-blue-700 mt-1">Extrae datos de tu factura con IA.</p>
                     </div>
                     <label class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-xl cursor-pointer transition shadow-sm flex items-center gap-2">
                         <i class="ph ph-scan"></i> Escanear
-                        <!-- Soporte estricto para imágenes requeridas por Vision API -->
-                        <input type="file" id="invoice-upload" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="processInvoiceWithAI(this)">
+                        <input type="file" id="invoice-upload" accept="image/*" class="hidden" onchange="processInvoiceOpenRouter(this)">
                     </label>
                 </div>
 
@@ -160,7 +158,7 @@
                             </tr>
                         </thead>
                         <tbody id="table-body" class="text-gray-700">
-                            <!-- Los datos de la tabla se inyectan aquí -->
+                            <!-- Los datos se inyectan aquí -->
                         </tbody>
                     </table>
                 </div>
@@ -205,9 +203,9 @@
                     </button>
                 </div>
 
-                <div id="scan-success-msg" class="hidden mb-4 bg-green-50 text-green-700 text-xs p-3 rounded-xl border border-green-200 flex items-center gap-2">
+                <div id="scan-success-msg" class="hidden mb-4 bg-indigo-50 text-indigo-700 text-xs p-3 rounded-xl border border-indigo-200 flex items-center gap-2">
                     <i class="ph-fill ph-check-circle text-lg"></i>
-                    Datos procesados por Gemini AI.
+                    Datos leídos por OCR Local. Por favor verifica.
                 </div>
 
                 <form id="transaction-form" onsubmit="handleFormSubmit(event)">
@@ -260,11 +258,11 @@
             <div class="relative w-24 h-24 mb-6">
                 <div class="absolute inset-0 border-4 border-t-blue-500 border-blue-500/20 rounded-full animate-spin"></div>
                 <div class="absolute inset-0 flex items-center justify-center">
-                    <i class="ph ph-sparkle text-4xl text-white animate-pulse"></i>
+                    <i class="ph ph-brain text-4xl text-white animate-pulse"></i>
                 </div>
             </div>
-            <h3 class="text-white text-xl font-bold mb-2">Procesando Documento...</h3>
-            <p class="text-gray-400 text-sm text-center max-w-[250px]">Gemini 1.5 Flash está analizando la imagen.</p>
+            <h3 class="text-white text-xl font-bold mb-2">Analizando Factura...</h3>
+            <p class="text-gray-300 text-sm text-center max-w-[280px]">Procesando documento con OpenRouter AI. Esto tomará un par de segundos.</p>
         </div>
 
         <!-- MODAL: ALERTAS PERSONALIZADAS -->
@@ -280,20 +278,15 @@
                 </button>
             </div>
         </div>
-    <!-- LÓGICA JAVASCRIPT Y FIREBASE -->
+
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Importar el SDK oficial actual (2026) de Google Gen AI 
-        // Esto soluciona el error de "OAuth 2 access token" con las nuevas llaves AQ...
-        import { GoogleGenAI } from 'https://esm.run/@google/genai';
-
-        // Tu clave API AQ...
-        const GEMINI_API_KEY = "AQ.Ab8RN6LGQQfwOtM1bPAyg7UTcYARP7K3o_6By1u8ZamVsT1wmw"; 
-        
-        // Configuración de Firebase (Tus credenciales)
+        // Firebase Config (Para guardar datos)
         const firebaseConfig = {
             apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg",
             authDomain: "librocontable-6dcdc.firebaseapp.com",
@@ -308,11 +301,13 @@
         const db = getFirestore(app);
         let currentUser = null;
 
+        // Variables
         let transactions = [];
         let isExpense = true;
         let currentFilter = 'Todos';
         let myChart = null;
 
+        // Elements
         const balanceEl = document.getElementById('total-balance');
         const availableEl = document.getElementById('available-amount');
         const spentEl = document.getElementById('spent-amount');
@@ -329,8 +324,7 @@
                 currentUser = userCredential.user;
                 listenToTransactions();
             }).catch((error) => {
-                console.error("Auth Error:", error);
-                showCustomAlert('Error de Conexión', 'No se pudo conectar a la base de datos de Firebase.', 'ph-wifi-slash', 'text-red-500', 'bg-red-100');
+                showCustomAlert('Error de Conexión', 'No se pudo conectar a Firebase.', 'ph-wifi-slash', 'text-red-500', 'bg-red-100');
             });
         };
 
@@ -365,20 +359,45 @@
                 closeFormModal();
                 showCustomAlert('Éxito', 'Registro guardado correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-100');
             } catch (error) {
-                console.error("Error al guardar:", error);
                 showCustomAlert('Error', 'Ocurrió un problema guardando el registro.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
             }
         }
 
-        async function processInvoiceWithAI(input) {
-            if (!input.files || input.files.length === 0) return;
+        // NUEVA FUNCIÓN: Comprime la imagen antes de leerla para que sea MUCHO más rápido
+        function compressImageForOCR(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 800; // Reducimos a max 800px para máxima velocidad
+                        let width = img.width;
+                        let height = img.height;
 
-            const activeApiKey = GEMINI_API_KEY ? GEMINI_API_KEY.trim() : "";
-            if (!activeApiKey || activeApiKey === "TU_API_KEY_DE_GOOGLE_AI_STUDIO_AQUI") {
-                showCustomAlert('Clave Ausente', 'Por favor, configura tu API Key de Gemini en el código fuente.', 'ph-key', 'text-yellow-500', 'bg-yellow-100');
-                input.value = '';
-                return;
-            }
+                        if (width > height && width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        } else if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.8)); // Calidad del 80%
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // LECTURA INTELIGENTE CON OPENROUTER AI
+        async function processInvoiceOpenRouter(input) {
+            if (!input.files || input.files.length === 0) return;
 
             const file = input.files[0];
             const loader = document.getElementById('scan-loader');
@@ -388,75 +407,82 @@
             loader.classList.add('flex');
             successMsg.classList.add('hidden');
 
+            const OPENROUTER_API_KEY = "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";
+
             try {
-                // Convertir la imagen a Base64
-                const base64Image = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
+                // 1. Comprimir la imagen (Acelera la subida x5)
+                const compressedBase64 = await compressImageForOCR(file);
 
+                // 2. Prompt estricto para extraer JSON
                 const prompt = `Analiza la imagen adjunta que es una factura o recibo. 
-                                Extrae los siguientes datos:
-                                - Monto total (sólo números, ej: 150.50)
-                                - Descripción corta (Nombre del comercio o servicio)
-                                - Categoriza el gasto (DEBE ser exactamente una de estas palabras: Operaciones, Inventario, Servicios, Nómina, Ventas, Aportes, Otros)
-                                - Fecha en formato YYYY-MM-DD.
-                                
-                                Devuelve SOLO un objeto JSON válido con esta estructura:
-                                {"amount": number, "description": "string", "category": "string", "date": "string"}`;
+Extrae los siguientes datos:
+- "amount": Monto total (sólo números decimales, ej: 150.50)
+- "description": Descripción corta (Nombre del comercio o servicio)
+- "category": Categoriza el gasto (DEBE ser exactamente una de estas palabras: Operaciones, Inventario, Servicios, Nómina, Ventas, Aportes, Otros)
+- "date": Fecha en formato YYYY-MM-DD.
 
-                // Instanciar el nuevo SDK oficial de Google Gen AI (resuelve el error 401 de OAuth)
-                const ai = new GoogleGenAI({ apiKey: activeApiKey });
+Devuelve SOLO un objeto JSON válido. No envíes texto adicional ni bloques de markdown (sin \`\`\`json).`;
 
-                const response = await ai.models.generateContent({
-                    model: 'gemini-1.5-flash',
-                    contents: [
-                        { text: prompt },
-                        { inlineData: { mimeType: file.type, data: base64Image } }
-                    ],
-                    config: {
-                        responseMimeType: "application/json"
-                    }
+                // 3. Petición a OpenRouter usando el modelo rápido GPT-4o-mini
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "openai/gpt-4o-mini", 
+                        response_format: { type: "json_object" },
+                        messages: [
+                            {
+                                role: "user",
+                                content: [
+                                    { type: "text", text: prompt },
+                                    { type: "image_url", image_url: { url: compressedBase64 } }
+                                ]
+                            }
+                        ]
+                    })
                 });
 
-                loader.classList.add('hidden');
-                loader.classList.remove('flex');
-
-                if (response && response.text) {
-                    const extractedData = JSON.parse(response.text);
-
-                    document.getElementById('form-amount').value = extractedData.amount || '';
-                    document.getElementById('form-desc').value = extractedData.description || '';
-                    
-                    const validCategories = ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Ventas', 'Aportes', 'Otros'];
-                    const categoryToSet = validCategories.includes(extractedData.category) ? extractedData.category : 'Otros';
-                    document.getElementById('form-category').value = categoryToSet;
-
-                    if (extractedData.date) {
-                        document.getElementById('form-date').value = extractedData.date;
-                    } else {
-                        document.getElementById('form-date').valueAsDate = new Date();
-                    }
-
-                    document.getElementById('scan-success-msg').classList.remove('hidden');
-                    openFormModal('expense', true);
-                } else {
-                    throw new Error("La IA no devolvió los datos requeridos.");
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || "Error al conectar con OpenRouter.");
                 }
+
+                const data = await response.json();
+                let resultText = data.choices[0].message.content;
+                
+                // Limpiar posibles bloques markdown si la IA no respeta el response_format
+                resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                const extractedData = JSON.parse(resultText);
+
+                // 4. Rellenar Formulario
+                document.getElementById('form-amount').value = extractedData.amount || '';
+                document.getElementById('form-desc').value = (extractedData.description || "Recibo Escaneado").substring(0, 30);
+                
+                if (extractedData.date) {
+                    document.getElementById('form-date').value = extractedData.date;
+                } else {
+                    document.getElementById('form-date').valueAsDate = new Date();
+                }
+
+                const validCategories = ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Ventas', 'Aportes', 'Otros'];
+                document.getElementById('form-category').value = validCategories.includes(extractedData.category) ? extractedData.category : "Otros"; 
+
+                successMsg.innerHTML = `<i class="ph-fill ph-check-circle text-lg"></i> Datos leídos por Inteligencia Artificial. Por favor verifica.`;
+                successMsg.className = "mb-4 bg-green-50 text-green-700 text-xs p-3 rounded-xl border border-green-200 flex items-center gap-2";
+                
+                openFormModal('expense', true);
 
             } catch (error) {
-                console.error("Error detallado de IA:", error);
+                console.error("Error OpenRouter:", error);
+                showCustomAlert('Error de Lectura', 'No pudimos reconocer la factura: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-100');
+            } finally {
                 loader.classList.add('hidden');
                 loader.classList.remove('flex');
-                if (error.message.includes("API Key")) {
-                     showCustomAlert('Configuración Requerida', error.message, 'ph-key', 'text-yellow-500', 'bg-yellow-100');
-                } else {
-                     showCustomAlert('Fallo al Escanear', `Motivo: ${error.message}`, 'ph-warning-octagon', 'text-red-500', 'bg-red-100');
-                }
-            } finally {
-                input.value = '';
+                input.value = ''; // Reset input
             }
         }
 
@@ -652,13 +678,12 @@
             showCustomAlert('Próximamente', `La función de ${featureName} estará disponible en la próxima actualización.`, 'ph-rocket-launch', 'text-purple-500', 'bg-purple-100');
         }
 
-        // Exposición de funciones en el objeto global (window)
-        // Requerido debido al uso de type="module" en el script principal
+        // Exponer al scope global
         window.switchTab = switchTab;
         window.openFormModal = openFormModal;
         window.closeFormModal = closeFormModal;
         window.filterLedger = filterLedger;
-        window.processInvoiceWithAI = processInvoiceWithAI;
+        window.processInvoiceOpenRouter = processInvoiceOpenRouter;
         window.handleFormSubmit = handleFormSubmit;
         window.closeAlert = closeAlert;
         window.notImplemented = notImplemented;
