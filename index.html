@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinSight - Libro Contable Moderno</title>
+    
+    <!-- Tailwind CSS para estilos rápidos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons para iconografía moderna -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Chart.js para el gráfico de dona -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Configuración personalizada de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            dark: '#1c1c1e',
+                            light: '#f5f5f7',
+                            green: '#34d399',
+                            pink: '#f472b6',
+                            yellow: '#fbbf24',
+                            gray: '#8e8e93'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos personalizados adicionales, principalmente para el scrollbar */
+        body { background-color: #e5e7eb; }
+        .app-container {
+            max-width: 480px; /* Tamaño de móvil para el contenedor principal */
+            margin: 0 auto;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        @media (min-width: 481px) {
+            .app-container {
+                min-height: 850px;
+                height: 850px;
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                overflow: hidden;
+            }
+        }
+        
+        /* Ocultar barra de desplazamiento pero permitir scroll */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Efecto de cristal para la navegación inferior */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .view-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tabla clásica de libro contable */
+        .table-container { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        th { background-color: #f9fafb; font-weight: 600; color: #4b5563; padding: 10px; border-bottom: 2px solid #e5e7eb; white-space: nowrap; }
+        td { padding: 10px; border-bottom: 1px solid #e5e7eb; color: #1f2937; white-space: nowrap; }
+        .td-numeric { text-align: right; font-family: monospace; font-size: 0.9rem; }
+        .text-debit { color: #ef4444; } /* Rojo para gastos (débito) */
+        .text-credit { color: #10b981; } /* Verde para ingresos (crédito) */
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="app-container">
+        
+        <!-- Header Común -->
+        <header class="pt-12 pb-4 px-6 flex justify-between items-center bg-white z-10">
+            <div class="flex items-center gap-3">
+                <img src="https://ui-avatars.com/api/?name=Jane+Cooper&background=random" alt="Perfil" class="w-10 h-10 rounded-full">
+                <div>
+                    <p class="text-xs text-gray-500 font-medium">Buenos Días</p>
+                    <h1 class="text-sm font-bold text-gray-900">Empresa XYZ</h1>
+                </div>
+            </div>
+            <button onclick="showCustomAlert('Notificaciones', 'No tienes notificaciones nuevas en este momento.', 'ph-bell', 'text-blue-500', 'bg-blue-100')" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center relative hover:bg-gray-50 transition">
+                <i class="ph ph-bell text-xl"></i>
+            </button>
+        </header>
+
+        <!-- Contenedor desplazable principal -->
+        <main class="flex-1 overflow-y-auto hide-scrollbar pb-24 px-6">
+            
+            <!-- ================= DASHBOARD VIEW ================= -->
+            <section id="view-dashboard" class="view-section active">
+                <h2 class="text-lg font-semibold mb-4">Mi Billetera</h2>
+                
+                <!-- Tarjeta Principal de Balance -->
+                <div class="bg-brand-dark rounded-3xl p-6 text-white shadow-lg relative overflow-hidden mb-6">
+                    <!-- Decoración de fondo -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl"></div>
+                    
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="font-medium text-gray-300">FinSight Contable</span>
+                        <i class="ph ph-visa-logo text-3xl opacity-80"></i>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-1">Balance Actual</p>
+                    <h3 class="text-4xl font-bold mb-6 tracking-tight" id="main-balance">$0.00</h3>
+                    
+                    <div class="flex justify-between items-end text-sm">
+                        <span class="text-gray-400 tracking-widest font-mono">**** **** **** 6925</span>
+                        <div class="text-right">
+                            <span class="text-xs text-gray-400 block">Exp. Date</span>
+                            <span>10/28</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción Rápida -->
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <button onclick="openFormModal('expense')" class="flex flex-col items-center justify-center gap-2 p-4 bg-brand-light rounded-2xl hover:bg-gray-200 transition">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-brand-dark">
+                            <i class="ph ph-arrow-up-right text-xl"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-gray-700">Gasto</span>
+                    </button>
+                    <button onclick="openFormModal('income')" class="flex flex-col items-center justify-center gap-2 p-4 bg-brand-light rounded-2xl hover:bg-gray-200 transition">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-brand-dark">
+                            <i class="ph ph-arrow-down-left text-xl"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-gray-700">Ingreso</span>
+                    </button>
+                    <button onclick="switchTab('libro')" class="flex flex-col items-center justify-center gap-2 p-4 bg-brand-light rounded-2xl hover:bg-gray-200 transition">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-brand-dark">
+                            <i class="ph ph-book-bookmark text-xl"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-gray-700">Ver Libro</span>
+                    </button>
+                </div>
+
+                <!-- Sección de Resumen Mensual (Gráfico) -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold">Resumen Mensual</h2>
+                    </div>
+                    <div class="bg-brand-light rounded-3xl p-6 relative">
+                        <div class="w-48 h-48 mx-auto relative">
+                            <canvas id="portfolioChart"></canvas>
+                            <!-- Texto central del donut -->
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span class="text-xs text-gray-500">Total Mensual</span>
+                                <span class="font-bold text-sm" id="chart-total">$0.00</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Leyenda personalizada -->
+                        <div class="flex justify-between mt-6 text-xs">
+                            <div class="text-center">
+                                <div class="flex items-center gap-1 justify-center mb-1">
+                                    <span class="w-2 h-2 rounded-full bg-brand-green"></span>
+                                    <span class="text-gray-500">Ingresos</span>
+                                </div>
+                                <span class="font-semibold block" id="legend-income">$0.00</span>
+                            </div>
+                            <div class="text-center">
+                                <div class="flex items-center gap-1 justify-center mb-1">
+                                    <span class="w-2 h-2 rounded-full bg-brand-pink"></span>
+                                    <span class="text-gray-500">Gastos</span>
+                                </div>
+                                <span class="font-semibold block" id="legend-expense">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transacciones Recientes -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold">Transacciones Recientes</h2>
+                        <button onclick="switchTab('libro')" class="text-sm text-gray-500 hover:text-brand-dark">Ver Todo</button>
+                    </div>
+                    <div id="recent-transactions-list" class="flex flex-col gap-4">
+                        <!-- Las transacciones se inyectarán aquí vía JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= LIBRO CONTABLE VIEW ================= -->
+            <section id="view-libro" class="view-section">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Libro Mayor</h2>
+                    <button onclick="openFormModal('expense')" class="bg-brand-dark text-white p-2 rounded-full shadow-md hover:bg-gray-800 transition">
+                        <i class="ph ph-plus text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Simulador de Escaneo de Factura -->
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-blue-900 text-sm">Registro Inteligente</h3>
+                        <p class="text-xs text-blue-700 mt-1">Extrae datos de tu factura automáticamente.</p>
+                    </div>
+                    <label class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium cursor-pointer shadow-sm hover:bg-blue-700 transition flex items-center gap-2">
+                        <i class="ph ph-scan"></i>
+                        Escanear
+                        <!-- Input file oculto para simular subida -->
+                        <input type="file" class="hidden" accept="image/*,.pdf" onchange="simulateInvoiceReading(this)">
+                    </label>
+                </div>
+
+                <!-- Loader oculto para el escaneo -->
+                <div id="scan-loader" class="hidden flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm mb-6 border border-gray-100">
+                    <i class="ph ph-spinner animate-spin text-3xl text-blue-600 mb-2"></i>
+                    <p class="text-sm text-gray-600">Procesando factura y extrayendo datos...</p>
+                </div>
+
+                <!-- Tabla de Contabilidad Clásica -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+                    <div class="bg-gray-800 text-white p-4 text-center">
+                        <h3 class="font-serif text-xl tracking-wider">Libro De Contabilidad</h3>
+                        <p class="text-xs text-gray-300">Registro General de Movimientos</p>
+                    </div>
+                    <div class="table-container">
+                        <table id="accounting-table">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Cuenta</th>
+                                    <th class="text-right">Pago (Débito)</th>
+                                    <th class="text-right">Deposit. (Crédito)</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accounting-tbody">
+                                <!-- Filas generadas por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Navegación Inferior -->
+        <nav class="absolute bottom-0 w-full glass-nav px-6 py-4 flex justify-around items-center rounded-b-[40px] z-20">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex flex-col items-center gap-1 text-brand-dark">
+                <div class="p-2 bg-gray-900 text-white rounded-xl shadow-md transition-all duration-300" id="icon-bg-dashboard">
+                    <i class="ph ph-house text-xl"></i>
+                </div>
+                <span class="text-[10px] font-semibold opacity-100 transition-opacity">Inicio</span>
+            </button>
+            
+            <button onclick="switchTab('libro')" id="nav-libro" class="nav-btn flex flex-col items-center gap-1 text-gray-400">
+                <div class="p-2 bg-transparent rounded-xl transition-all duration-300" id="icon-bg-libro">
+                    <i class="ph ph-book-open-text text-xl"></i>
+                </div>
+                <span class="text-[10px] font-semibold opacity-0 transition-opacity">Libro</span>
+            </button>
+
+            <button onclick="showCustomAlert('Próximamente', 'Los reportes detallados y estadísticas estarán disponibles muy pronto.', 'ph-chart-bar', 'text-yellow-500', 'bg-yellow-100')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 hover:text-gray-700 transition">
+                <div class="p-2 bg-transparent rounded-xl">
+                    <i class="ph ph-chart-bar text-xl"></i>
+                </div>
+            </button>
+            
+            <button onclick="showCustomAlert('Perfil', 'La configuración de tu cuenta de usuario estará disponible en la próxima actualización.', 'ph-user', 'text-gray-500', 'bg-gray-200')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 hover:text-gray-700 transition">
+                <div class="p-2 bg-transparent rounded-xl">
+                    <i class="ph ph-user text-xl"></i>
+                </div>
+            </button>
+        </nav>
+
+        <!-- Modal Formulario Nueva Transacción -->
+        <div id="transaction-modal" class="absolute inset-0 bg-black/50 z-50 hidden flex flex-col justify-end transition-opacity">
+            <div class="bg-white rounded-t-3xl p-6 h-[80%] flex flex-col transform translate-y-full transition-transform duration-300" id="modal-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold" id="modal-title">Nuevo Registro</h3>
+                    <button onclick="closeFormModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+                
+                <form id="transaction-form" class="flex-1 overflow-y-auto hide-scrollbar space-y-4 pb-10" onsubmit="handleFormSubmit(event)">
+                    
+                    <input type="hidden" id="form-type" value="expense">
+                    
+                    <!-- Selector Visual de Tipo -->
+                    <div class="flex p-1 bg-gray-100 rounded-xl mb-4">
+                        <button type="button" id="btn-type-expense" onclick="setFormType('expense')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-brand-dark transition">Gasto (Débito)</button>
+                        <button type="button" id="btn-type-income" onclick="setFormType('income')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-brand-dark transition">Ingreso (Crédito)</button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Monto</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-medium text-gray-400">$</span>
+                            <input type="number" id="form-amount" step="0.01" required class="w-full bg-brand-light border-0 rounded-2xl py-4 pl-10 pr-4 text-2xl font-bold text-gray-900 focus:ring-2 focus:ring-brand-dark outline-none" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Descripción / Concepto</label>
+                        <input type="text" id="form-desc" required class="w-full bg-brand-light border-0 rounded-xl py-3 px-4 focus:ring-2 focus:ring-brand-dark outline-none" placeholder="Ej. Compra de suministros">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Fecha</label>
+                            <input type="date" id="form-date" required class="w-full bg-brand-light border-0 rounded-xl py-3 px-4 focus:ring-2 focus:ring-brand-dark outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Cuenta/Categoría</label>
+                            <select id="form-category" class="w-full bg-brand-light border-0 rounded-xl py-3 px-4 focus:ring-2 focus:ring-brand-dark outline-none text-sm appearance-none">
+                                <option value="Operaciones">Operaciones</option>
+                                <option value="Inventario">Inventario</option>
+                                <option value="Servicios">Servicios Básicos</option>
+                                <option value="Nómina">Nómina</option>
+                                <option value="Ventas">Ventas (Ingreso)</option>
+                                <option value="Aportes">Aportes (Ingreso)</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de éxito lectura factura -->
+                    <div id="scan-success-msg" class="hidden bg-green-50 text-green-700 text-xs p-3 rounded-xl border border-green-200 mt-2 flex items-center gap-2">
+                        <i class="ph ph-check-circle text-lg"></i> Datos extraídos de la factura exitosamente. Por favor verifica.
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-dark text-white font-bold py-4 rounded-2xl mt-6 hover:bg-gray-800 transition active:scale-95 shadow-lg">
+                        Guardar Registro
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Custom Alert Modal -->
+        <div id="custom-alert" class="absolute inset-0 bg-black/40 z-[60] hidden flex items-center justify-center opacity-0 transition-opacity">
+            <div class="bg-white rounded-2xl p-6 w-3/4 max-w-xs text-center shadow-2xl transform scale-95 transition-transform" id="alert-box">
+                <div id="alert-icon" class="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl"></div>
+                <h4 id="alert-title" class="font-bold text-lg mb-1"></h4>
+                <p id="alert-message" class="text-sm text-gray-500 mb-5"></p>
+                <button onclick="closeAlert()" class="w-full bg-gray-900 text-white font-semibold py-2 rounded-xl">Entendido</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- ESTADO INICIAL (Vacío desde Cero) ---
+        // Estructura: { id, date, description, category, type ('expense' o 'income'), amount }
+        let transactions = [];
+
+        let donutChart = null;
+        let currentTotalBalance = 0;
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setear fecha de hoy en el form
+            document.getElementById('form-date').valueAsDate = new Date();
+            updateApp();
+        });
+
+        // --- FUNCIONES PRINCIPALES DE ACTUALIZACIÓN ---
+        function updateApp() {
+            // Ordenar transacciones por fecha ascendente para el libro contable
+            transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            renderDashboard();
+            renderAccountingTable();
+        }
+
+        // --- RENDER DASHBOARD ---
+        function renderDashboard() {
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            // Calcular totales
+            transactions.forEach(t => {
+                if (t.type === 'income') totalIncome += t.amount;
+                if (t.type === 'expense') totalExpense += t.amount;
+            });
+
+            currentTotalBalance = totalIncome - totalExpense;
+
+            // Actualizar UI Textos
+            document.getElementById('main-balance').textContent = formatCurrency(currentTotalBalance);
+            document.getElementById('chart-total').textContent = formatCurrency(totalIncome + totalExpense); // Volumen total para el gráfico
+            document.getElementById('legend-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('legend-expense').textContent = formatCurrency(totalExpense);
+
+            // Actualizar Gráfico
+            renderChart(totalIncome, totalExpense);
+
+            // Renderizar Lista Reciente (últimos 4, orden descendente)
+            const recentList = document.getElementById('recent-transactions-list');
+            recentList.innerHTML = '';
+            const recentTx = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
+            
+            if (recentTx.length === 0) {
+                recentList.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">No hay movimientos recientes.</p>';
+            }
+
+            recentTx.forEach(tx => {
+                const isExpense = tx.type === 'expense';
+                const sign = isExpense ? '-' : '+';
+                const colorClass = isExpense ? 'text-brand-dark' : 'text-brand-green';
+                const icon = getIconForCategory(tx.category);
+
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-3 bg-brand-light rounded-2xl hover:bg-gray-100 transition';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-gray-600">
+                            <i class="ph ${icon} text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-900 truncate w-32 sm:w-48">${tx.description}</h4>
+                            <p class="text-xs text-gray-500">${tx.category} • ${formatDateMsg(tx.date)}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-bold text-sm ${colorClass}">${sign}${formatCurrency(tx.amount)}</span>
+                    </div>
+                `;
+                recentList.appendChild(div);
+            });
+        }
+
+        // --- RENDER LIBRO CONTABLE (TABLA) ---
+        function renderAccountingTable() {
+            const tbody = document.getElementById('accounting-tbody');
+            tbody.innerHTML = '';
+            
+            let runningBalance = 0;
+
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-gray-500">No hay registros en el libro.</td></tr>';
+                return;
+            }
+
+            transactions.forEach((tx, index) => {
+                const isExpense = tx.type === 'expense';
+                
+                // Actualizar balance acumulado
+                if (isExpense) {
+                    runningBalance -= tx.amount;
+                } else {
+                    runningBalance += tx.amount;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${tx.date}</td>
+                    <td class="font-medium max-w-[150px] truncate" title="${tx.description}">${tx.description}</td>
+                    <td><span class="px-2 py-1 bg-gray-100 rounded-md text-xs">${tx.category}</span></td>
+                    <td class="td-numeric ${isExpense ? 'text-debit font-bold' : 'text-gray-300'}">
+                        ${isExpense ? formatCurrency(tx.amount) : '-'}
+                    </td>
+                    <td class="td-numeric ${!isExpense ? 'text-credit font-bold' : 'text-gray-300'}">
+                        ${!isExpense ? formatCurrency(tx.amount) : '-'}
+                    </td>
+                    <td class="td-numeric font-bold bg-gray-50/50">
+                        ${formatCurrency(runningBalance)}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- LÓGICA DEL GRÁFICO (Chart.js) ---
+        function renderChart(income, expense) {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            
+            let chartData, chartColors, chartLabels;
+
+            // Manejo elegante del estado vacío (0 ingresos y 0 gastos)
+            if (income === 0 && expense === 0) {
+                chartData = [1]; // Un solo bloque de datos para dibujar un anillo completo
+                chartColors = ['#e5e7eb']; // Gris claro para indicar que está vacío
+                chartLabels = ['Sin movimientos'];
+            } else {
+                chartData = [income, expense];
+                chartColors = ['#34d399', '#f472b6']; // Verde y Rosa
+                chartLabels = ['Ingresos', 'Gastos'];
+            }
+
+            // Datos para el gráfico inspirado en el diseño
+            const data = {
+                labels: chartLabels,
+                datasets: [{
+                    data: chartData,
+                    backgroundColor: chartColors,
+                    borderWidth: 0,
+                    hoverOffset: 4,
+                    cutout: '75%' // Hace el donut más delgado
+                }]
+            };
+
+            if (donutChart) {
+                donutChart.data = data;
+                donutChart.update();
+            } else {
+                donutChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) { label += ': '; }
+                                        if (context.parsed !== null) {
+                                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- STREAMING_CHUNK:Lógica de Navegación e Interacción de UI ---
+
+        function switchTab(tabId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            
+            // Mostrar la seleccionada
+            document.getElementById(`view-${tabId}`).classList.add('active');
+
+            // Actualizar UI de navegación inferior
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-brand-dark');
+                btn.classList.add('text-gray-400');
+                const span = btn.querySelector('span');
+                if(span) { span.classList.remove('opacity-100'); span.classList.add('opacity-0'); }
+            });
+            
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.classList.remove('text-gray-400');
+            activeBtn.classList.add('text-brand-dark');
+            const activeSpan = activeBtn.querySelector('span');
+            if(activeSpan) { activeSpan.classList.remove('opacity-0'); activeSpan.classList.add('opacity-100'); }
+
+            // Actualizar fondos de iconos en nav
+            document.getElementById('icon-bg-dashboard').className = 'p-2 rounded-xl transition-all duration-300 bg-transparent text-current';
+            document.getElementById('icon-bg-libro').className = 'p-2 rounded-xl transition-all duration-300 bg-transparent text-current';
+            
+            const iconBg = document.getElementById(`icon-bg-${tabId}`);
+            iconBg.className = 'p-2 bg-gray-900 text-white rounded-xl shadow-md transition-all duration-300';
+        }
+
+        // --- LÓGICA DEL FORMULARIO Y MODAL ---
+        
+        function openFormModal(type = 'expense', isAutoFill = false) {
+            const modal = document.getElementById('transaction-modal');
+            const content = document.getElementById('modal-content');
+            
+            // Reset form unless it's an autofill from invoice
+            if(!isAutoFill) {
+                document.getElementById('transaction-form').reset();
+                document.getElementById('form-date').valueAsDate = new Date();
+                document.getElementById('scan-success-msg').classList.add('hidden');
+            }
+            
+            setFormType(type);
+            
+            modal.classList.remove('hidden');
+            // Timeout para permitir que display block aplique antes de la transición
+            setTimeout(() => {
+                content.classList.remove('translate-y-full');
+            }, 10);
+        }
+
+        function closeFormModal() {
+            const modal = document.getElementById('transaction-modal');
+            const content = document.getElementById('modal-content');
+            
+            content.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // Esperar a que termine la transición
+        }
+
+        function setFormType(type) {
+            document.getElementById('form-type').value = type;
+            const btnExp = document.getElementById('btn-type-expense');
+            const btnInc = document.getElementById('btn-type-income');
+
+            if (type === 'expense') {
+                btnExp.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-brand-dark transition';
+                btnInc.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-brand-dark transition bg-transparent shadow-none';
+            } else {
+                btnInc.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-brand-dark transition';
+                btnExp.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-brand-dark transition bg-transparent shadow-none';
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const type = document.getElementById('form-type').value;
+            const amount = parseFloat(document.getElementById('form-amount').value);
+            const desc = document.getElementById('form-desc').value;
+            const date = document.getElementById('form-date').value;
+            const category = document.getElementById('form-category').value;
+
+            if (!amount || amount <= 0) {
+                showCustomAlert('Error', 'Por favor ingresa un monto válido mayor a 0.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
+                return;
+            }
+
+            const newTx = {
+                id: Date.now(),
+                date: date,
+                description: desc,
+                category: category,
+                type: type,
+                amount: amount
+            };
+
+            transactions.push(newTx);
+            updateApp();
+            closeFormModal();
+            showCustomAlert('¡Éxito!', 'Registro guardado correctamente en el libro.', 'ph-check-circle', 'text-green-500', 'bg-green-100');
+        }
+
+        // --- LÓGICA DE LECTURA DE FACTURA (SIMULACIÓN) ---
+        function simulateInvoiceReading(input) {
+            if (!input.files || input.files.length === 0) return;
+            
+            const file = input.files[0];
+            const loader = document.getElementById('scan-loader');
+            
+            // Mostrar loader
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            
+            // Simular tiempo de procesamiento OCR (2 segundos)
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                
+                // Generar datos aleatorios creíbles para una factura
+                const mockAmount = (Math.random() * 500 + 50).toFixed(2);
+                const mockCategories = ['Servicios', 'Inventario', 'Operaciones'];
+                const mockCat = mockCategories[Math.floor(Math.random() * mockCategories.length)];
+                const mockDesc = `Factura Escaneada - ${file.name.substring(0, 10)}...`;
+
+                // Auto-completar formulario
+                document.getElementById('form-amount').value = mockAmount;
+                document.getElementById('form-desc').value = mockDesc;
+                document.getElementById('form-category').value = mockCat;
+                document.getElementById('form-date').valueAsDate = new Date(); // Hoy
+                
+                // Mostrar mensaje de éxito en el form
+                document.getElementById('scan-success-msg').classList.remove('hidden');
+                
+                // Abrir modal configurado como gasto (generalmente las facturas que se suben son compras)
+                openFormModal('expense', true);
+                
+                // Limpiar input file para permitir subir el mismo archivo de nuevo si es necesario
+                input.value = '';
+
+            }, 2000);
+        }
+
+        // --- UTILIDADES ---
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        }
+
+        function formatDateMsg(dateString) {
+            const options = { month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('es-ES', options);
+        }
+
+        function getIconForCategory(category) {
+            const icons = {
+                'Operaciones': 'ph-briefcase',
+                'Inventario': 'ph-package',
+                'Servicios': 'ph-lightning',
+                'Nómina': 'ph-users',
+                'Ventas': 'ph-trend-up',
+                'Aportes': 'ph-bank',
+                'Otros': 'ph-dots-three'
+            };
+            return icons[category] || 'ph-receipt';
+        }
+
+        // --- SISTEMA DE ALERTA PERSONALIZADO (Reemplazo de alert()) ---
+        function showCustomAlert(title, message, iconClass, iconColorClass, iconBgClass) {
+            const alertModal = document.getElementById('custom-alert');
+            const alertBox = document.getElementById('alert-box');
+            const titleEl = document.getElementById('alert-title');
+            const msgEl = document.getElementById('alert-message');
+            const iconContainer = document.getElementById('alert-icon');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            
+            iconContainer.className = `w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl ${iconColorClass} ${iconBgClass}`;
+            iconContainer.innerHTML = `<i class="ph ${iconClass}"></i>`;
+
+            alertModal.classList.remove('hidden');
+            // Trigger reflow
+            void alertModal.offsetWidth;
+            alertModal.classList.remove('opacity-0');
+            alertBox.classList.remove('scale-95');
+        }
+
+        function closeAlert() {
+            const alertModal = document.getElementById('custom-alert');
+            const alertBox = document.getElementById('alert-box');
+            
+            alertModal.classList.add('opacity-0');
+            alertBox.classList.add('scale-95');
+            
+            setTimeout(() => {
+                alertModal.classList.add('hidden');
+            }, 300);
+        }
+
+    </script>
+</body>
+</html>
