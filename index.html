@@ -54,14 +54,17 @@
             <div id="dashboard-view" class="block px-6">
                 <!-- Tarjeta Principal (Wallet) -->
                 <div class="bg-gray-900 text-white rounded-3xl p-6 shadow-lg mb-6 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-6 opacity-20">
-                        <i class="ph-fill ph-circles-four text-6xl"></i>
+                    <!-- Fondo decorativo profesional (sin emojis) -->
+                    <div class="absolute -right-4 -top-8 opacity-5 text-[9rem] pointer-events-none transition-all duration-300">
+                        <i class="ph-fill ph-chart-line-up"></i>
                     </div>
-                    <p class="text-sm text-gray-400 mb-1">Balance Actual</p>
-                    <h2 class="text-4xl font-bold mb-8" id="total-balance">$0.00</h2>
-                    <div class="flex justify-between items-end text-sm text-gray-400">
-                        <p>**** **** **** 6925</p>
-                        <p>VISA</p>
+                    
+                    <p class="text-sm text-gray-400 mb-1 relative z-10">Balance Actual</p>
+                    <h2 class="text-4xl font-bold mb-8 relative z-10" id="total-balance">$0.00</h2>
+                    <div class="flex justify-between items-end relative z-10">
+                        <div id="status-text" class="text-xs font-medium text-gray-300 bg-white/10 border border-white/10 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300">
+                            <i class="ph ph-minus mr-1"></i> Sin Datos
+                        </div>
                     </div>
                 </div>
 
@@ -246,7 +249,7 @@
                         <input type="date" id="form-date" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black">
                     </div>
 
-                    <button type="submit" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-black transition shadow-lg">
+                    <button type="submit" id="submit-btn" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-black transition shadow-lg flex justify-center items-center gap-2">
                         Guardar Registro
                     </button>
                 </form>
@@ -345,6 +348,13 @@
             e.preventDefault();
             if (!currentUser) return;
             
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Guardando...';
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            
             const type = isExpense ? 'expense' : 'income';
             const amount = parseFloat(document.getElementById('form-amount').value);
             const desc = document.getElementById('form-desc').value;
@@ -360,6 +370,10 @@
                 showCustomAlert('Éxito', 'Registro guardado correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-100');
             } catch (error) {
                 showCustomAlert('Error', 'Ocurrió un problema guardando el registro.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
         }
 
@@ -487,7 +501,13 @@ Devuelve SOLO un objeto JSON válido. No envíes texto adicional ni bloques de m
         }
 
         function formatCurrency(amount) {
-            return '$' + parseFloat(amount).toFixed(2);
+            // Formatear como Peso Colombiano (COP) con puntos de miles y sin decimales
+            return new Intl.NumberFormat('es-CO', { 
+                style: 'currency', 
+                currency: 'COP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
         }
 
         function updateUI() {
@@ -562,6 +582,21 @@ Devuelve SOLO un objeto JSON válido. No envíes texto adicional ni bloques de m
             balanceEl.innerText = formatCurrency(totalBalance);
             availableEl.innerText = formatCurrency(totalIncome);
             spentEl.innerText = formatCurrency(totalExpense);
+
+            const statusText = document.getElementById('status-text');
+
+            if (statusText) {
+                if (totalBalance > 0) {
+                    statusText.innerHTML = '<i class="ph ph-trend-up mr-1 text-sm"></i> Saludable';
+                    statusText.className = 'text-xs font-medium text-green-300 bg-green-500/20 border border-green-500/30 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300';
+                } else if (totalBalance < 0) {
+                    statusText.innerHTML = '<i class="ph ph-trend-down mr-1 text-sm"></i> En Rojo';
+                    statusText.className = 'text-xs font-medium text-red-300 bg-red-500/20 border border-red-500/30 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300';
+                } else {
+                    statusText.innerHTML = '<i class="ph ph-minus mr-1 text-sm"></i> Sin Datos';
+                    statusText.className = 'text-xs font-medium text-gray-300 bg-white/10 border border-white/10 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors duration-300';
+                }
+            }
 
             updateChart(totalIncome, totalExpense);
         }
