@@ -28,7 +28,7 @@
 </head>
 <body class="flex items-center justify-center min-h-screen sm:py-8">
 
-    <!-- App Container (Simula un dispositivo móvil en escritorio) -->
+    <!-- App Container -->
     <div class="w-full h-screen sm:h-[850px] max-w-[400px] bg-gray-50 sm:rounded-[3rem] sm:border-[8px] sm:border-gray-900 shadow-2xl relative overflow-hidden flex flex-col">
         
         <!-- HEADER -->
@@ -52,9 +52,10 @@
             
             <!-- VISTA 1: DASHBOARD -->
             <div id="dashboard-view" class="block px-6">
-                <!-- Tarjeta Principal (Wallet) -->
+                
+                <!-- Tarjeta Principal (Elegante, sin Emojis) -->
                 <div class="bg-gray-900 text-white rounded-3xl p-6 shadow-lg mb-6 relative overflow-hidden">
-                    <!-- Fondo decorativo profesional (sin emojis) -->
+                    <!-- Fondo decorativo profesional -->
                     <div class="absolute -right-4 -top-8 opacity-5 text-[9rem] pointer-events-none transition-all duration-300">
                         <i class="ph-fill ph-chart-line-up"></i>
                     </div>
@@ -131,7 +132,7 @@
                 <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-6 flex justify-between items-center">
                     <div>
                         <h4 class="font-semibold text-blue-900 text-sm">Registro Inteligente</h4>
-                        <p class="text-xs text-blue-700 mt-1">Extrae datos de tu factura con IA.</p>
+                        <p class="text-xs text-blue-700 mt-1">Extrae datos con IA.</p>
                     </div>
                     <label class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-xl cursor-pointer transition shadow-sm flex items-center gap-2">
                         <i class="ph ph-scan"></i> Escanear
@@ -156,12 +157,12 @@
                                 <th class="py-3 px-4 font-medium">Descripción</th>
                                 <th class="py-3 px-4 font-medium">Cuenta</th>
                                 <th class="py-3 px-4 font-medium text-red-300">Pago (Débito)</th>
-                                <th class="py-3 px-4 font-medium text-green-300">Depositar (Crédito)</th>
+                                <th class="py-3 px-4 font-medium text-green-300">Depositado</th>
                                 <th class="py-3 px-4 font-medium rounded-tr-2xl">Total</th>
                             </tr>
                         </thead>
                         <tbody id="table-body" class="text-gray-700">
-                            <!-- Los datos se inyectan aquí -->
+                            <!-- Datos -->
                         </tbody>
                     </table>
                 </div>
@@ -225,7 +226,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Categoría</label>
                             <select id="form-category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black">
-                                <!-- Las opciones se inyectan dinámicamente con JS -->
+                                <!-- Dinámico -->
                             </select>
                         </div>
                         <div>
@@ -258,8 +259,8 @@
                     <i class="ph ph-brain text-4xl text-white animate-pulse"></i>
                 </div>
             </div>
-            <h3 class="text-white text-xl font-bold mb-2">Analizando Factura...</h3>
-            <p class="text-gray-300 text-sm text-center max-w-[280px]">Procesando documento con OpenRouter AI.</p>
+            <h3 class="text-white text-xl font-bold mb-2">Analizando Documento...</h3>
+            <p class="text-gray-300 text-sm text-center max-w-[280px]">Procesando con IA.</p>
         </div>
 
         <!-- MODAL: ALERTAS PERSONALIZADAS -->
@@ -336,9 +337,6 @@
             });
         }
 
-        /* -------------------------------------------------------------
-           OPTIMIZACIÓN 1: ENVÍO DE FORMULARIO BLINDADO CONTRA DUPLICADOS
-        -------------------------------------------------------------- */
         async function handleFormSubmit(e) {
             e.preventDefault();
             if (!currentUser) return;
@@ -361,29 +359,30 @@
                 await addDoc(collection(db, `artifacts/librocontable/users/${currentUser.uid}/transactions`), {
                     type, amount, desc, category, date, account, createdAt: new Date().toISOString()
                 });
-                closeFormModal();
+                
+                // CERRAR MODAL AL INSTANTE DE GUARDAR
+                document.getElementById('form-modal').classList.add('hidden');
+                document.getElementById('form-modal').classList.remove('flex');
+                document.getElementById('transaction-form').reset();
+                
                 showCustomAlert('Éxito', 'Registro guardado correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-100');
             } catch (error) {
                 showCustomAlert('Error', 'Ocurrió un problema guardando el registro.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
             } finally {
-                // Siempre, pase lo que pase, restablecemos el botón
+                // Restauramos el botón
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Guardar Registro';
                 submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
         }
 
-        /* -------------------------------------------------------------
-           OPTIMIZACIÓN 2: APERTURA DE MODAL CON RESETEO ESTRICTO 
-           Y CATEGORÍAS DINÁMICAS (INGRESOS VS GASTOS)
-        -------------------------------------------------------------- */
         function openFormModal(type, fromScanner = false) {
             isExpense = type === 'expense';
             modalTitle.innerText = isExpense ? 'Añadir Gasto' : 'Añadir Ingreso';
             
-            // Cargamos las categorías según si es Gasto o Ingreso
+            // Cargar categorías dinámicas
             const categorySelect = document.getElementById('form-category');
-            categorySelect.innerHTML = ''; // Limpiamos opciones
+            categorySelect.innerHTML = '';
             
             const optionsList = isExpense 
                 ? ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros']
@@ -402,7 +401,7 @@
                 document.getElementById('scan-success-msg').classList.add('hidden');
             }
 
-            // FORZAMOS EL RESETEO DEL BOTÓN PARA EVITAR QUE SE QUEDE EN "GUARDANDO..."
+            // Restaurar botón por seguridad
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Guardar Registro';
@@ -417,7 +416,7 @@
             formModal.classList.remove('flex');
         }
 
-        // COMPRESIÓN DE IMAGEN PARA OPENROUTER
+        // Compresión de imagen ARREGLADA (Con paréntesis y llaves de cierre)
         function compressImageForOCR(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -442,12 +441,11 @@
                         resolve(canvas.toDataURL('image/jpeg', 0.8));
                     };
                     img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
+                }; // <-- Faltaban estas líneas
+                reader.readAsDataURL(file); // <--
+            }); // <--
         }
 
-        // IA OPENROUTER
         async function processInvoiceOpenRouter(input) {
             if (!input.files || input.files.length === 0) return;
 
@@ -463,11 +461,12 @@
 
             try {
                 const compressedBase64 = await compressImageForOCR(file);
-                const prompt = `Analiza la imagen de la factura. 
-Extrae los datos y devuelve SOLO JSON:
+                const prompt = `Analiza la imagen de la factura o recibo. 
+Extrae los datos y devuelve SOLO JSON con esta estructura:
+- "type": Determina lógicamente si es un gasto/pago ("expense") o si fue un cobro/venta ("income").
 - "amount": Monto total (sólo números, ej: 150.50)
-- "description": Nombre del comercio
-- "category": Clasifica en (Operaciones, Inventario, Servicios, Nómina, Ventas, Aportes, Otros)
+- "description": Nombre del comercio, cliente o servicio.
+- "category": Clasifica en (Operaciones, Inventario, Servicios, Nómina, Ventas, Aportes, Rendimientos, Otros)
 - "date": YYYY-MM-DD`;
 
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -497,8 +496,10 @@ Extrae los datos y devuelve SOLO JSON:
                 let resultText = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
                 const extractedData = JSON.parse(resultText);
 
-                // Forzamos abrir modal en modo Gasto para que cargue la lista de categorías correcta primero
-                openFormModal('expense', true);
+                // Determinar tipo según la IA
+                const transactionType = extractedData.type === 'income' ? 'income' : 'expense';
+
+                openFormModal(transactionType, true);
 
                 document.getElementById('form-amount').value = extractedData.amount || '';
                 document.getElementById('form-desc').value = (extractedData.description || "Recibo Escaneado").substring(0, 30);
@@ -507,7 +508,6 @@ Extrae los datos y devuelve SOLO JSON:
                     document.getElementById('form-date').value = extractedData.date;
                 }
                 
-                // Si la categoría sugerida no existe en la lista, la pone en "Otros"
                 const select = document.getElementById('form-category');
                 let found = false;
                 for (let i = 0; i < select.options.length; i++) {
@@ -530,7 +530,6 @@ Extrae los datos y devuelve SOLO JSON:
             }
         }
 
-        // FORMATO COLOMBIANO
         function formatCurrency(amount) {
             return new Intl.NumberFormat('es-CO', { 
                 style: 'currency', 
@@ -727,7 +726,6 @@ Extrae los datos y devuelve SOLO JSON:
             showCustomAlert('Próximamente', `La función de ${featureName} estará disponible en la próxima actualización.`, 'ph-rocket-launch', 'text-purple-500', 'bg-purple-100');
         }
 
-        // Exportamos las funciones a Window para que los botones de HTML las detecten en módulos JS
         window.switchTab = switchTab;
         window.openFormModal = openFormModal;
         window.closeFormModal = closeFormModal;
