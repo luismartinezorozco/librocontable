@@ -377,9 +377,8 @@
         import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         
-        // 🔑 TU CLAVE DE API DE GEMINI AQUÍ (Necesaria para escanear facturas fuera de esta plataforma)
-        // Consíguela gratis en: https://aistudio.google.com/app/apikey
-        const GEMINI_API_KEY = "AQ.Ab8RN6LGQQfwOtM1bPAyg7UTcYARP7K3o_6By1u8ZamVsT1wmw"; 
+        // 🔑 TU CLAVE DE API DE GEMINI AQUÍ (Actualizada con la de tu captura)
+        const GEMINI_API_KEY = "AQ.Ab8RN6Lmh6G1rPJaBxPYEb64o7Kr_6XdRXlLfvRxL37yCU2REQ"; 
 
         // Configuración de Firebase (Tus credenciales)
         const firebaseConfig = {
@@ -708,7 +707,7 @@
             if (!input.files || input.files.length === 0) return;
             
             // Verificación de API Key para sitios externos
-            const activeApiKey = GEMINI_API_KEY || ""; // Fallback automático si está en Canvas
+            const activeApiKey = GEMINI_API_KEY || ""; 
             if(!activeApiKey && window.location.hostname !== "localhost" && !window.location.hostname.includes("google")) {
                 showCustomAlert('Falta Configuración', 'Debes añadir tu API Key de Gemini en el código fuente para usar esta función en tu web.', 'ph-key', 'text-yellow-500', 'bg-yellow-100');
                 input.value = '';
@@ -751,13 +750,21 @@
                     }
                 };
 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${activeApiKey}`;
+                // CORRECCIÓN: Usamos el modelo público y estable (gemini-1.5-flash)
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeApiKey}`;
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
+                // Manejo de errores detallado de la API
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Detalle del error de la API de Gemini:", errorData);
+                    throw new Error(errorData.error?.message || "Error en la validación de la API de Google");
+                }
 
                 const result = await response.json();
                 loader.classList.add('hidden');
@@ -790,7 +797,9 @@
                 console.error("Error procesando factura con IA:", error);
                 loader.classList.add('hidden');
                 loader.classList.remove('flex');
-                showCustomAlert('Error de Lectura', 'No pudimos analizar la factura. Asegúrate de tener una API Key válida o intenta con una imagen más clara.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
+                
+                // Mostrar alerta en pantalla (si quieres ver el error exacto en la app, puedes poner error.message)
+                showCustomAlert('Error de Lectura', 'No pudimos analizar la factura. Asegúrate de que tu API Key sea válida (AIzaSy...). Revisa la consola para más detalles.', 'ph-warning-circle', 'text-red-500', 'bg-red-100');
             } finally {
                 input.value = '';
             }
