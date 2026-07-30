@@ -26,54 +26,55 @@
         .animate-scaleIn { animation: scaleIn 0.2s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        
+        /* Prevenir zoom en inputs en iOS */
+        input, select, textarea { font-size: 16px !important; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen sm:py-8 relative">
 
-    <!-- PANTALLA DE LOGIN / REGISTRO -->
+    <!-- PANTALLA DE LOGIN PRIVADO -->
     <div id="login-view" class="w-full h-screen sm:h-[850px] max-w-[400px] bg-white sm:rounded-[3rem] sm:border-[8px] sm:border-gray-900 shadow-2xl relative overflow-hidden flex flex-col justify-center px-8 z-50 animate-fadeIn">
         
-        <!-- Elementos decorativos de fondo -->
         <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-gray-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-gray-200 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
 
         <div class="text-center mb-10 relative z-10">
             <div class="w-20 h-20 bg-gray-900 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-2xl transform rotate-3 transition-transform hover:rotate-0">
-                <i class="ph-fill ph-wallet text-4xl transform -rotate-3 transition-transform hover:rotate-0"></i>
+                <i class="ph-fill ph-lock-key text-4xl transform -rotate-3 transition-transform hover:rotate-0"></i>
             </div>
             <h1 class="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">FinSight</h1>
-            <p class="text-sm text-gray-500 font-medium">Bóveda Privada</p>
+            <p class="text-sm text-gray-500 font-medium">Acceso Restringido</p>
         </div>
         
         <form id="auth-form" onsubmit="window.handleAuthSubmit(event)" class="space-y-4 relative z-10">
             <div>
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Correo Electrónico (Bloqueado)</label>
-                <input type="email" id="auth-email" value="luismartinezorozco2@gmail.com" readonly class="w-full bg-gray-200 border border-gray-200 rounded-2xl px-4 py-3.5 text-base text-gray-500 font-bold focus:outline-none cursor-not-allowed shadow-inner">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Usuario Autorizado</label>
+                <input type="email" id="auth-email" value="luismartinezorozco2@gmail.com" readonly class="w-full bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-500 font-bold focus:outline-none cursor-not-allowed shadow-inner select-none">
             </div>
             <div>
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contraseña</label>
-                <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-base text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all shadow-sm">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contraseña de Bóveda</label>
+                <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all shadow-sm">
             </div>
             
             <button type="submit" id="auth-submit-btn" class="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-2xl mt-6 flex items-center justify-center gap-2 transform active:scale-95">
-                Iniciar Sesión
+                Desbloquear Bóveda
             </button>
         </form>
     </div>
 
-
-    <!-- APP CONTAINER (Se muestra solo al iniciar sesión) -->
+    <!-- APP CONTAINER -->
     <div id="main-app-view" class="hidden w-full h-screen sm:h-[850px] max-w-[400px] bg-gray-50 sm:rounded-[3rem] sm:border-[8px] sm:border-gray-900 shadow-2xl relative overflow-hidden flex flex-col animate-fadeIn">
         
         <!-- HEADER -->
         <header class="px-6 pt-12 pb-4 flex justify-between items-center bg-gray-50 z-10 border-b border-gray-100">
             <div class="flex items-center gap-3">
                 <div id="user-initials" class="w-11 h-11 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-sm shadow-md">
-                    --
+                    LM
                 </div>
                 <div>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Bienvenido</p>
-                    <p id="user-name" class="text-sm font-extrabold text-gray-900 truncate max-w-[120px]">Usuario</p>
+                    <p id="user-name" class="text-sm font-extrabold text-gray-900 truncate max-w-[120px]">Luis Martínez</p>
                 </div>
             </div>
             <button onclick="window.logout()" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition shadow-sm text-gray-500 hover:text-red-500">
@@ -81,23 +82,25 @@
             </button>
         </header>
 
-        <!-- CONTENIDO PRINCIPAL SCROLLEABLE -->
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="flex-1 overflow-y-auto hide-scroll pb-24 relative">
             
             <!-- VISTA 1: DASHBOARD -->
             <div id="dashboard-view" class="block px-6 mt-6">
-                <!-- Tarjeta Principal (Elegante y dinámica) -->
-                <div class="bg-gray-900 text-white rounded-3xl p-6 shadow-xl mb-6 relative overflow-hidden">
-                    <!-- Icono gigante de fondo (Sutil) -->
-                    <div class="absolute -right-6 -top-6 opacity-[0.03] text-[10rem] pointer-events-none">
-                        <i class="ph-fill ph-chart-line-up"></i>
+                <!-- Tarjeta Principal Profesional -->
+                <div class="bg-gray-900 text-white rounded-3xl p-6 shadow-xl mb-6 relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                    <div class="absolute -right-6 -bottom-6 opacity-5 pointer-events-none">
+                        <i class="ph-fill ph-trend-up text-[12rem]"></i>
                     </div>
                     
-                    <p class="text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider relative z-10">Balance Actual</p>
-                    <h2 class="text-4xl font-extrabold mb-8 relative z-10 tracking-tight" id="total-balance">$ 0</h2>
-                    <div class="flex justify-between items-end relative z-10">
-                        <div id="status-badge" class="text-xs font-bold text-gray-300 bg-white/10 border border-white/10 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md transition-all duration-300">
-                            <i class="ph ph-minus mr-1.5 text-sm"></i> Sin Datos
+                    <div class="relative z-10">
+                        <p class="text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Balance Actual</p>
+                        <h2 class="text-4xl font-extrabold tracking-tight" id="total-balance">$ 0</h2>
+                    </div>
+                    
+                    <div class="flex justify-between items-end relative z-10 mt-4">
+                        <div id="status-badge" class="text-xs font-bold text-gray-400 bg-white/5 border border-white/10 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md transition-all duration-300">
+                            <i class="ph-bold ph-minus mr-1.5 text-sm"></i> Estable
                         </div>
                     </div>
                 </div>
@@ -225,7 +228,6 @@
                 </div>
                 <span class="text-[10px] font-bold mt-1">Stats</span>
             </button>
-            <!-- El botón de perfil lo dejamos para ajustes futuros, el logout ya está en el header -->
             <button onclick="window.notImplemented('Configuración')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition w-16 group">
                 <div class="w-12 h-8 rounded-full flex items-center justify-center transition-colors">
                     <i class="ph ph-gear text-xl transition-transform group-active:scale-90"></i>
@@ -251,19 +253,19 @@
                     </div>
                     <div class="mb-4">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Descripción</label>
-                        <input type="text" id="form-desc" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-base font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition" placeholder="Ej. Uber, Compra inventario...">
+                        <input type="text" id="form-desc" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition" placeholder="Ej. Uber, Compra inventario...">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Categoría</label>
-                            <select id="form-category" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-base font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition appearance-none">
-                                <!-- Se llena dinámicamente -->
+                            <select id="form-category" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition appearance-none">
+                                <!-- Se llena dinámicamente con JS -->
                             </select>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Cuenta/Banco</label>
-                            <select id="form-account" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-base font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition appearance-none">
+                            <select id="form-account" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition appearance-none">
                                 <option>Efectivo</option>
                                 <option>Banco Principal</option>
                                 <option>Tarjeta Crédito</option>
@@ -273,7 +275,7 @@
 
                     <div class="mb-8">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Fecha</label>
-                        <input type="date" id="form-date" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-base font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition">
+                        <input type="date" id="form-date" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition">
                     </div>
 
                     <button type="submit" id="submit-btn" class="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl hover:bg-black transition-all shadow-xl flex justify-center items-center gap-2 transform active:scale-95">
@@ -294,7 +296,7 @@
                     </div>
                 </div>
                 <h3 class="text-gray-900 text-lg font-extrabold mb-1">Analizando Factura</h3>
-                <p class="text-gray-500 text-xs font-medium">Extrayendo datos inteligentes...</p>
+                <p class="text-gray-500 text-xs font-medium">Extrayendo datos con IA...</p>
             </div>
         </div>
 
@@ -305,42 +307,49 @@
                     <i id="alert-icon" class="text-3xl"></i>
                 </div>
                 <h3 id="alert-title" class="text-xl font-extrabold text-gray-900 mb-2 tracking-tight">Título</h3>
-                <p id="alert-message" class="text-sm text-gray-500 mb-7 font-medium">Mensaje detallado aquí.</p>
+                <p id="alert-message" class="text-sm text-gray-500 mb-7 font-medium">Mensaje.</p>
                 <button onclick="window.closeAlert()" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-2xl hover:bg-black transition-all transform active:scale-95">
                     Entendido
                 </button>
             </div>
         </div>
-
     </div>
 
-    <!-- SCRIPT PRINCIPAL -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ==========================================
+        // CONFIGURACIÓN OFICIAL DE FIREBASE
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg",
             authDomain: "librocontable-6dcdc.firebaseapp.com",
+            databaseURL: "https://librocontable-6dcdc-default-rtdb.firebaseio.com",
             projectId: "librocontable-6dcdc",
             storageBucket: "librocontable-6dcdc.firebasestorage.app",
             messagingSenderId: "1015207314787",
             appId: "1:1015207314787:web:4e5bc42a03fa9697683f56"
         };
+        // ==========================================
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        
+        // Inicializar Firestore CON PERSISTENCIA OFFLINE (Guardado local sin internet)
+        const db = initializeFirestore(app, {
+            localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
+        });
         
         let currentUser = null;
         let transactions = [];
         let isExpense = true;
         let currentFilter = 'Todos';
         let myChart = null;
-        let unsubSnapshot = null; // Para detener la escucha al cerrar sesión
+        let unsubscribeDB = null;
 
-        // Elementos del DOM
+        // Referencias DOM
         const balanceEl = document.getElementById('total-balance');
         const availableEl = document.getElementById('available-amount');
         const spentEl = document.getElementById('spent-amount');
@@ -352,7 +361,6 @@
         const modalTitle = document.getElementById('modal-title');
         const categorySelect = document.getElementById('form-category');
 
-        // --- SISTEMA DE AUTENTICACIÓN ---
         window.handleAuthSubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
@@ -360,67 +368,56 @@
             const btn = document.getElementById('auth-submit-btn');
             
             btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Procesando...';
+            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Verificando...';
             btn.classList.add('opacity-80', 'cursor-not-allowed');
             
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // Si es exitoso, el onAuthStateChanged se encargará de mostrar la app
-            } catch (error) {
+                // Si funciona, onAuthStateChanged toma el control
+            } catch(error) {
                 console.error(error);
-                let msg = "Error de autenticación.";
-                if (error.code === 'auth/invalid-credential') msg = "Contraseña incorrecta.";
-                if (error.code === 'auth/user-not-found') msg = "Este usuario no existe en Firebase.";
-                
-                window.showCustomAlert('Error de Acceso', msg, 'ph-shield-warning', 'text-red-500', 'bg-red-50');
-                
+                if (error.code === 'auth/api-key-not-valid') {
+                    window.showCustomAlert('Falta tu API Key', 'Debes poner tu API Key real en la variable firebaseConfig dentro del código.', 'ph-key', 'text-orange-500', 'bg-orange-50');
+                } else if (error.code === 'auth/invalid-credential') {
+                    window.showCustomAlert('Acceso Denegado', 'La contraseña es incorrecta o no has creado el usuario en tu consola de Firebase (Auth -> Users).', 'ph-shield-warning', 'text-red-500', 'bg-red-50');
+                } else {
+                    window.showCustomAlert('Error de Seguridad', 'Error: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
+                }
                 btn.disabled = false;
-                btn.innerText = 'Iniciar Sesión';
+                btn.innerHTML = 'Desbloquear Bóveda';
                 btn.classList.remove('opacity-80', 'cursor-not-allowed');
             }
         };
 
         window.logout = async () => {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Error signing out: ", error);
-            }
+            await signOut(auth);
         };
 
         window.onload = () => {
             initChart();
             
-            // Vigila los cambios de sesión
             onAuthStateChanged(auth, (user) => {
                 const loginView = document.getElementById('login-view');
                 const mainAppView = document.getElementById('main-app-view');
                 const authBtn = document.getElementById('auth-submit-btn');
-                
+
                 if (user) {
                     currentUser = user;
                     
-                    // Actualizar UI con datos del usuario
-                    const emailPrefix = user.email.split('@')[0];
-                    document.getElementById('user-initials').innerText = emailPrefix.substring(0, 2).toUpperCase();
-                    document.getElementById('user-name').innerText = emailPrefix;
-                    
-                    // Restaurar botón de login por si se desloguea
                     authBtn.disabled = false;
-                    authBtn.innerText = 'Iniciar Sesión';
+                    authBtn.innerText = 'Desbloquear Bóveda';
                     authBtn.classList.remove('opacity-80', 'cursor-not-allowed');
                     
-                    // Transición a la app
                     loginView.classList.add('hidden');
                     mainAppView.classList.remove('hidden');
+                    
                     listenToTransactions();
                 } else {
                     currentUser = null;
-                    if (unsubSnapshot) unsubSnapshot(); // Detener lecturas de DB anteriores
                     transactions = [];
-                    updateUI(); // Limpiar pantalla
+                    if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
+                    updateUI(); 
                     
-                    // Transición al login
                     loginView.classList.remove('hidden');
                     mainAppView.classList.add('hidden');
                     document.getElementById('auth-form').reset();
@@ -430,22 +427,29 @@
 
         function listenToTransactions() {
             if (!currentUser) return;
-            const q = query(collection(db, `artifacts/librocontable/users/${currentUser.uid}/transactions`));
             
-            unsubSnapshot = onSnapshot(q, (snapshot) => {
+            // ELIMINAMOS el orderBy("createdAt", "asc") para que no pida índices especiales
+            const q = query(collection(db, "transactions"), orderBy("date", "asc"));
+            
+            unsubscribeDB = onSnapshot(q, (snapshot) => {
                 transactions = [];
                 snapshot.forEach((doc) => {
-                    transactions.push({ id: doc.id, ...doc.data() });
+                    if (doc.data().userId === currentUser.uid) {
+                        transactions.push({ id: doc.id, ...doc.data() });
+                    }
                 });
-                transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
                 updateUI();
             }, (error) => {
-                console.error("Snapshot error:", error);
-                window.showCustomAlert('Bloqueo de Seguridad', 'Firebase está bloqueando la lectura. Por favor ve a Firestore Database y pon las reglas en Modo Prueba.', 'ph-lock-key', 'text-red-500', 'bg-red-50');
+                console.error("Error Firestore: ", error);
+                if(error.code === 'permission-denied'){
+                    window.showCustomAlert('Bloqueo de Seguridad', 'Firebase bloqueó la lectura. Revisa tus reglas de Firestore.', 'ph-lock-key', 'text-red-500', 'bg-red-50');
+                } else if (error.code === 'not-found' || error.message.includes('not exist')) {
+                    window.showCustomAlert('Base de datos no encontrada', 'Aún no has creado la base de datos FIRESTORE en la consola de Firebase.', 'ph-database', 'text-orange-500', 'bg-orange-50');
+                }
             });
         }
 
-        window.handleFormSubmit = (e) => {
+        window.handleFormSubmit = async (e) => {
             e.preventDefault();
             if (!currentUser) return;
             
@@ -456,29 +460,45 @@
             const date = document.getElementById('form-date').value;
             const account = document.getElementById('form-account').value;
 
-            if (isNaN(amount) || amount <= 0) {
-                window.showCustomAlert('Error', 'El monto no es válido.', 'ph-warning-circle', 'text-red-500', 'bg-red-50');
-                return;
+            if (isNaN(amount) || amount <= 0) return;
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Guardando...';
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            try {
+                // Al tener persistencia local, esto se resuelve muy rápido, 
+                // incluso si estás sin internet, lo guarda localmente y sincroniza después.
+                await addDoc(collection(db, "transactions"), {
+                    userId: currentUser.uid,
+                    type, amount, desc, category, date, account,
+                    createdAt: serverTimestamp()
+                });
+                
+                window.closeFormModal();
+                document.getElementById('transaction-form').reset();
+                window.showCustomAlert('¡Guardado!', 'Registro añadido con éxito al libro.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
+                
+            } catch (error) {
+                console.error("Error al guardar: ", error);
+                if (error.code === 'not-found' || error.message.includes('not exist')) {
+                    window.showCustomAlert('Base de datos inexistente', 'Firebase dice que no existe la base de datos Firestore. Verifica la consola.', 'ph-database', 'text-orange-500', 'bg-orange-50');
+                } else {
+                    window.showCustomAlert('Error al guardar', 'Revisa tu conexión o reglas de Firebase.', 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Guardar Registro';
+                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
-
-            // 1. Cierre instantáneo para una experiencia ultra fluida
-            window.closeFormModal();
-            document.getElementById('transaction-form').reset();
-            window.showCustomAlert('¡Éxito!', 'Registro guardado correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
-
-            // 2. Sincronización en segundo plano con Firestore
-            addDoc(collection(db, `artifacts/librocontable/users/${currentUser.uid}/transactions`), {
-                type, amount, desc, category, date, account, createdAt: new Date().toISOString()
-            }).catch((error) => {
-                console.error("Error de sincronización: ", error);
-                window.showCustomAlert('Fallo al Guardar', 'Hubo un problema de conexión con Firebase: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
-            });
         }
 
         window.openFormModal = (type, fromScanner = false) => {
             isExpense = type === 'expense';
             modalTitle.innerText = isExpense ? 'Añadir Gasto' : 'Añadir Ingreso';
             
+            // Categorías Dinámicas
             categorySelect.innerHTML = '';
             const optionsList = isExpense 
                 ? ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros Gastos']
@@ -495,11 +515,6 @@
                 transactionForm.reset();
                 document.getElementById('form-date').valueAsDate = new Date();
             }
-
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Guardar Registro';
-            submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
 
             formModal.classList.remove('hidden');
             formModal.classList.add('flex');
@@ -551,12 +566,12 @@
 
             try {
                 const compressedBase64 = await compressImageForOCR(file);
-                const prompt = `Analiza la imagen de esta factura o recibo. 
-Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
-- "type": Escribe "income" (si es una venta, cobro o ingreso de dinero) o "expense" (si es una compra, gasto o pago que tú hiciste).
-- "amount": Monto total (solo el numero, sin comas ni simbolos, ej: 150000).
-- "description": Nombre del comercio, cliente o servicio (max 20 caracteres).
-- "category": Si type es "expense" elige una de: (Operaciones, Inventario, Servicios, Nómina, Otros Gastos). Si type es "income" elige una de: (Ventas, Aportes, Rendimientos, Otros Ingresos).
+                const prompt = `Analiza la imagen. Si es un cobro, factura de venta emitida por mí o comprobante de dinero recibido, clasifícalo como "income". Si es un ticket de compra, pago de servicios o dinero que yo gasté, clasifícalo como "expense".
+Extrae los datos y devuelve SOLO JSON con esta estructura:
+- "type": "income" o "expense"
+- "amount": Monto total (solo el numero, sin comas).
+- "description": Nombre del comercio o servicio (max 20 caracteres).
+- "category": Si type="expense" (Operaciones, Inventario, Servicios, Nómina, Otros Gastos). Si type="income" (Ventas, Aportes, Rendimientos, Otros Ingresos).
 - "date": YYYY-MM-DD`;
 
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -580,24 +595,19 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
                     })
                 });
 
-                if (!response.ok) throw new Error("Error conectando con la IA de OpenRouter.");
+                if (!response.ok) throw new Error("Error con OpenRouter.");
 
                 const data = await response.json();
                 let resultText = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
                 const extractedData = JSON.parse(resultText);
 
-                // La IA decide si abrir el modal de Ingreso o de Gasto
                 const transactionType = extractedData.type === 'income' ? 'income' : 'expense';
                 window.openFormModal(transactionType, true);
 
                 document.getElementById('form-amount').value = extractedData.amount || '';
                 document.getElementById('form-desc').value = (extractedData.description || "Recibo Escaneado").substring(0, 30);
+                if (extractedData.date) document.getElementById('form-date').value = extractedData.date;
                 
-                if (extractedData.date) {
-                    document.getElementById('form-date').value = extractedData.date;
-                }
-                
-                // Setear la categoría correcta
                 let found = false;
                 for (let i = 0; i < categorySelect.options.length; i++) {
                     if (categorySelect.options[i].value === extractedData.category) {
@@ -608,10 +618,10 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
                 }
                 if (!found) categorySelect.value = transactionType === 'income' ? 'Otros Ingresos' : 'Otros Gastos';
 
-                window.showCustomAlert('Escaneo Exitoso', 'La IA ha extraído los datos. Verifica y presiona Guardar.', 'ph-magic-wand', 'text-blue-500', 'bg-blue-50');
+                window.showCustomAlert('Escaneo Exitoso', 'Datos extraídos con IA.', 'ph-magic-wand', 'text-blue-500', 'bg-blue-50');
 
             } catch (error) {
-                window.showCustomAlert('Error de Lectura', 'No se pudo leer la factura: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
+                window.showCustomAlert('Error', 'No se pudo leer la factura: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
             } finally {
                 loader.classList.add('hidden');
                 loader.classList.remove('flex');
@@ -625,7 +635,7 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
                 currency: 'COP',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(amount).replace(/\s/g, ' '); 
+            }).format(amount).replace(/\s/g, '.').replace(',', '.'); 
         }
 
         function updateUI() {
@@ -706,14 +716,13 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
             spentEl.innerText = formatCOP(totalExpense);
 
             const badge = document.getElementById('status-badge');
-            
             if (badge) {
                 if (totalBalance > 0) {
                     badge.innerHTML = '<i class="ph-bold ph-trend-up mr-1.5 text-sm"></i> Saludable';
-                    badge.className = 'text-xs font-bold text-green-400 bg-green-400/10 border border-green-400/20 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md shadow-inner transition-all duration-300';
+                    badge.className = 'text-xs font-bold text-green-400 bg-white/10 border border-white/20 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md shadow-inner transition-all duration-300';
                 } else if (totalBalance < 0) {
                     badge.innerHTML = '<i class="ph-bold ph-trend-down mr-1.5 text-sm"></i> En Rojo';
-                    badge.className = 'text-xs font-bold text-red-400 bg-red-400/10 border border-red-400/20 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md shadow-inner transition-all duration-300';
+                    badge.className = 'text-xs font-bold text-red-400 bg-white/10 border border-white/20 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md shadow-inner transition-all duration-300';
                 } else {
                     badge.innerHTML = '<i class="ph-bold ph-minus mr-1.5 text-sm"></i> Estable';
                     badge.className = 'text-xs font-bold text-gray-400 bg-white/5 border border-white/10 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md transition-all duration-300';
@@ -729,19 +738,9 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
                 type: 'doughnut',
                 data: {
                     labels: ['Ingresos', 'Gastos'],
-                    datasets: [{
-                        data: [0.01, 0.01], 
-                        backgroundColor: ['#f3f4f6', '#f3f4f6'], 
-                        borderWidth: 0,
-                        cutout: '75%'
-                    }]
+                    datasets: [{ data: [0.01, 0.01], backgroundColor: ['#f3f4f6', '#f3f4f6'], borderWidth: 0, cutout: '75%' }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                    animation: { animateScale: true, animateRotate: true }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { animateScale: true, animateRotate: true } }
             });
         }
 
@@ -760,27 +759,21 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
         window.switchTab = (tab) => {
             document.getElementById('dashboard-view').classList.add('hidden');
             document.getElementById('ledger-view').classList.add('hidden');
-            
-            document.getElementById('nav-home').classList.remove('text-gray-900');
-            document.getElementById('nav-home').classList.add('text-gray-400');
+            document.getElementById('nav-home').classList.replace('text-gray-900', 'text-gray-400');
             document.getElementById('nav-home').querySelector('.nav-indicator').classList.remove('bg-gray-100');
             document.getElementById('nav-home').querySelector('i').classList.replace('ph-fill', 'ph');
-            
-            document.getElementById('nav-ledger').classList.remove('text-gray-900');
-            document.getElementById('nav-ledger').classList.add('text-gray-400');
+            document.getElementById('nav-ledger').classList.replace('text-gray-900', 'text-gray-400');
             document.getElementById('nav-ledger').querySelector('.nav-indicator').classList.remove('bg-gray-100');
             document.getElementById('nav-ledger').querySelector('i').classList.replace('ph-fill', 'ph');
             
             if(tab === 'dashboard') {
                 document.getElementById('dashboard-view').classList.remove('hidden');
-                document.getElementById('nav-home').classList.add('text-gray-900');
-                document.getElementById('nav-home').classList.remove('text-gray-400');
+                document.getElementById('nav-home').classList.replace('text-gray-400', 'text-gray-900');
                 document.getElementById('nav-home').querySelector('.nav-indicator').classList.add('bg-gray-100');
                 document.getElementById('nav-home').querySelector('i').classList.replace('ph', 'ph-fill');
             } else {
                 document.getElementById('ledger-view').classList.remove('hidden');
-                document.getElementById('nav-ledger').classList.add('text-gray-900');
-                document.getElementById('nav-ledger').classList.remove('text-gray-400');
+                document.getElementById('nav-ledger').classList.replace('text-gray-400', 'text-gray-900');
                 document.getElementById('nav-ledger').querySelector('.nav-indicator').classList.add('bg-gray-100');
                 document.getElementById('nav-ledger').querySelector('i').classList.replace('ph', 'ph-fill');
             }
@@ -790,23 +783,20 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
             currentFilter = type;
             const buttons = document.querySelectorAll('.filter-btn');
             buttons.forEach(btn => {
-                btn.classList.remove('bg-gray-900', 'text-white');
-                btn.classList.add('bg-white', 'text-gray-500');
+                btn.classList.replace('bg-gray-900', 'bg-white');
+                btn.classList.replace('text-white', 'text-gray-500');
             });
-            btnElement.classList.remove('bg-white', 'text-gray-500');
-            btnElement.classList.add('bg-gray-900', 'text-white');
+            btnElement.classList.replace('bg-white', 'bg-gray-900');
+            btnElement.classList.replace('text-gray-500', 'text-white');
             updateUI();
         }
 
         window.showCustomAlert = (title, message, iconClass, iconColor, iconBg) => {
             const alertModal = document.getElementById('custom-alert');
             document.getElementById('alert-icon-container').className = `w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-inner ${iconBg}`;
-            const finalIconClass = iconClass.startsWith('ph') && !iconClass.includes(' ') ? `ph ${iconClass}` : iconClass;
-            document.getElementById('alert-icon').className = `${finalIconClass} text-3xl ${iconColor}`;
-            
+            document.getElementById('alert-icon').className = `ph ${iconClass} text-3xl ${iconColor}`;
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-message').innerText = message;
-            
             alertModal.classList.remove('hidden');
             alertModal.classList.add('flex');
         }
@@ -817,7 +807,7 @@ Extrae los datos y devuelve SOLO JSON con esta estructura exacta:
         }
 
         window.notImplemented = (featureName) => {
-            window.showCustomAlert('Próximamente', `La sección de ${featureName} estará disponible en la próxima actualización.`, 'ph-rocket-launch', 'text-indigo-500', 'bg-indigo-50');
+            window.showCustomAlert('Próximamente', `La sección de ${featureName} estará disponible muy pronto.`, 'ph-rocket-launch', 'text-indigo-500', 'bg-indigo-50');
         }
     </script>
 </body>
