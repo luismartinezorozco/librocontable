@@ -441,6 +441,7 @@
                 updateUI();
             }, (error) => {
                 console.error("Snapshot error:", error);
+                window.showCustomAlert('Bloqueo de Seguridad', 'Firebase está bloqueando la lectura. Por favor ve a Firestore Database y pon las reglas en Modo Prueba.', 'ph-lock-key', 'text-red-500', 'bg-red-50');
             });
         }
 
@@ -458,22 +459,25 @@
                 const type = isExpense ? 'expense' : 'income';
                 const amount = parseFloat(document.getElementById('form-amount').value);
                 const desc = document.getElementById('form-desc').value;
-                const category = categorySelect.value;
+                const category = categorySelect.value || 'Otros';
                 const date = document.getElementById('form-date').value;
                 const account = document.getElementById('form-account').value;
 
                 if (isNaN(amount) || amount <= 0) throw new Error("El monto no es válido.");
 
+                // Guardar en Firestore
                 await addDoc(collection(db, `artifacts/librocontable/users/${currentUser.uid}/transactions`), {
                     type, amount, desc, category, date, account, createdAt: new Date().toISOString()
                 });
                 
+                // Forzar el cierre y reset
                 window.closeFormModal();
                 document.getElementById('transaction-form').reset();
                 window.showCustomAlert('¡Éxito!', 'Registro guardado correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
+                
             } catch (error) {
                 console.error("Error de sincronización: ", error);
-                window.showCustomAlert('Error', 'No se pudo guardar: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
+                window.showCustomAlert('Fallo al Guardar', 'Firebase denegó el acceso. Verifica tu base de datos: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Guardar Registro';
