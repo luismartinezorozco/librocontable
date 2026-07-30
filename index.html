@@ -445,44 +445,34 @@
             });
         }
 
-        window.handleFormSubmit = async (e) => {
+        window.handleFormSubmit = (e) => {
             e.preventDefault();
             if (!currentUser) return;
             
-            const submitBtn = document.getElementById('submit-btn');
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Guardando...';
-            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
-            
-            try {
-                const type = isExpense ? 'expense' : 'income';
-                const amount = parseFloat(document.getElementById('form-amount').value);
-                const desc = document.getElementById('form-desc').value;
-                const category = categorySelect.value || 'Otros';
-                const date = document.getElementById('form-date').value;
-                const account = document.getElementById('form-account').value;
+            const type = isExpense ? 'expense' : 'income';
+            const amount = parseFloat(document.getElementById('form-amount').value);
+            const desc = document.getElementById('form-desc').value;
+            const category = categorySelect.value || 'Otros';
+            const date = document.getElementById('form-date').value;
+            const account = document.getElementById('form-account').value;
 
-                if (isNaN(amount) || amount <= 0) throw new Error("El monto no es válido.");
-
-                // Guardar en Firestore
-                await addDoc(collection(db, `artifacts/librocontable/users/${currentUser.uid}/transactions`), {
-                    type, amount, desc, category, date, account, createdAt: new Date().toISOString()
-                });
-                
-                // Forzar el cierre y reset
-                window.closeFormModal();
-                document.getElementById('transaction-form').reset();
-                window.showCustomAlert('¡Éxito!', 'Registro guardado correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
-                
-            } catch (error) {
-                console.error("Error de sincronización: ", error);
-                window.showCustomAlert('Fallo al Guardar', 'Firebase denegó el acceso. Verifica tu base de datos: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Guardar Registro';
-                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            if (isNaN(amount) || amount <= 0) {
+                window.showCustomAlert('Error', 'El monto no es válido.', 'ph-warning-circle', 'text-red-500', 'bg-red-50');
+                return;
             }
+
+            // 1. Cierre instantáneo para una experiencia ultra fluida
+            window.closeFormModal();
+            document.getElementById('transaction-form').reset();
+            window.showCustomAlert('¡Éxito!', 'Registro guardado correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
+
+            // 2. Sincronización en segundo plano con Firestore
+            addDoc(collection(db, `artifacts/librocontable/users/${currentUser.uid}/transactions`), {
+                type, amount, desc, category, date, account, createdAt: new Date().toISOString()
+            }).catch((error) => {
+                console.error("Error de sincronización: ", error);
+                window.showCustomAlert('Fallo al Guardar', 'Hubo un problema de conexión con Firebase: ' + error.message, 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
+            });
         }
 
         window.openFormModal = (type, fromScanner = false) => {
