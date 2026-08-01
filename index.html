@@ -178,16 +178,22 @@
                     </div>
                     <label class="relative z-10 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl cursor-pointer transition shadow-md flex items-center gap-2 transform active:scale-95">
                         <i class="ph ph-scan text-base"></i> Escanear
-                        <!-- La etiqueta input file sin "capture" permite usar tanto Galería como Cámara nativamente -->
+                        <!-- Al no usar capture, permite Cámara o Galería -->
                         <input type="file" id="invoice-upload" accept="image/*" class="hidden" onchange="window.processInvoiceWithOpenRouter(this)">
                     </label>
                 </div>
 
-                <!-- Filtros -->
-                <div class="flex gap-2 mb-5">
-                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-gray-900 text-white shadow-sm transition">Todos</button>
-                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 transition">Ingresos</button>
-                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 transition">Gastos</button>
+                <!-- Buscador y Filtros -->
+                <div class="flex flex-col gap-3 mb-5">
+                    <div class="relative w-full">
+                        <i class="ph ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                        <input type="text" placeholder="Buscar transacción, cuenta o categoría..." oninput="window.handleSearch(this.value)" class="w-full bg-white border border-gray-100 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition shadow-sm">
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.filterLedger('Todos', this)" class="filter-btn flex-1 py-2 rounded-xl text-xs font-bold bg-gray-900 text-white shadow-sm transition">Todos</button>
+                        <button onclick="window.filterLedger('income', this)" class="filter-btn flex-1 py-2 rounded-xl text-xs font-bold bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 transition">Ingresos</button>
+                        <button onclick="window.filterLedger('expense', this)" class="filter-btn flex-1 py-2 rounded-xl text-xs font-bold bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 transition">Gastos</button>
+                    </div>
                 </div>
 
                 <!-- Tabla del Libro Contable -->
@@ -202,7 +208,7 @@
                                 <th class="py-4 px-5 text-red-400">Gasto</th>
                                 <th class="py-4 px-5 text-green-500">Ingreso</th>
                                 <th class="py-4 px-5 text-gray-900">Total</th>
-                                <th class="py-4 px-5 rounded-tr-3xl text-center">Borrar</th>
+                                <th class="py-4 px-5 rounded-tr-3xl text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="table-body" class="text-gray-700">
@@ -228,7 +234,8 @@
                     
                     <div class="flex flex-col gap-3 relative z-10">
                         <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Mes a exportar</label>
-                        <div class="flex gap-2 w-full">
+                        <div class="flex gap-2">
+                            <!-- Clases añadidas: flex-1, min-w-0, w-full para el input y shrink-0 para el botón -->
                             <input type="month" id="export-month" class="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition">
                             <button onclick="window.exportToPDF()" class="shrink-0 bg-red-500 hover:bg-red-600 text-white font-bold px-5 rounded-xl transition-all shadow-md active:scale-95 text-sm flex items-center gap-2">
                                 <i class="ph-bold ph-download-simple"></i> PDF
@@ -244,7 +251,8 @@
                     </div>
                     <h3 class="font-extrabold text-gray-900 mb-4 flex items-center gap-2 relative z-10"><i class="ph-fill ph-wallet text-indigo-500 text-xl"></i> Mis Cuentas / Bancos</h3>
                     
-                    <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 w-full mb-5 relative z-10">
+                    <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-5 relative z-10">
+                         <!-- Clases añadidas: flex-1, min-w-0, w-full para el input y shrink-0 para el botón -->
                         <input type="text" id="new-account-name" placeholder="Ej. Davivienda, Caja Fuerte..." required class="flex-1 min-w-0 w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
                         <button type="submit" id="btn-add-account" class="shrink-0 bg-indigo-600 text-white font-bold px-5 rounded-xl hover:bg-indigo-700 transition-all shadow-md active:scale-95 text-sm">
                             Crear
@@ -258,27 +266,21 @@
             </div>
         </main>
 
-        <!-- BARRA DE NAVEGACIÓN INFERIOR -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 px-6 py-4 flex justify-between items-center z-20 pb-6 sm:pb-4 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
-            <button id="nav-home" onclick="window.switchTab('dashboard')" class="flex flex-col items-center gap-1 text-gray-900 transition w-16 group">
+        <!-- BARRA DE NAVEGACIÓN INFERIOR (Sin botón de Stats) -->
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 px-6 py-4 flex justify-around items-center z-20 pb-6 sm:pb-4 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
+            <button id="nav-home" onclick="window.switchTab('dashboard')" class="flex flex-col items-center gap-1 text-gray-900 transition w-20 group">
                 <div class="w-12 h-8 rounded-full flex items-center justify-center bg-gray-100 nav-indicator transition-colors">
                     <i class="ph-fill ph-house text-xl transition-transform group-active:scale-90"></i>
                 </div>
                 <span class="text-[10px] font-bold mt-1">Inicio</span>
             </button>
-            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="flex flex-col items-center gap-1 text-gray-400 transition w-16 group">
+            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="flex flex-col items-center gap-1 text-gray-400 transition w-20 group">
                 <div class="w-12 h-8 rounded-full flex items-center justify-center nav-indicator transition-colors">
                     <i class="ph ph-book-open text-xl transition-transform group-active:scale-90"></i>
                 </div>
                 <span class="text-[10px] font-bold mt-1">Libro</span>
             </button>
-            <button onclick="window.notImplemented('Estadísticas')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition w-16 group">
-                <div class="w-12 h-8 rounded-full flex items-center justify-center transition-colors">
-                    <i class="ph ph-chart-bar text-xl transition-transform group-active:scale-90"></i>
-                </div>
-                <span class="text-[10px] font-bold mt-1">Stats</span>
-            </button>
-            <button id="nav-settings" onclick="window.switchTab('settings')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition w-16 group">
+            <button id="nav-settings" onclick="window.switchTab('settings')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition w-20 group">
                 <div class="w-12 h-8 rounded-full flex items-center justify-center nav-indicator transition-colors">
                     <i class="ph ph-gear text-xl transition-transform group-active:scale-90"></i>
                 </div>
@@ -397,7 +399,8 @@
                     <button onclick="window.closeConfirm()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3.5 rounded-2xl hover:bg-gray-200 transition-all transform active:scale-95">
                         Cancelar
                     </button>
-                    <button onclick="window.executeConfirm()" class="flex-1 bg-red-500 text-white font-bold py-3.5 rounded-2xl hover:bg-red-600 transition-all transform active:scale-95 shadow-lg shadow-red-500/30">
+                    <!-- Añadido ID para manejar el spinner -->
+                    <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 bg-red-500 text-white font-bold py-3.5 rounded-2xl hover:bg-red-600 transition-all transform active:scale-95 shadow-lg shadow-red-500/30 flex justify-center items-center">
                         Sí, continuar
                     </button>
                 </div>
@@ -408,12 +411,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        // Importamos updateDoc para poder editar los bancos
         import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ==========================================
-        // CONFIGURACIÓN OFICIAL DE FIREBASE
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg",
             authDomain: "librocontable-6dcdc.firebaseapp.com",
@@ -427,23 +426,22 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         
-        // Firestore CON PERSISTENCIA OFFLINE
         const db = initializeFirestore(app, {
             localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
         });
         
-        // Variables globales
         let currentUser = null;
         let transactions = [];
         let accounts = [];
         let isExpense = true;
         let currentFilter = 'Todos';
+        let currentSearch = '';
+        let editTxId = null; 
         let myChart = null;
         let unsubscribeDB = null;
         let unsubscribeAccountsDB = null;
         let confirmActionCallback = null;
 
-        // Referencias DOM
         const balanceEl = document.getElementById('total-balance');
         const availableEl = document.getElementById('available-amount');
         const spentEl = document.getElementById('spent-amount');
@@ -488,7 +486,6 @@
         window.onload = () => {
             initChart();
             
-            // Establecer el mes actual por defecto en el exportador PDF
             const exportMonthInput = document.getElementById('export-month');
             if(exportMonthInput) {
                 const now = new Date();
@@ -527,7 +524,6 @@
 
         function listenToTransactions() {
             if (!currentUser) return;
-            // Quitamos el doble ordenamiento para no requerir índice compuesto.
             const q = query(collection(db, "transactions"), orderBy("date", "asc"));
             
             unsubscribeDB = onSnapshot(q, (snapshot) => {
@@ -581,13 +577,11 @@
             }
 
             accounts.forEach(acc => {
-                // Llenar select del formulario
                 const opt = document.createElement('option');
                 opt.value = acc.name;
                 opt.innerText = acc.name;
                 formAccount.appendChild(opt);
 
-                // Llenar lista en ajustes
                 if (accountsList) {
                     const div = document.createElement('div');
                     div.className = "flex justify-between items-center p-3.5 bg-gray-50 rounded-2xl border border-gray-100 mb-2 shadow-sm transition hover:shadow-md";
@@ -663,6 +657,7 @@
             try {
                 await updateDoc(doc(db, "accounts", id), { name: newName });
                 window.closeEditAccountModal();
+                window.showCustomAlert('¡Cuenta Editada!', 'El nombre se guardó correctamente.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
             } catch (error) {
                 window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
             } finally {
@@ -675,7 +670,9 @@
             window.showConfirm('Eliminar Cuenta', '¿Estás seguro de eliminar esta cuenta? No afectará a tus transacciones pasadas.', async () => {
                 try {
                     await deleteDoc(doc(db, "accounts", id));
+                    window.showCustomAlert('¡Eliminada!', 'La cuenta fue borrada con éxito.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
                 } catch (error) {
+                    console.error("Error al borrar cuenta:", error);
                     window.showCustomAlert('Error', 'No se pudo eliminar.', 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
                 }
             });
@@ -686,6 +683,7 @@
                 try {
                     await deleteDoc(doc(db, "transactions", id));
                 } catch(error) {
+                    console.error("Error al borrar tx:", error);
                     window.showCustomAlert('Error', 'No se pudo eliminar.', 'ph-warning-octagon', 'text-red-500', 'bg-red-50');
                 }
             });
@@ -707,8 +705,15 @@
             confirmActionCallback = null;
         }
 
-        window.executeConfirm = () => {
-            if (confirmActionCallback) confirmActionCallback();
+        window.executeConfirm = async () => {
+            const btn = document.getElementById('btn-confirm-action');
+            if (confirmActionCallback) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i>';
+                await confirmActionCallback();
+                btn.disabled = false;
+                btn.innerHTML = 'Sí, continuar';
+            }
             window.closeConfirm();
         }
 
@@ -734,15 +739,22 @@
             submitBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Guardando...';
 
             try {
-                await addDoc(collection(db, "transactions"), {
-                    userId: currentUser.uid,
-                    type, amount, desc, category, date, account,
-                    createdAt: serverTimestamp()
-                });
+                if (editTxId) {
+                    await updateDoc(doc(db, "transactions", editTxId), {
+                        type, amount, desc, category, date, account
+                    });
+                    window.showCustomAlert('¡Actualizado!', 'Registro modificado con éxito.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
+                } else {
+                    await addDoc(collection(db, "transactions"), {
+                        userId: currentUser.uid,
+                        type, amount, desc, category, date, account,
+                        createdAt: serverTimestamp()
+                    });
+                    window.showCustomAlert('¡Guardado!', 'Registro añadido con éxito.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
+                }
                 
                 window.closeFormModal();
                 document.getElementById('transaction-form').reset();
-                window.showCustomAlert('¡Guardado!', 'Registro añadido con éxito.', 'ph-check-circle', 'text-green-500', 'bg-green-50');
                 
             } catch (error) {
                 console.error(error);
@@ -776,9 +788,9 @@
             });
 
             if (!fromScanner) {
+                editTxId = null; 
                 transactionForm.reset();
                 document.getElementById('form-date').valueAsDate = new Date();
-                // Si hay cuentas, que ponga por defecto la primera
                 if(accounts.length > 0) document.getElementById('form-account').value = accounts[0].name;
             }
 
@@ -789,6 +801,45 @@
         window.closeFormModal = () => {
             formModal.classList.add('hidden');
             formModal.classList.remove('flex');
+            editTxId = null;
+        }
+
+        window.editTransaction = (id) => {
+            const tx = transactions.find(t => t.id === id);
+            if(!tx) return;
+            
+            editTxId = id;
+            isExpense = tx.type === 'expense';
+            modalTitle.innerText = isExpense ? 'Editar Gasto' : 'Editar Ingreso';
+            
+            categorySelect.innerHTML = '';
+            const optionsList = isExpense 
+                ? ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros Gastos']
+                : ['Ventas', 'Aportes', 'Rendimientos', 'Otros Ingresos'];
+                
+            optionsList.forEach(opt => {
+                const el = document.createElement('option');
+                el.value = opt;
+                el.innerText = opt;
+                categorySelect.appendChild(el);
+            });
+
+            document.getElementById('form-amount').value = tx.amount;
+            document.getElementById('form-desc').value = tx.desc;
+            document.getElementById('form-date').value = tx.date;
+            
+            setTimeout(() => {
+                document.getElementById('form-category').value = tx.category || optionsList[0];
+                document.getElementById('form-account').value = tx.account || (accounts.length > 0 ? accounts[0].name : '');
+            }, 50);
+
+            formModal.classList.remove('hidden');
+            formModal.classList.add('flex');
+        }
+
+        window.handleSearch = (value) => {
+            currentSearch = value;
+            updateUI();
         }
 
         function compressImageForOCR(file) {
@@ -873,7 +924,7 @@ Devuelve SOLO JSON con:
                 document.getElementById('form-amount').value = ext.amount || '';
                 document.getElementById('form-desc').value = (ext.description || "Recibo IA").substring(0, 30);
                 
-                // Lógica Inteligente de Fecha: Usar la de la IA, si falla, usar la actual.
+                // Lógica Inteligente de Fecha
                 if (ext.date && ext.date !== "null" && ext.date.length === 10) {
                     document.getElementById('form-date').value = ext.date;
                 } else {
@@ -926,7 +977,18 @@ Devuelve SOLO JSON con:
                 if (tx.type === 'income') { totalBalance += amount; totalIncome += amount; } 
                 else { totalBalance -= amount; totalExpense += amount; }
 
-                if (currentFilter === 'Todos' || tx.type === currentFilter) {
+                let matchesFilter = (currentFilter === 'Todos' || tx.type === currentFilter);
+                let matchesSearch = true;
+                
+                if (currentSearch !== '') {
+                    const searchLower = currentSearch.toLowerCase();
+                    const descMatch = tx.desc ? tx.desc.toLowerCase().includes(searchLower) : false;
+                    const catMatch = tx.category ? tx.category.toLowerCase().includes(searchLower) : false;
+                    const accMatch = tx.account ? tx.account.toLowerCase().includes(searchLower) : false;
+                    matchesSearch = descMatch || catMatch || accMatch;
+                }
+
+                if (matchesFilter && matchesSearch) {
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-gray-50 hover:bg-gray-50 transition-colors text-sm whitespace-nowrap";
                     tr.innerHTML = `
@@ -938,9 +1000,14 @@ Devuelve SOLO JSON con:
                         <td class="py-4 px-5 text-green-500 font-bold">${tx.type === 'income' ? formatCOP(tx.amount) : ''}</td>
                         <td class="py-4 px-5 font-extrabold text-gray-900 bg-gray-50/50">${formatCOP(totalBalance)}</td>
                         <td class="py-4 px-5 text-center bg-gray-50/30">
-                            <button onclick="window.deleteTransaction('${tx.id}')" class="w-8 h-8 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition flex items-center justify-center mx-auto shadow-sm transform active:scale-95">
-                                <i class="ph-bold ph-trash"></i>
-                            </button>
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="window.editTransaction('${tx.id}')" class="w-8 h-8 rounded-full text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition flex items-center justify-center shadow-sm transform active:scale-95">
+                                    <i class="ph-bold ph-pencil-simple"></i>
+                                </button>
+                                <button onclick="window.deleteTransaction('${tx.id}')" class="w-8 h-8 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition flex items-center justify-center shadow-sm transform active:scale-95">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     `;
                     tableBody.appendChild(tr);
@@ -1056,7 +1123,6 @@ Devuelve SOLO JSON con:
             updateUI();
         }
 
-        // Exportar PDF
         window.exportToPDF = () => {
             const monthInput = document.getElementById('export-month').value;
             if (!monthInput) return window.showCustomAlert('Selecciona Mes', 'Elige un mes para exportar.', 'ph-calendar', 'text-orange-500', 'bg-orange-50');
@@ -1087,8 +1153,8 @@ Devuelve SOLO JSON con:
             
             const balanceNeto = totalIn - totalOut;
             doc.setFont("helvetica", "bold");
-            if(balanceNeto >= 0) doc.setTextColor(34, 197, 94); // Green
-            else doc.setTextColor(239, 68, 68); // Red
+            if(balanceNeto >= 0) doc.setTextColor(34, 197, 94);
+            else doc.setTextColor(239, 68, 68);
             doc.text(`Balance Neto: ${formatCOP(balanceNeto)}`, 14, 56);
 
             const tableData = filteredTx.map((tx, i) => [
@@ -1106,7 +1172,7 @@ Devuelve SOLO JSON con:
                 head: [['#', 'Fecha', 'Descripción', 'Categoría', 'Cuenta', 'Ingreso', 'Gasto']],
                 body: tableData,
                 theme: 'grid',
-                headStyles: { fillColor: [17, 24, 39] } // Color gray-900
+                headStyles: { fillColor: [17, 24, 39] }
             });
 
             doc.save(`FinSight_Reporte_${year}_${month}.pdf`);
