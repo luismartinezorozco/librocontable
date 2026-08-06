@@ -886,13 +886,26 @@
                 const base64 = await compressImageForOCR(input.files[0]);
                 const prompt = `Analiza la imagen. Si es cobro/venta para mi es "income", si es ticket que pagué es "expense". Devuelve SOLO JSON con: "type": "income" o "expense", "amount": numero total sin comas, "description": texto corto, "category": (Si expense: Operaciones, Inventario, Servicios, Nómina, Otros Gastos. Si income: Ventas, Aportes, Rendimientos, Otros Ingresos), "date": YYYY-MM-DD. SI NO SE VE LA FECHA CLARA, DEVUELVE null.`;
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST", headers: { "Authorization": `Bearer ${OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
+                    method: "POST", headers: { 
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`, 
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": window.location.href,
+                        "X-Title": "FinSight App"
+                    },
                     body: JSON.stringify({ model: "openai/gpt-4o-mini", response_format: { type: "json_object" }, messages: [ { role: "user", content: [ { type: "text", text: prompt }, { type: "image_url", image_url: { url: base64 } } ] } ] })
                 });
 
-                if (!response.ok) throw new Error("Error API");
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: Es posible que tu API Key se haya quedado sin saldo o bloqueado.`);
+                }
+                
                 const data = await response.json();
-                const ext = JSON.parse(data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim());
+                
+                // Extracción segura para evitar que la IA rompa el código
+                const jsonMatch = data.choices[0].message.content.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("La IA no devolvió los datos correctamente.");
+                
+                const ext = JSON.parse(jsonMatch[0]);
 
                 const txType = ext.type === 'income' ? 'income' : 'expense';
                 window.openFormModal(txType, true);
@@ -913,7 +926,10 @@
                 if (!found) categorySelect.value = txType === 'income' ? 'Otros Ingresos' : 'Otros Gastos';
                 if(accounts.length > 0) document.getElementById('form-account').value = accounts[0].name;
 
-            } catch (error) { window.showCustomAlert('Error', 'No se pudo leer la imagen.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); } 
+            } catch (error) { 
+                console.error("Detalle Error IA:", error);
+                window.showCustomAlert('Fallo el Escáner', error.message || 'No se pudo leer la imagen.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); 
+            } 
             finally { loader.classList.add('hidden'); loader.classList.remove('flex'); input.value = ''; }
         }
 
