@@ -2,17 +2,17 @@
 <html lang="es" class="antialiased">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FinSight - Libro Contable</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FinSight</title>
     
     <!-- Configuración PWA y Logo para iPhone/Android -->
     <link rel="icon" type="image/png" href="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png">
     <link rel="apple-touch-icon" href="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="FinSight">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#f3f4f6">
+    <meta name="theme-color" content="#F2F2F7">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,61 +27,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-    <!-- Day.js para Simulador -->
+    <!-- Day.js -->
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/es.js"></script>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #e5e7eb; 
-            background-image: radial-gradient(circle at top right, #f3f4f6, #e5e7eb);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #F2F2F7; /* iOS Default Background */
             -webkit-tap-highlight-color: transparent;
+            touch-action: pan-x pan-y;
         }
         
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .animate-slideUp { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
-        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .animate-scaleIn { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        /* Native App Animations */
+        @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-sheet { animation: slideUpSheet 0.3s cubic-bezier(0.175, 0.885, 0.32, 1) forwards; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-fade { animation: fadeIn 0.2s ease-out forwards; }
         
-        /* Animaciones del Login */
-        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        
-        @keyframes blob { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } }
-        .animate-blob { animation: blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
-
-        /* Glassmorphism Classes (Cristal) */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-        
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
-        }
-
-        .nav-item.active { color: #111827; }
-        .nav-item.active .icon-bg { background-color: #111827; color: white; transform: scale(1.05); }
-        
+        /* Select Reset */
         input, select, textarea { font-size: 16px !important; }
         .custom-select {
             appearance: none;
@@ -91,442 +62,352 @@
             background-size: 1.2em 1.2em;
         }
 
-        .premium-card-bg {
-            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-            box-shadow: 0 20px 25px -5px rgba(17, 24, 39, 0.4), 0 8px 10px -6px rgba(17, 24, 39, 0.2);
+        /* Bottom Nav Active State */
+        .nav-item.active { color: #000000; }
+        .nav-item.active i { font-weight: bold; }
+
+        /* Card Native styling */
+        .native-card {
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .premium-card-bg::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 40%);
-            pointer-events: none;
+
+        .balance-card {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen sm:p-6 relative">
+<body class="flex items-center justify-center min-h-screen sm:p-4 text-gray-900 selection:bg-indigo-100 selection:text-indigo-900">
 
-    <!-- PANTALLA DE LOGIN PRIVADO ANIMADO -->
-    <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[420px] bg-gray-50/50 sm:rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col justify-center px-8 z-50 animate-fadeIn backdrop-blur-2xl border border-white/40">
+    <!-- LOGIN LIMPIO Y NATIVO -->
+    <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 animate-fade relative overflow-hidden sm:border-[8px] sm:border-gray-900">
         
-        <!-- Blobs Animados de Fondo -->
-        <div class="absolute top-0 left-0 w-64 h-64 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob pointer-events-none"></div>
-        <div class="absolute top-0 right-0 w-64 h-64 bg-rose-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 pointer-events-none"></div>
-        <div class="absolute -bottom-8 left-20 w-64 h-64 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000 pointer-events-none"></div>
-
-        <div class="text-center mb-12 relative z-10">
-            <div class="w-28 h-28 mx-auto mb-6 rounded-[2.5rem] overflow-hidden shadow-[0_20px_40px_-10px_rgba(0,0,0,0.2)] bg-white p-1 animate-float">
-                <img src="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png" alt="FinSight Logo" class="w-full h-full object-cover rounded-[2.2rem]">
+        <div class="text-center mb-10">
+            <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden shadow-lg shadow-gray-200">
+                <img src="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png" alt="FinSight Logo" class="w-full h-full object-cover">
             </div>
-            <h1 class="text-4xl font-black text-gray-900 mb-1 tracking-tight">FinSight</h1>
-            <p class="text-sm text-gray-500 font-bold uppercase tracking-widest">Bóveda Privada</p>
+            <h1 class="text-3xl font-extrabold tracking-tight">FinSight</h1>
+            <p class="text-sm text-gray-500 font-medium mt-1">Tu bóveda financiera</p>
         </div>
         
-        <form id="auth-form" onsubmit="window.handleAuthSubmit(event)" class="space-y-5 relative z-10">
-            <div class="space-y-1.5 group">
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-600">Autorización</label>
+        <form id="auth-form" onsubmit="window.handleAuthSubmit(event)" class="space-y-4">
+            <div>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="ph-fill ph-user text-gray-400 text-lg transition-colors group-focus-within:text-indigo-500"></i>
+                        <i class="ph-bold ph-envelope-simple text-gray-400"></i>
                     </div>
-                    <input type="email" id="auth-email" required placeholder="tu@correo.com" class="w-full bg-white/70 backdrop-blur-sm border border-white/80 rounded-2xl pl-11 pr-4 py-4 text-gray-900 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-sm">
+                    <input type="email" id="auth-email" required placeholder="Correo electrónico" class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all">
                 </div>
             </div>
             
-            <div class="space-y-1.5 group">
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-600">Clave de Acceso</label>
+            <div>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="ph-fill ph-lock-key text-gray-400 text-lg transition-colors group-focus-within:text-indigo-500"></i>
+                        <i class="ph-bold ph-lock-key text-gray-400"></i>
                     </div>
-                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-white/70 backdrop-blur-sm border border-white/80 rounded-2xl pl-11 pr-12 py-4 text-gray-900 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-sm">
-                    <button type="button" onclick="window.togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors focus:outline-none">
-                        <i id="eye-icon" class="ph-fill ph-eye text-lg"></i>
+                    <input type="password" id="auth-password" required placeholder="Contraseña" class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-11 pr-12 py-3.5 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all">
+                    <button type="button" onclick="window.togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <i id="eye-icon" class="ph-bold ph-eye"></i>
                     </button>
                 </div>
             </div>
             
-            <button type="submit" id="auth-submit-btn" class="w-full bg-gray-900 text-white font-black py-4 rounded-2xl hover:bg-black transition-all shadow-[0_10px_20px_rgba(17,24,39,0.3)] hover:shadow-[0_15px_25px_rgba(17,24,39,0.4)] mt-8 flex items-center justify-center gap-2 transform active:scale-95 text-lg border border-gray-800">
-                Desbloquear
+            <button type="submit" id="auth-submit-btn" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-2xl hover:bg-black transition-all shadow-md active:scale-[0.98] mt-6 flex justify-center items-center gap-2">
+                Entrar a la bóveda
             </button>
         </form>
     </div>
 
     <!-- APP CONTAINER -->
-    <div id="main-app-view" class="hidden w-full h-[100dvh] sm:h-[850px] max-w-[420px] bg-[#f8f9fa] sm:rounded-[3rem] sm:border-[6px] sm:border-gray-900 shadow-2xl relative overflow-hidden flex flex-col animate-fadeIn">
+    <div id="main-app-view" class="hidden w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#F2F2F7] sm:rounded-[3rem] sm:shadow-2xl flex flex-col relative overflow-hidden sm:border-[8px] sm:border-gray-900">
         
-        <!-- HEADER GLASSMORPHISM -->
-        <header class="px-6 pt-12 pb-4 flex justify-between items-center glass-panel z-10 sticky top-0 border-b-0">
-            <div class="flex items-center gap-3.5">
-                <div id="user-initials" class="w-12 h-12 rounded-full bg-gradient-to-tr from-gray-900 to-gray-700 text-white flex items-center justify-center font-bold text-base shadow-lg shadow-gray-900/20">
-                    LM
+        <!-- HEADER NATIVO (Minimalista) -->
+        <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] z-10 sticky top-0 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div id="user-initials" class="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    --
                 </div>
                 <div>
-                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Hola de nuevo</p>
-                    <p id="user-name" class="text-base font-extrabold text-gray-900 truncate max-w-[140px] leading-tight">Luis Martínez</p>
+                    <p class="text-xs text-gray-500 font-medium">Hola,</p>
+                    <p id="user-name" class="text-base font-bold text-gray-900 leading-tight">Usuario</p>
                 </div>
             </div>
-            <button onclick="window.logout()" class="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-red-50 hover:border-red-100 transition shadow-sm text-gray-400 hover:text-red-500 transform active:scale-90">
-                <i class="ph-bold ph-sign-out text-lg"></i>
-            </button>
         </header>
 
         <!-- CONTENIDO PRINCIPAL -->
-        <main class="flex-1 overflow-y-auto hide-scroll pb-32 relative px-6">
+        <main class="flex-1 overflow-y-auto hide-scroll pb-24 px-5">
             
             <!-- VISTA 1: DASHBOARD -->
-            <div id="dashboard-view" class="block mt-6 animate-scaleIn">
-                <!-- Tarjeta Premium -->
-                <div class="premium-card-bg text-white rounded-[2rem] p-7 mb-7 relative overflow-hidden flex flex-col justify-between min-h-[170px]">
-                    <div class="absolute -right-4 -bottom-4 opacity-10 pointer-events-none transform rotate-12">
-                        <i class="ph-fill ph-asterisk text-[12rem]"></i>
-                    </div>
-                    
-                    <div class="relative z-10 flex justify-between items-start">
-                        <div>
-                            <p class="text-[11px] font-semibold text-gray-400 mb-1 uppercase tracking-widest">Balance Total</p>
-                            <h2 class="text-4xl font-black tracking-tighter" id="total-balance">$ 0</h2>
+            <div id="dashboard-view" class="block animate-fade">
+                <!-- Tarjeta Balance -->
+                <div class="balance-card text-white rounded-[24px] p-6 mb-6 shadow-lg shadow-gray-900/10">
+                    <p class="text-xs text-gray-300 font-medium mb-1">Balance Total</p>
+                    <h2 class="text-3xl font-extrabold tracking-tight" id="total-balance">$ 0</h2>
+                    <div class="mt-4 flex items-center justify-between">
+                        <div id="status-badge" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1">
+                            <i class="ph-bold ph-minus"></i> Analizando
                         </div>
-                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
-                            <img src="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png" class="w-5 h-5 rounded-full opacity-80 mix-blend-screen">
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between items-end relative z-10 mt-6">
-                        <div id="status-badge" class="text-[11px] font-bold text-gray-300 bg-white/5 border border-white/10 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md transition-all">
-                            <i class="ph-bold ph-minus mr-1.5 text-sm"></i> Analizando...
-                        </div>
-                        <p class="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Actualizado Hoy</p>
+                        <i class="ph-fill ph-wallet text-2xl text-white/20"></i>
                     </div>
                 </div>
 
-                <!-- Botones de Acción -->
-                <div class="flex justify-between gap-4 mb-8">
-                    <button onclick="window.openFormModal('expense')" class="flex-1 bg-white rounded-[1.5rem] p-4 flex flex-col items-center justify-center gap-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.03)] border border-gray-50 hover:shadow-md transition transform active:scale-95 group">
-                        <div class="w-14 h-14 rounded-[1.2rem] bg-rose-50 text-rose-500 flex items-center justify-center group-hover:bg-rose-100 transition shadow-inner">
-                            <i class="ph-bold ph-arrow-up-right text-2xl"></i>
+                <!-- Action Buttons Grid -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="window.openFormModal('expense')" class="native-card p-4 flex flex-col items-center justify-center gap-2 active:bg-gray-50 transition">
+                        <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center">
+                            <i class="ph-bold ph-arrow-up-right text-lg"></i>
                         </div>
-                        <span class="text-xs font-extrabold text-gray-700">Registrar Gasto</span>
+                        <span class="text-xs font-bold text-gray-700">Gasto</span>
                     </button>
-                    <button onclick="window.openFormModal('income')" class="flex-1 bg-white rounded-[1.5rem] p-4 flex flex-col items-center justify-center gap-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.03)] border border-gray-50 hover:shadow-md transition transform active:scale-95 group">
-                        <div class="w-14 h-14 rounded-[1.2rem] bg-emerald-50 text-emerald-500 flex items-center justify-center group-hover:bg-emerald-100 transition shadow-inner">
-                            <i class="ph-bold ph-arrow-down-left text-2xl"></i>
+                    <button onclick="window.openFormModal('income')" class="native-card p-4 flex flex-col items-center justify-center gap-2 active:bg-gray-50 transition">
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center">
+                            <i class="ph-bold ph-arrow-down-left text-lg"></i>
                         </div>
-                        <span class="text-xs font-extrabold text-gray-700">Nuevo Ingreso</span>
+                        <span class="text-xs font-bold text-gray-700">Ingreso</span>
                     </button>
                 </div>
 
-                <!-- Gráfico Glassmorphism -->
-                <div class="mb-8">
-                    <div class="flex justify-between items-center mb-4 px-1">
-                        <h3 class="font-black text-gray-900 text-lg tracking-tight">Flujo de Caja</h3>
-                    </div>
-                    <div class="glass-panel rounded-[2rem] p-6 shadow-sm flex flex-col items-center">
-                        <div class="relative w-40 h-40 mb-6 drop-shadow-md">
+                <!-- Gráfico Minimalista -->
+                <div class="native-card p-5 mb-6">
+                    <h3 class="font-bold text-sm mb-4">Flujo de Caja</h3>
+                    <div class="flex items-center gap-4">
+                        <div class="relative w-24 h-24 shrink-0">
                             <canvas id="myChart"></canvas>
                         </div>
-                        <div class="w-full flex justify-between px-4 text-center text-sm">
-                            <div class="flex flex-col items-center">
-                                <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]"></span> Ingresos</p>
-                                <p class="font-black text-gray-900 mt-1.5 text-base" id="available-amount">$ 0</p>
+                        <div class="flex-1 space-y-3">
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ingresos</p>
+                                <p class="font-bold text-sm" id="available-amount">$ 0</p>
                             </div>
-                            <div class="w-[1px] bg-gray-200"></div>
-                            <div class="flex flex-col items-center">
-                                <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-400 shadow-[0_0_10px_rgba(251,113,133,0.5)]"></span> Gastos</p>
-                                <p class="font-black text-gray-900 mt-1.5 text-base" id="spent-amount">$ 0</p>
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-400"></span> Gastos</p>
+                                <p class="font-bold text-sm" id="spent-amount">$ 0</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <div class="flex justify-between items-center mb-4 px-1">
-                        <h3 class="font-black text-gray-900 text-lg tracking-tight">Actividad Reciente</h3>
-                        <button onclick="window.switchTab('ledger')" class="text-xs font-black text-indigo-500 hover:text-indigo-700 transition uppercase tracking-wider">Ver Todo</button>
+                    <div class="flex justify-between items-end mb-3">
+                        <h3 class="font-bold text-lg">Recientes</h3>
+                        <button onclick="window.switchTab('ledger')" class="text-xs font-semibold text-blue-500">Ver todo</button>
                     </div>
-                    <div id="tx-list" class="flex flex-col gap-3">
-                        <p class="text-center text-gray-400 text-sm py-4">Cargando...</p>
+                    <!-- Lista de Recientes -->
+                    <div class="native-card overflow-hidden">
+                        <div id="tx-list" class="divide-y divide-gray-100 flex flex-col">
+                            <p class="text-center text-gray-400 text-sm py-4">Cargando...</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA 2: LIBRO CONTABLE -->
-            <div id="ledger-view" class="hidden mt-6 animate-scaleIn">
-                <div class="flex justify-between items-center mb-6 px-1">
-                    <h2 class="text-2xl font-black text-gray-900 tracking-tight">Libro Mayor</h2>
-                    <button onclick="window.openFormModal('expense')" class="w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-lg shadow-gray-900/30 hover:bg-black transform active:scale-90 transition">
-                        <i class="ph-bold ph-plus text-xl"></i>
-                    </button>
-                </div>
+            <!-- VISTA 2: LIBRO CONTABLE (Lista Nativa) -->
+            <div id="ledger-view" class="hidden animate-fade">
+                <h2 class="text-3xl font-extrabold mb-4">Movimientos</h2>
 
-                <!-- Escáner IA Rediseñado -->
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2rem] p-5 mb-6 flex justify-between items-center shadow-lg shadow-blue-500/20 relative overflow-hidden">
-                    <div class="absolute -right-2 -bottom-6 opacity-20 transform rotate-12">
-                        <i class="ph-fill ph-robot text-8xl text-white"></i>
+                <!-- Barra de búsqueda y escáner combinados -->
+                <div class="flex gap-2 mb-4">
+                    <div class="relative flex-1">
+                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full bg-white rounded-xl pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 shadow-sm border border-transparent">
                     </div>
-                    <div class="relative z-10 text-white">
-                        <h4 class="font-black text-base flex items-center gap-2"><i class="ph-fill ph-sparkle"></i> Escáner IA</h4>
-                        <p class="text-[11px] text-blue-100 mt-0.5 font-medium opacity-90">Extrae datos de facturas al instante.</p>
-                    </div>
-                    <label class="relative z-10 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold py-3 px-5 rounded-xl cursor-pointer transition shadow-inner flex items-center gap-2 transform active:scale-95 border border-white/20">
-                        <i class="ph-bold ph-camera text-lg"></i>
-                        <input type="file" id="invoice-upload" accept="image/*" class="hidden" onchange="window.processInvoiceWithOpenRouter(this)">
+                    <label class="w-12 h-12 bg-gray-900 text-white rounded-xl flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition">
+                        <i class="ph-bold ph-camera text-xl"></i>
+                        <input type="file" id="invoice-upload" accept="image/jpeg, image/png, image/jpg" class="hidden" onchange="window.processInvoiceWithOpenRouter(this)">
                     </label>
                 </div>
 
-                <!-- Buscador Elegante -->
-                <div class="mb-5 glass-panel p-2 rounded-[1.5rem] shadow-sm">
-                    <div class="relative mb-2">
-                        <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar registro, cuenta, categoría..." class="w-full bg-white border-none rounded-xl pl-12 pr-4 py-3.5 text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner">
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="window.filterLedger('Todos', this)" class="filter-btn flex-1 py-2.5 rounded-xl text-[11px] font-bold bg-gray-900 text-white shadow-md transition">Todos</button>
-                        <button onclick="window.filterLedger('income', this)" class="filter-btn flex-1 py-2.5 rounded-xl text-[11px] font-bold bg-white text-gray-500 hover:bg-gray-50 transition border border-gray-100">Ingresos</button>
-                        <button onclick="window.filterLedger('expense', this)" class="filter-btn flex-1 py-2.5 rounded-xl text-[11px] font-bold bg-white text-gray-500 hover:bg-gray-50 transition border border-gray-100">Gastos</button>
-                    </div>
+                <!-- Filtros estilo Chips -->
+                <div class="flex gap-2 mb-5 overflow-x-auto hide-scroll pb-1">
+                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-gray-900 text-white whitespace-nowrap shadow-sm">Todos</button>
+                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-gray-500 border border-gray-200 whitespace-nowrap">Gastos</button>
+                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-gray-500 border border-gray-200 whitespace-nowrap">Ingresos</button>
                 </div>
 
-                <!-- Tabla Moderna -->
-                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-x-auto hide-scroll">
-                    <table class="w-full text-left min-w-[700px] border-collapse">
-                        <thead>
-                            <tr class="bg-gray-50/80 text-gray-400 text-[10px] uppercase tracking-widest font-black border-b border-gray-100">
-                                <th class="py-4 px-5 rounded-tl-[2rem]">No.</th>
-                                <th class="py-4 px-5">Fecha</th>
-                                <th class="py-4 px-5">Descripción</th>
-                                <th class="py-4 px-5">Cuenta</th>
-                                <th class="py-4 px-5 text-rose-400">Gasto</th>
-                                <th class="py-4 px-5 text-emerald-500">Ingreso</th>
-                                <th class="py-4 px-5 text-gray-900">Balance</th>
-                                <th class="py-4 px-5 rounded-tr-[2rem] text-center">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body" class="text-gray-700 text-sm font-medium">
-                            <!-- Datos dinámicos -->
-                        </tbody>
-                    </table>
+                <!-- Lista de Transacciones Completa (Reemplaza a la tabla) -->
+                <div class="native-card overflow-hidden">
+                    <div id="ledger-list" class="divide-y divide-gray-100 flex flex-col">
+                        <!-- Items inyectados por JS -->
+                    </div>
                 </div>
             </div>
 
-            <!-- VISTA 3: SIMULADOR CREDIT IQ -->
-            <div id="simulador-view" class="hidden mt-6 animate-scaleIn">
-                <div class="mb-6 px-1">
-                    <h2 class="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-                        <i class="ph-fill ph-credit-card text-indigo-500"></i> Credit IQ
-                    </h2>
-                    <p class="text-[13px] text-gray-500 font-medium mt-1">Simula compras con tarjeta de crédito.</p>
-                </div>
+            <!-- VISTA 3: SIMULADOR -->
+            <div id="simulador-view" class="hidden animate-fade">
+                <h2 class="text-3xl font-extrabold mb-1">Credit IQ</h2>
+                <p class="text-sm text-gray-500 mb-6">Calcula cortes y pagos.</p>
 
-                <div class="glass-panel rounded-[2rem] p-6 shadow-sm space-y-4 mb-6">
+                <div class="native-card p-5 space-y-4 mb-6">
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Día Corte</label>
-                            <select id="sim-cut" class="custom-select w-full bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-indigo-500 transition shadow-sm"></select>
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-gray-500 ml-1">Corte</label>
+                            <select id="sim-cut" class="custom-select w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200"></select>
                         </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Día Pago</label>
-                            <select id="sim-pay" class="custom-select w-full bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-indigo-500 transition shadow-sm"></select>
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-gray-500 ml-1">Pago</label>
+                            <select id="sim-pay" class="custom-select w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200"></select>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Valor</label>
-                            <input type="number" id="sim-amount" class="w-full bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-indigo-500 transition shadow-sm" placeholder="$ 1.000.000">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-gray-500 ml-1">Valor</label>
+                            <input type="number" id="sim-amount" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200" placeholder="Ej. 100000">
                         </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Cuotas</label>
-                            <select id="sim-installments" class="custom-select w-full bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-indigo-500 transition shadow-sm">
-                                <option value="1" selected>1 cuota</option>
-                                <option value="2">2 cuotas</option><option value="3">3 cuotas</option>
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-gray-500 ml-1">Cuotas</label>
+                            <select id="sim-installments" class="custom-select w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200">
+                                <option value="1">1 cuota</option><option value="2">2 cuotas</option><option value="3">3 cuotas</option>
                                 <option value="6">6 cuotas</option><option value="12">12 cuotas</option>
-                                <option value="24">24 cuotas</option><option value="36">36 cuotas</option>
                             </select>
                         </div>
                     </div>
-                    
-                    <div class="space-y-1.5">
-                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Fecha Compra</label>
-                        <input type="date" id="sim-date" class="w-full bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-400 focus:ring-2 focus:ring-indigo-500 transition shadow-sm">
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-gray-500 ml-1">Fecha Compra</label>
+                        <input type="date" id="sim-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200 text-gray-500">
                     </div>
                 </div>
                 
-                <div id="sim-results" class="space-y-4">
-                    <div class="text-center py-10 px-4 glass-panel rounded-[2rem] border border-dashed border-gray-300">
-                        <i class="ph-fill ph-calculator mx-auto text-gray-300 text-5xl mb-3"></i>
-                        <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mt-2">Llena los datos para simular</p>
+                <div id="sim-results">
+                    <div class="text-center py-10 px-4">
+                        <i class="ph-bold ph-calculator mx-auto text-gray-300 text-4xl mb-2"></i>
+                        <p class="text-gray-400 text-xs font-medium">Llena los datos para simular</p>
                     </div>
                 </div>
             </div>
 
             <!-- VISTA 4: AJUSTES -->
-            <div id="settings-view" class="hidden mt-6 animate-scaleIn">
-                <div class="mb-6 px-1">
-                    <h2 class="text-2xl font-black text-gray-900 tracking-tight">Ajustes</h2>
-                    <p class="text-[13px] text-gray-500 font-medium mt-1">Configuración y respaldos.</p>
-                </div>
+            <div id="settings-view" class="hidden animate-fade">
+                <h2 class="text-3xl font-extrabold mb-6">Ajustes</h2>
 
-                <div class="glass-panel rounded-[2rem] shadow-sm p-6 mb-6 relative overflow-hidden border border-gray-100">
-                    <div class="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
-                        <i class="ph-fill ph-file-pdf text-8xl"></i>
-                    </div>
-                    <h3 class="font-black text-gray-900 mb-5 flex items-center gap-2"><i class="ph-fill ph-file-pdf text-rose-500 text-xl"></i> Exportar Reporte</h3>
-                    
-                    <div class="flex flex-col gap-3 relative z-10">
-                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">Mes del reporte</label>
-                        <div class="flex gap-2 w-full">
-                            <input type="month" id="export-month" class="flex-1 min-w-0 bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 transition shadow-sm">
-                            <button onclick="window.exportToPDF()" class="shrink-0 bg-rose-500 hover:bg-rose-600 text-white font-black px-5 rounded-xl transition-all shadow-md shadow-rose-500/20 active:scale-95 text-sm flex items-center gap-2">
-                                <i class="ph-bold ph-download-simple text-lg"></i> PDF
-                            </button>
-                        </div>
+                <!-- Exportar -->
+                <div class="native-card p-5 mb-5">
+                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2"><i class="ph-bold ph-file-pdf text-rose-500"></i> Exportar Reporte</h3>
+                    <div class="flex gap-2">
+                        <input type="month" id="export-month" class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200">
+                        <button onclick="window.exportToPDF()" class="bg-gray-900 text-white font-bold px-4 rounded-xl active:scale-95 transition">PDF</button>
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-[2rem] shadow-sm p-6 mb-6 relative overflow-hidden border border-gray-100">
-                    <div class="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
-                        <i class="ph-fill ph-bank text-8xl"></i>
-                    </div>
-                    <h3 class="font-black text-gray-900 mb-5 flex items-center gap-2 relative z-10"><i class="ph-fill ph-wallet text-indigo-500 text-xl"></i> Mis Cuentas / Bancos</h3>
-                    
-                    <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-6 relative z-10 w-full">
-                        <input type="text" id="new-account-name" placeholder="Ej. Nequi..." required class="flex-1 min-w-0 bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-indigo-500 transition shadow-sm">
-                        <button type="submit" id="btn-add-account" class="shrink-0 bg-gray-900 text-white font-black px-5 rounded-xl hover:bg-black transition-all shadow-md shadow-gray-900/20 active:scale-95 text-sm">
-                            Crear
-                        </button>
+                <!-- Cuentas -->
+                <div class="native-card p-5 mb-5">
+                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2"><i class="ph-bold ph-bank text-blue-500"></i> Mis Cuentas</h3>
+                    <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-4">
+                        <input type="text" id="new-account-name" placeholder="Ej. Efectivo, Nequi..." required class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200">
+                        <button type="submit" id="btn-add-account" class="bg-blue-500 text-white font-bold px-4 rounded-xl active:scale-95 transition">+</button>
                     </form>
-
-                    <div id="accounts-list" class="flex flex-col gap-2.5 max-h-[350px] overflow-y-auto hide-scroll relative z-10">
-                        <p class="text-center text-gray-400 text-xs py-4 font-bold">Cargando cuentas...</p>
+                    <div id="accounts-list" class="flex flex-col divide-y divide-gray-100 max-h-[300px] overflow-y-auto hide-scroll">
+                        <!-- Cuentas JS -->
                     </div>
                 </div>
+                
+                <button onclick="window.logout()" class="w-full native-card p-4 text-center text-rose-500 font-bold active:bg-gray-50 transition">
+                    Cerrar Sesión
+                </button>
             </div>
         </main>
 
-        <!-- BARRA DE NAVEGACIÓN ISLA -->
-        <nav class="absolute bottom-6 left-6 right-6 glass-nav rounded-3xl px-3 py-2.5 flex justify-between items-center z-20">
-            <button id="nav-home" onclick="window.switchTab('dashboard')" class="nav-item active flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition flex-1 group">
-                <div class="icon-bg w-14 h-9 rounded-2xl flex items-center justify-center transition-all duration-300">
-                    <i class="ph-fill ph-house text-[22px] transition-transform group-active:scale-90"></i>
-                </div>
-                <span class="text-[10px] font-black mt-0.5 tracking-wide">Inicio</span>
+        <!-- BOTTOM TAB BAR (Estilo iOS) -->
+        <nav class="absolute bottom-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-200 flex justify-around items-center pb-safe pt-2 z-20" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
+            <button id="nav-home" onclick="window.switchTab('dashboard')" class="nav-item active flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-house text-2xl"></i>
+                <span class="text-[10px] font-semibold">Inicio</span>
             </button>
-            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition flex-1 group">
-                <div class="icon-bg w-14 h-9 rounded-2xl flex items-center justify-center transition-all duration-300">
-                    <i class="ph-fill ph-book-open text-[22px] transition-transform group-active:scale-90"></i>
-                </div>
-                <span class="text-[10px] font-black mt-0.5 tracking-wide">Libro</span>
+            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-list-bullets text-2xl"></i>
+                <span class="text-[10px] font-semibold">Movimientos</span>
             </button>
-            <button id="nav-simulador" onclick="window.switchTab('simulador')" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition flex-1 group">
-                <div class="icon-bg w-14 h-9 rounded-2xl flex items-center justify-center transition-all duration-300">
-                    <i class="ph-fill ph-credit-card text-[22px] transition-transform group-active:scale-90"></i>
-                </div>
-                <span class="text-[10px] font-black mt-0.5 tracking-wide">Simulador</span>
+            <button id="nav-simulador" onclick="window.switchTab('simulador')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-credit-card text-2xl"></i>
+                <span class="text-[10px] font-semibold">Simulador</span>
             </button>
-            <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 transition flex-1 group">
-                <div class="icon-bg w-14 h-9 rounded-2xl flex items-center justify-center transition-all duration-300">
-                    <i class="ph-fill ph-gear text-[22px] transition-transform group-active:scale-90"></i>
-                </div>
-                <span class="text-[10px] font-black mt-0.5 tracking-wide">Ajustes</span>
+            <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-gear text-2xl"></i>
+                <span class="text-[10px] font-semibold">Ajustes</span>
             </button>
         </nav>
 
-        <!-- MODALES DE LA APLICACIÓN -->
-        <div id="form-modal" class="absolute inset-0 bg-gray-900/60 z-50 hidden items-end sm:items-center justify-center backdrop-blur-md transition-opacity">
-            <div class="bg-white w-full max-w-[420px] rounded-t-[2.5rem] sm:rounded-[2.5rem] p-7 transform transition-transform animate-slideUp shadow-2xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 id="modal-title" class="text-2xl font-black text-gray-900 tracking-tight">Añadir Registro</h3>
-                    <button onclick="window.closeFormModal()" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200 transition">
-                        <i class="ph-bold ph-x"></i>
-                    </button>
+        <!-- MODAL FORMULARIO (Estilo Bottom Sheet) -->
+        <div id="form-modal" class="absolute inset-0 bg-gray-900/40 z-50 hidden flex-col justify-end transition-opacity">
+            <div class="bg-white w-full rounded-t-[32px] p-6 animate-sheet pb-safe" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
+                <div class="w-10 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                <div class="flex justify-between items-center mb-5">
+                    <h3 id="modal-title" class="text-xl font-bold">Añadir</h3>
+                    <button onclick="window.closeFormModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold active:bg-gray-200"><i class="ph-bold ph-x"></i></button>
                 </div>
 
-                <form id="transaction-form" onsubmit="window.handleFormSubmit(event)">
+                <form id="transaction-form" onsubmit="window.handleFormSubmit(event)" class="space-y-4">
                     <input type="hidden" id="edit-tx-id" value="">
-                    <div class="mb-4">
-                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1.5">Monto ($ COP)</label>
-                        <input type="number" step="1" id="form-amount" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 text-xl font-black text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition shadow-inner" placeholder="Ej. 150000">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1.5">Descripción</label>
-                        <input type="text" id="form-desc" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition shadow-inner" placeholder="Ej. Uber, Cena...">
+                    
+                    <div class="flex items-center bg-gray-50 rounded-2xl px-4 py-2 border border-gray-100">
+                        <span class="text-gray-400 font-bold text-lg mr-2">$</span>
+                        <input type="number" step="1" id="form-amount" required class="w-full bg-transparent text-2xl font-bold text-gray-900 focus:outline-none py-2" placeholder="0">
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1.5">Categoría</label>
-                            <select id="form-category" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition appearance-none shadow-inner custom-select"></select>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1.5">Cuenta</label>
-                            <select id="form-account" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition appearance-none shadow-inner custom-select"></select>
-                        </div>
+                    <div class="relative">
+                        <i class="ph-bold ph-text-aa absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="form-desc" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-11 pr-4 py-3.5 font-medium focus:ring-2 focus:ring-gray-200" placeholder="Descripción">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="form-category" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-3 py-3.5 font-medium focus:ring-2 focus:ring-gray-200 custom-select"></select>
+                        <select id="form-account" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-3 py-3.5 font-medium focus:ring-2 focus:ring-gray-200 custom-select"></select>
                     </div>
 
-                    <div class="mb-8">
-                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1.5">Fecha</label>
-                        <input type="date" id="form-date" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 transition shadow-inner">
-                    </div>
+                    <input type="date" id="form-date" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 font-medium focus:ring-2 focus:ring-gray-200">
 
-                    <button type="submit" id="submit-btn" class="w-full bg-gray-900 text-white font-black py-4 rounded-2xl hover:bg-black transition-all shadow-xl shadow-gray-900/20 flex justify-center items-center gap-2 transform active:scale-95 text-lg">
-                        Guardar Registro
-                    </button>
+                    <div class="flex gap-3 pt-2">
+                        <!-- Botón borrar que solo aparece al editar -->
+                        <button type="button" id="btn-delete-tx" onclick="window.deleteCurrentTx()" class="hidden w-14 h-[52px] bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 transition shrink-0">
+                            <i class="ph-bold ph-trash text-xl"></i>
+                        </button>
+                        <button type="submit" id="submit-btn" class="flex-1 bg-gray-900 text-white font-bold py-3.5 rounded-2xl active:bg-black transition">
+                            Guardar
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
 
-        <div id="edit-account-modal" class="absolute inset-0 bg-gray-900/60 z-[60] hidden items-center justify-center backdrop-blur-md px-6">
-            <div class="bg-white w-full max-w-[320px] rounded-[2.5rem] p-8 text-center transform transition-transform animate-scaleIn shadow-2xl">
-                <div class="w-16 h-16 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 shadow-inner bg-indigo-50 text-indigo-500">
-                    <i class="ph-bold ph-pencil-simple text-3xl"></i>
-                </div>
-                <h3 class="text-2xl font-black text-gray-900 mb-2 tracking-tight">Renombrar</h3>
+        <!-- MODAL EDITAR CUENTA -->
+        <div id="edit-account-modal" class="absolute inset-0 bg-gray-900/40 z-[60] hidden items-center justify-center p-5">
+            <div class="bg-white w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl">
+                <h3 class="text-lg font-bold mb-4">Renombrar Cuenta</h3>
                 <form id="edit-account-form" onsubmit="window.handleEditAccount(event)">
                     <input type="hidden" id="edit-account-id">
-                    <input type="text" id="edit-account-name" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 text-base font-bold text-gray-900 focus:ring-2 focus:ring-indigo-500 transition mb-6 text-center shadow-inner">
-                    
-                    <div class="flex gap-3">
-                        <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 bg-gray-100 text-gray-500 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all transform active:scale-95">Cancelar</button>
-                        <button type="submit" id="btn-save-account" class="flex-1 bg-indigo-600 text-white font-black py-4 rounded-2xl hover:bg-indigo-700 transition-all transform active:scale-95 shadow-lg shadow-indigo-500/30">Guardar</button>
+                    <input type="text" id="edit-account-name" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-center mb-5 focus:ring-2 focus:ring-blue-500">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 bg-gray-100 text-gray-500 font-bold py-3 rounded-xl active:bg-gray-200">Cancelar</button>
+                        <button type="submit" id="btn-save-account" class="flex-1 bg-blue-500 text-white font-bold py-3 rounded-xl active:bg-blue-600">Guardar</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div id="scan-loader" class="absolute inset-0 bg-gray-900/70 z-[60] hidden flex-col items-center justify-center backdrop-blur-lg">
-            <div class="bg-white p-8 rounded-[2.5rem] flex flex-col items-center shadow-2xl transform animate-scaleIn min-w-[260px] text-center">
-                <div class="relative w-20 h-20 mb-5">
-                    <div class="absolute inset-0 border-[6px] border-gray-100 rounded-full"></div>
-                    <div class="absolute inset-0 border-[6px] border-blue-500 rounded-full animate-spin border-t-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <i class="ph-fill ph-robot text-3xl text-blue-500 animate-pulse"></i>
-                    </div>
-                </div>
-                <h3 class="text-gray-900 text-xl font-black mb-1">IA Pensando</h3>
-                <p class="text-gray-400 text-xs font-bold uppercase tracking-wider">Leyendo recibo...</p>
+        <!-- LOADER IA -->
+        <div id="scan-loader" class="absolute inset-0 bg-white/80 z-[60] hidden flex-col items-center justify-center backdrop-blur-md">
+            <i class="ph-bold ph-spinner animate-spin text-4xl text-blue-500 mb-3"></i>
+            <h3 class="text-gray-900 font-bold">Procesando...</h3>
+        </div>
+
+        <!-- ALERTAS Y CONFIRMAR -->
+        <div id="custom-alert" class="absolute inset-0 bg-gray-900/40 z-[70] hidden items-center justify-center p-5">
+            <div class="bg-white w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl">
+                <i id="alert-icon" class="text-4xl mb-3 inline-block"></i>
+                <h3 id="alert-title" class="text-lg font-bold mb-1">Título</h3>
+                <p id="alert-message" class="text-sm text-gray-500 mb-5">Mensaje</p>
+                <button onclick="window.closeAlert()" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl active:bg-black">Entendido</button>
             </div>
         </div>
 
-        <div id="custom-alert" class="absolute inset-0 bg-gray-900/60 z-[70] hidden items-center justify-center backdrop-blur-md px-6">
-            <div class="bg-white w-full max-w-[320px] rounded-[2.5rem] p-8 text-center transform transition-transform animate-scaleIn shadow-2xl">
-                <div id="alert-icon-container" class="w-16 h-16 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 shadow-inner">
-                    <i id="alert-icon" class="text-4xl"></i>
-                </div>
-                <h3 id="alert-title" class="text-2xl font-black text-gray-900 mb-2 tracking-tight">Título</h3>
-                <p id="alert-message" class="text-sm text-gray-500 mb-8 font-medium leading-relaxed">Mensaje.</p>
-                <button onclick="window.closeAlert()" class="w-full bg-gray-900 text-white font-black py-4 rounded-2xl hover:bg-black transition-all transform active:scale-95 shadow-xl shadow-gray-900/20">Entendido</button>
-            </div>
-        </div>
-
-        <div id="confirm-modal" class="absolute inset-0 bg-gray-900/60 z-[80] hidden items-center justify-center backdrop-blur-md px-6">
-            <div class="bg-white w-full max-w-[320px] rounded-[2.5rem] p-8 text-center transform transition-transform animate-scaleIn shadow-2xl">
-                <div class="w-16 h-16 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 shadow-inner bg-rose-50 text-rose-500">
-                    <i class="ph-bold ph-trash text-3xl"></i>
-                </div>
-                <h3 id="confirm-title" class="text-2xl font-black text-gray-900 mb-2 tracking-tight">Confirmar</h3>
-                <p id="confirm-message" class="text-sm text-gray-500 mb-8 font-medium leading-relaxed">¿Estás seguro?</p>
-                <div class="flex gap-3">
-                    <button onclick="window.closeConfirm()" class="flex-1 bg-gray-100 text-gray-500 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all transform active:scale-95">Cancelar</button>
-                    <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 bg-rose-500 text-white font-black py-4 rounded-2xl hover:bg-rose-600 transition-all transform active:scale-95 shadow-lg shadow-rose-500/30">Borrar</button>
+        <div id="confirm-modal" class="absolute inset-0 bg-gray-900/40 z-[80] hidden items-center justify-center p-5">
+            <div class="bg-white w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl">
+                <i class="ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block"></i>
+                <h3 id="confirm-title" class="text-lg font-bold mb-1">Confirmar</h3>
+                <p id="confirm-message" class="text-sm text-gray-500 mb-5">¿Seguro?</p>
+                <div class="flex gap-2">
+                    <button onclick="window.closeConfirm()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl active:bg-gray-200">Cancelar</button>
+                    <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600">Borrar</button>
                 </div>
             </div>
         </div>
@@ -549,9 +430,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = initializeFirestore(app, {
-            localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
-        });
+        const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()}) });
         
         let currentUser = null;
         let transactions = [];
@@ -569,54 +448,44 @@
         const availableEl = document.getElementById('available-amount');
         const spentEl = document.getElementById('spent-amount');
         const txList = document.getElementById('tx-list');
-        const tableBody = document.getElementById('table-body');
+        const ledgerList = document.getElementById('ledger-list'); // Reemplaza tableBody
         const formModal = document.getElementById('form-modal');
         const transactionForm = document.getElementById('transaction-form');
         const modalTitle = document.getElementById('modal-title');
         const categorySelect = document.getElementById('form-category');
         const editAccountModal = document.getElementById('edit-account-modal');
 
-        const sanitizeInput = (str) => {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            ).trim();
-        };
+        const sanitizeInput = (str) => str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)).trim();
+
+        onAuthStateChanged(auth, (user) => {
+            const loginView = document.getElementById('login-view');
+            const mainAppView = document.getElementById('main-app-view');
+            const authBtn = document.getElementById('auth-submit-btn');
+
+            if (user) {
+                currentUser = user;
+                if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = 'Entrar a la bóveda'; }
+                if(loginView) loginView.classList.add('hidden');
+                if(mainAppView) mainAppView.classList.remove('hidden');
+                
+                document.getElementById('user-name').innerText = user.email.split('@')[0];
+                document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
+                
+                listenToTransactions();
+                listenToAccounts();
+            } else {
+                currentUser = null; transactions = []; filteredTransactions = []; accounts = [];
+                if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
+                if (unsubscribeAccountsDB) { unsubscribeAccountsDB(); unsubscribeAccountsDB = null; }
+                updateUI(); updateAccountsUI();
+                
+                if(loginView) loginView.classList.remove('hidden');
+                if(mainAppView) mainAppView.classList.add('hidden');
+            }
+        });
 
         window.onload = () => {
             if(typeof initSimulator === 'function') initSimulator();
-            
-            // Vigilante de Firebase: Carga los datos solo si la sesión es válida.
-            onAuthStateChanged(auth, (user) => {
-                const loginView = document.getElementById('login-view');
-                const mainAppView = document.getElementById('main-app-view');
-                const authBtn = document.getElementById('auth-submit-btn');
-
-                if (user) {
-                    currentUser = user;
-                    if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = 'Desbloquear'; }
-                    
-                    if(loginView) loginView.classList.add('hidden');
-                    if(mainAppView) mainAppView.classList.remove('hidden');
-                    
-                    document.getElementById('user-name').innerText = user.email.split('@')[0];
-                    document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
-                    
-                    listenToTransactions();
-                    listenToAccounts();
-                } else {
-                    currentUser = null;
-                    transactions = [];
-                    filteredTransactions = [];
-                    accounts = [];
-                    if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
-                    if (unsubscribeAccountsDB) { unsubscribeAccountsDB(); unsubscribeAccountsDB = null; }
-                    updateUI(); 
-                    updateAccountsUI();
-                    
-                    if(loginView) loginView.classList.remove('hidden');
-                    if(mainAppView) mainAppView.classList.add('hidden');
-                }
-            });
         };
 
         window.handleAuthSubmit = async (e) => {
@@ -624,74 +493,45 @@
             const emailRaw = document.getElementById('auth-email').value;
             const passwordRaw = document.getElementById('auth-password').value;
             const btn = document.getElementById('auth-submit-btn');
-            
-            const email = sanitizeInput(emailRaw).toLowerCase();
-            const password = passwordRaw.trim();
+            const email = sanitizeInput(emailRaw).toLowerCase(); const password = passwordRaw.trim();
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email || !password) {
-                return window.showCustomAlert('Campos Vacíos', 'Por favor ingresa correo y contraseña.', 'ph-warning-circle', 'text-orange-500', 'bg-orange-50');
-            }
-            if (!emailRegex.test(email)) {
-                return window.showCustomAlert('Formato Inválido', 'El formato del correo es incorrecto.', 'ph-warning-circle', 'text-orange-500', 'bg-orange-50');
-            }
+            if (!email || !password) return window.showCustomAlert('Datos incompletos', 'Ingresa correo y clave.', 'ph-warning-circle text-orange-500');
 
-            const MAX_INTENTOS = 3;
-            const MINUTOS_BLOQUEO = 5;
             let intentos = parseInt(localStorage.getItem('boveda_intentos') || '0');
             let tiempoDesbloqueo = parseInt(localStorage.getItem('boveda_bloqueo_hasta') || '0');
             const ahora = new Date().getTime();
 
             if (ahora < tiempoDesbloqueo) {
-                const minutosRestantes = Math.ceil((tiempoDesbloqueo - ahora) / 60000);
-                return window.showCustomAlert('Bóveda Bloqueada', `Demasiados intentos fallidos. Intenta de nuevo en ${minutosRestantes} minuto(s).`, 'ph-lock-key', 'text-red-500', 'bg-red-50');
+                return window.showCustomAlert('Bloqueado', `Intenta de nuevo en ${Math.ceil((tiempoDesbloqueo - ahora) / 60000)} minuto(s).`, 'ph-lock-key text-red-500');
             } else if (tiempoDesbloqueo !== 0) {
                 intentos = 0; localStorage.setItem('boveda_intentos', '0'); localStorage.setItem('boveda_bloqueo_hasta', '0');
             }
             
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Verificando...';
+            btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-lg"></i>';
             
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 localStorage.setItem('boveda_intentos', '0');
             } catch(error) {
-                console.warn("Login silencioso fallido por seguridad."); 
-                intentos++;
-                localStorage.setItem('boveda_intentos', intentos);
+                console.warn("Login attempt failed.");
+                intentos++; localStorage.setItem('boveda_intentos', intentos);
                 
-                if (intentos >= MAX_INTENTOS) {
-                    const bloqueoHasta = ahora + (MINUTOS_BLOQUEO * 60 * 1000);
-                    localStorage.setItem('boveda_bloqueo_hasta', bloqueoHasta.toString());
-                    window.showCustomAlert('Alerta de Seguridad', 'La bóveda se ha bloqueado temporalmente por intentos sospechosos.', 'ph-shield-slash', 'text-red-500', 'bg-red-50');
+                if (intentos >= 3) {
+                    localStorage.setItem('boveda_bloqueo_hasta', (ahora + (5 * 60 * 1000)).toString());
+                    window.showCustomAlert('Seguridad', 'Bóveda bloqueada temporalmente por intentos fallidos.', 'ph-shield-slash text-red-500');
                 } else {
-                    const intentosRestantes = MAX_INTENTOS - intentos;
-                    window.showCustomAlert('Acceso Denegado', `Correo o contraseña incorrectos. Te quedan ${intentosRestantes} intento(s).`, 'ph-shield-warning', 'text-red-500', 'bg-red-50');
+                    window.showCustomAlert('Acceso Denegado', `Credenciales incorrectas. Intentos: ${3 - intentos}`, 'ph-shield-warning text-red-500');
                 }
-                
-                btn.disabled = false;
-                btn.innerHTML = 'Desbloquear Bóveda';
+                btn.disabled = false; btn.innerHTML = 'Entrar a la bóveda';
             }
         };
 
-        window.logout = async () => {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Error al cerrar sesión", error);
-            }
-        };
+        window.logout = async () => { try { await signOut(auth); } catch (error) { console.error("Error al salir", error); } };
 
         window.togglePassword = () => {
-            const pwdInput = document.getElementById('auth-password');
-            const eyeIcon = document.getElementById('eye-icon');
-            if (pwdInput.type === 'password') {
-                pwdInput.type = 'text';
-                eyeIcon.classList.replace('ph-eye', 'ph-eye-slash');
-            } else {
-                pwdInput.type = 'password';
-                eyeIcon.classList.replace('ph-eye-slash', 'ph-eye');
-            }
+            const p = document.getElementById('auth-password'); const i = document.getElementById('eye-icon');
+            if (p.type === 'password') { p.type = 'text'; i.classList.replace('ph-eye', 'ph-eye-slash'); } 
+            else { p.type = 'password'; i.classList.replace('ph-eye-slash', 'ph-eye'); }
         };
 
         function listenToTransactions() {
@@ -716,33 +556,28 @@
         }
 
         function updateAccountsUI() {
-            const formAccount = document.getElementById('form-account');
-            const accountsList = document.getElementById('accounts-list');
-            
-            if (formAccount) formAccount.innerHTML = '';
-            if (accountsList) accountsList.innerHTML = '';
+            const formAccount = document.getElementById('form-account'); const accountsList = document.getElementById('accounts-list');
+            if (formAccount) formAccount.innerHTML = ''; if (accountsList) accountsList.innerHTML = '';
 
             if (accounts.length === 0) {
-                if(formAccount) formAccount.innerHTML = '<option value="" disabled selected>No hay cuentas (Añadir en Ajustes)</option>';
-                if(accountsList) accountsList.innerHTML = '<div class="text-center py-6 border-2 border-dashed border-gray-200 rounded-[1.5rem]"><i class="ph-fill ph-wallet text-gray-300 text-3xl mb-2"></i><p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Crea tu primera cuenta</p></div>';
+                if(formAccount) formAccount.innerHTML = '<option value="" disabled selected>Sin cuentas</option>';
+                if(accountsList) accountsList.innerHTML = '<p class="text-center py-4 text-xs font-bold text-gray-400">Crea tu primera cuenta</p>';
                 return;
             }
 
             accounts.forEach(acc => {
-                const opt = document.createElement('option'); opt.value = acc.name; opt.innerText = acc.name;
-                formAccount.appendChild(opt);
-
+                const opt = document.createElement('option'); opt.value = acc.name; opt.innerText = acc.name; formAccount.appendChild(opt);
                 if (accountsList) {
                     const div = document.createElement('div');
-                    div.className = "flex justify-between items-center p-4 bg-white rounded-2xl border border-gray-100 shadow-[0_4px_10px_rgba(0,0,0,0.02)]";
+                    div.className = "flex justify-between items-center py-3";
                     div.innerHTML = `
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-10 h-10 rounded-[1rem] bg-indigo-50 flex items-center justify-center text-indigo-500 shadow-inner"><i class="ph-bold ph-bank text-lg"></i></div>
-                            <span class="font-black text-sm text-gray-800 truncate max-w-[120px]">${acc.name}</span>
+                        <div class="flex items-center gap-3">
+                            <i class="ph-fill ph-wallet text-gray-400 text-xl"></i>
+                            <span class="font-bold text-sm text-gray-800">${acc.name}</span>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="window.openEditAccountModal('${acc.id}', '${acc.name.replace(/'/g, "\\'")}')" class="w-9 h-9 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition transform active:scale-90"><i class="ph-bold ph-pencil-simple"></i></button>
-                            <button onclick="window.deleteAccount('${acc.id}')" class="w-9 h-9 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition transform active:scale-90"><i class="ph-bold ph-trash"></i></button>
+                        <div class="flex gap-1">
+                            <button onclick="window.openEditAccountModal('${acc.id}', '${acc.name.replace(/'/g, "\\'")}')" class="p-2 text-gray-400 hover:text-blue-500"><i class="ph-bold ph-pencil-simple"></i></button>
+                            <button onclick="window.deleteAccount('${acc.id}')" class="p-2 text-gray-400 hover:text-rose-500"><i class="ph-bold ph-trash"></i></button>
                         </div>
                     `;
                     accountsList.appendChild(div);
@@ -754,10 +589,10 @@
             e.preventDefault();
             const input = document.getElementById('new-account-name'); const name = input.value.trim();
             if (!name || !currentUser) return;
-            const btn = document.getElementById('btn-add-account'); btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-lg"></i>';
+            const btn = document.getElementById('btn-add-account'); btn.disabled = true; btn.innerHTML = '...';
             try { await addDoc(collection(db, "accounts"), { userId: currentUser.uid, name: name, createdAt: serverTimestamp() }); input.value = ''; } 
-            catch (error) { window.showCustomAlert('Error', 'No se pudo crear.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); } 
-            finally { btn.disabled = false; btn.innerHTML = 'Crear'; }
+            catch (error) { window.showCustomAlert('Error', 'Fallo al crear.', 'ph-warning-circle text-rose-500'); } 
+            finally { btn.disabled = false; btn.innerHTML = '+'; }
         }
 
         window.openEditAccountModal = (id, name) => { document.getElementById('edit-account-id').value = id; document.getElementById('edit-account-name').value = name; editAccountModal.classList.remove('hidden'); editAccountModal.classList.add('flex'); }
@@ -766,36 +601,35 @@
         window.handleEditAccount = async (e) => {
             e.preventDefault();
             const id = document.getElementById('edit-account-id').value; const newName = document.getElementById('edit-account-name').value.trim();
-            const btn = document.getElementById('btn-save-account');
             if (!newName || !id) return;
-            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i>'; btn.disabled = true;
             try { await updateDoc(doc(db, "accounts", id), { name: newName }); window.closeEditAccountModal(); } 
-            catch (error) { window.showCustomAlert('Error', 'No se actualizó.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); } 
-            finally { btn.innerHTML = 'Guardar'; btn.disabled = false; }
+            catch (error) { window.showCustomAlert('Error', 'No se actualizó.', 'ph-warning-circle text-rose-500'); }
         }
 
         window.deleteAccount = (id) => {
-            window.showConfirm('Borrar Banco', '¿Seguro de eliminar esta cuenta? Los registros pasados se mantendrán.', async () => {
-                const btn = document.getElementById('btn-confirm-action'); btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i>'; btn.disabled = true;
-                try { await deleteDoc(doc(db, "accounts", id)); window.closeConfirm(); } 
-                catch (error) { window.showCustomAlert('Error', 'Fallo al borrar.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); window.closeConfirm(); } 
-                finally { btn.innerHTML = 'Borrar'; btn.disabled = false; }
+            window.showConfirm('Borrar Cuenta', '¿Seguro? Los registros se mantendrán.', async () => {
+                try { await deleteDoc(doc(db, "accounts", id)); window.closeConfirm(); } catch (error) { window.closeConfirm(); }
             });
         }
 
-        window.deleteTransaction = (id) => {
-            window.showConfirm('Eliminar Movimiento', '¿Seguro de borrar este registro permanentemente?', async () => {
-                const btn = document.getElementById('btn-confirm-action'); btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i>'; btn.disabled = true;
-                try { await deleteDoc(doc(db, "transactions", id)); window.closeConfirm(); } 
-                catch(error) { window.showCustomAlert('Error', 'Fallo al borrar.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); window.closeConfirm(); } 
-                finally { btn.innerHTML = 'Borrar'; btn.disabled = false; }
+        window.deleteCurrentTx = () => {
+            const txId = document.getElementById('edit-tx-id').value;
+            if (!txId) return;
+            window.closeFormModal(); // Cerrar form primero
+            window.showConfirm('Borrar', '¿Eliminar este registro permanentemente?', async () => {
+                try { await deleteDoc(doc(db, "transactions", txId)); window.closeConfirm(); } 
+                catch(error) { window.showCustomAlert('Error', 'Fallo al borrar.', 'ph-warning-circle text-rose-500'); window.closeConfirm(); }
             });
         }
 
         window.editTransaction = (id) => {
             const tx = transactions.find(t => t.id === id); if (!tx) return;
-            isExpense = tx.type === 'expense'; window.openFormModal(tx.type, false); modalTitle.innerText = 'Editar Movimiento';
+            isExpense = tx.type === 'expense'; window.openFormModal(tx.type, false); modalTitle.innerText = 'Editar';
             document.getElementById('edit-tx-id').value = tx.id; document.getElementById('form-amount').value = tx.amount; document.getElementById('form-desc').value = tx.desc; document.getElementById('form-date').value = tx.date;
+            
+            // Mostrar botón borrar
+            document.getElementById('btn-delete-tx').classList.remove('hidden');
+
             setTimeout(() => { document.getElementById('form-category').value = tx.category; document.getElementById('form-account').value = tx.account; }, 50);
         }
 
@@ -804,11 +638,9 @@
         window.filterLedger = (type, btnElement) => {
             currentFilter = type;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.replace('bg-gray-900', 'bg-white'); btn.classList.replace('text-white', 'text-gray-500');
-                btn.classList.add('border', 'border-gray-100'); btn.classList.remove('shadow-md');
+                btn.classList.replace('bg-gray-900', 'bg-white'); btn.classList.replace('text-white', 'text-gray-500'); btn.classList.add('border-gray-200');
             });
-            btnElement.classList.replace('bg-white', 'bg-gray-900'); btnElement.classList.replace('text-gray-500', 'text-white');
-            btnElement.classList.remove('border', 'border-gray-100'); btnElement.classList.add('shadow-md');
+            btnElement.classList.replace('bg-white', 'bg-gray-900'); btnElement.classList.replace('text-gray-500', 'text-white'); btnElement.classList.remove('border-gray-200');
             applyFiltersAndSearch();
         }
 
@@ -824,7 +656,7 @@
         window.handleFormSubmit = async (e) => {
             e.preventDefault();
             if (!currentUser) return;
-            if (accounts.length === 0) return window.showCustomAlert('Alto ahí', 'Primero debes crear una cuenta o banco en Ajustes.', 'ph-bank', 'text-indigo-500', 'bg-indigo-50');
+            if (accounts.length === 0) return window.showCustomAlert('Falta Cuenta', 'Crea una cuenta en Ajustes primero.', 'ph-bank text-blue-500');
 
             const type = isExpense ? 'expense' : 'income';
             const amount = parseFloat(document.getElementById('form-amount').value);
@@ -835,19 +667,21 @@
             const txId = document.getElementById('edit-tx-id').value;
 
             if (isNaN(amount) || amount <= 0) return;
-            const submitBtn = document.getElementById('submit-btn'); submitBtn.disabled = true; submitBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Procesando...';
+            const submitBtn = document.getElementById('submit-btn'); submitBtn.disabled = true; submitBtn.innerText = '...';
 
             try {
                 if (txId) { await updateDoc(doc(db, "transactions", txId), { type, amount, desc, category, date, account }); } 
                 else { await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type, amount, desc, category, date, account, createdAt: serverTimestamp() }); }
                 window.closeFormModal(); document.getElementById('transaction-form').reset(); document.getElementById('edit-tx-id').value = '';
-            } catch (error) { window.showCustomAlert('Error', 'Fallo al guardar el registro.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); } 
-            finally { submitBtn.disabled = false; submitBtn.innerHTML = 'Guardar Registro'; }
+            } catch (error) { window.showCustomAlert('Error', 'Fallo al guardar.', 'ph-warning-circle text-rose-500'); } 
+            finally { submitBtn.disabled = false; submitBtn.innerText = 'Guardar'; }
         }
 
         window.openFormModal = (type, fromScanner = false) => {
-            isExpense = type === 'expense'; modalTitle.innerText = isExpense ? 'Registrar Gasto' : 'Nuevo Ingreso';
+            isExpense = type === 'expense'; modalTitle.innerText = isExpense ? 'Gasto' : 'Ingreso';
             document.getElementById('edit-tx-id').value = ''; categorySelect.innerHTML = '';
+            document.getElementById('btn-delete-tx').classList.add('hidden'); // Ocultar borrar al crear
+            
             const optionsList = isExpense ? ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros Gastos'] : ['Ventas', 'Aportes', 'Rendimientos', 'Otros Ingresos'];
             optionsList.forEach(opt => { const el = document.createElement('option'); el.value = opt; el.innerText = opt; categorySelect.appendChild(el); });
 
@@ -860,7 +694,7 @@
         window.closeFormModal = () => { formModal.classList.add('hidden'); formModal.classList.remove('flex'); document.getElementById('edit-tx-id').value = ''; }
 
         function compressImageForOCR(file) {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     const img = new Image();
@@ -872,8 +706,11 @@
                         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
                         resolve(canvas.toDataURL('image/jpeg', 0.8));
                     };
+                    img.onerror = () => reject("Error al procesar formato de imagen (Intenta JPEG/PNG)");
                     img.src = event.target.result;
-                }; reader.readAsDataURL(file); 
+                }; 
+                reader.onerror = () => reject("No se pudo leer el archivo");
+                reader.readAsDataURL(file); 
             });
         }
 
@@ -886,39 +723,30 @@
                 const base64 = await compressImageForOCR(input.files[0]);
                 const prompt = `Analiza la imagen. Si es cobro/venta para mi es "income", si es ticket que pagué es "expense". Devuelve SOLO JSON con: "type": "income" o "expense", "amount": numero total sin comas, "description": texto corto, "category": (Si expense: Operaciones, Inventario, Servicios, Nómina, Otros Gastos. Si income: Ventas, Aportes, Rendimientos, Otros Ingresos), "date": YYYY-MM-DD. SI NO SE VE LA FECHA CLARA, DEVUELVE null.`;
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST", headers: { 
-                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`, 
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": window.location.href,
-                        "X-Title": "FinSight App"
-                    },
+                    method: "POST", headers: { "Authorization": `Bearer ${OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
                     body: JSON.stringify({ model: "openai/gpt-4o-mini", response_format: { type: "json_object" }, messages: [ { role: "user", content: [ { type: "text", text: prompt }, { type: "image_url", image_url: { url: base64 } } ] } ] })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Error ${response.status}: Es posible que tu API Key se haya quedado sin saldo o bloqueado.`);
+                    const errorText = await response.text();
+                    throw new Error(`OpenRouter (${response.status}): Revisa tu API Key o saldo.`);
                 }
                 
                 const data = await response.json();
-                
-                // Extracción segura para evitar que la IA rompa el código
                 const jsonMatch = data.choices[0].message.content.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("La IA no devolvió los datos correctamente.");
+                if (!jsonMatch) throw new Error("La IA no devolvió datos estructurados.");
                 
                 const ext = JSON.parse(jsonMatch[0]);
-
                 const txType = ext.type === 'income' ? 'income' : 'expense';
                 window.openFormModal(txType, true);
 
                 document.getElementById('form-amount').value = ext.amount || '';
                 document.getElementById('form-desc').value = (ext.description || "Recibo IA").substring(0, 30);
                 
-                // Lógica Inteligente de Fecha
                 if (ext.date && ext.date !== "null" && ext.date !== null) { 
                     document.getElementById('form-date').value = ext.date; 
                 } else {
-                    const now = new Date();
-                    document.getElementById('form-date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+                    const now = new Date(); document.getElementById('form-date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
                 }
                 
                 let found = false;
@@ -927,8 +755,7 @@
                 if(accounts.length > 0) document.getElementById('form-account').value = accounts[0].name;
 
             } catch (error) { 
-                console.error("Detalle Error IA:", error);
-                window.showCustomAlert('Fallo el Escáner', error.message || 'No se pudo leer la imagen.', 'ph-warning-octagon', 'text-rose-500', 'bg-rose-50'); 
+                window.showCustomAlert('Error del Escáner', error.message || error, 'ph-warning-circle text-rose-500'); 
             } 
             finally { loader.classList.add('hidden'); loader.classList.remove('flex'); input.value = ''; }
         }
@@ -937,74 +764,74 @@
             return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount).replace(/\s/g, '.').replace(',', '.'); 
         }
 
+        function getCategoryIcon(cat) {
+            const icons = { 'Operaciones': 'ph-briefcase', 'Inventario': 'ph-package', 'Servicios': 'ph-lightning', 'Nómina': 'ph-users', 'Ventas': 'ph-storefront', 'Aportes': 'ph-piggy-bank' };
+            return icons[cat] || 'ph-receipt';
+        }
+
+        function createListItem(tx, isRecent = false) {
+            const isInc = tx.type === 'income';
+            const color = isInc ? 'emerald' : 'rose';
+            const sign = isInc ? '+' : '-';
+            const icon = getCategoryIcon(tx.category);
+
+            return `
+                <div class="flex justify-between items-center p-4 active:bg-gray-50 transition cursor-pointer" onclick="window.editTransaction('${tx.id}')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-${color}-50 text-${color}-500 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ${icon} text-lg"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-gray-900 text-sm truncate max-w-[150px] sm:max-w-[200px]">${tx.desc}</p>
+                            <p class="text-xs text-gray-400 font-medium truncate">${tx.date} • ${tx.account || 'Sin cuenta'}</p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <p class="font-bold text-${color}-500 text-sm">${sign} ${formatCOP(tx.amount)}</p>
+                    </div>
+                </div>
+            `;
+        }
+
         function updateUI() {
             let totalBalance = 0; let totalIncome = 0; let totalExpense = 0;
-            txList.innerHTML = ''; tableBody.innerHTML = '';
+            txList.innerHTML = ''; ledgerList.innerHTML = '';
 
             transactions.forEach((tx) => {
                 const amount = parseFloat(tx.amount);
                 if (tx.type === 'income') { totalBalance += amount; totalIncome += amount; } else { totalBalance -= amount; totalExpense += amount; }
             });
 
-            filteredTransactions.forEach((tx, index) => {
-                const tr = document.createElement('tr');
-                tr.className = "border-b border-gray-50 hover:bg-gray-50/80 transition-colors whitespace-nowrap";
-                tr.innerHTML = `
-                    <td class="py-4 px-5 font-bold text-gray-400">${index + 1}</td>
-                    <td class="py-4 px-5 font-semibold text-gray-500">${tx.date}</td>
-                    <td class="py-4 px-5 font-black text-gray-900">${tx.desc}</td>
-                    <td class="py-4 px-5 font-semibold text-gray-500 text-xs">
-                        <span class="bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200">${tx.account || '-'}</span>
-                    </td>
-                    <td class="py-4 px-5 text-rose-500 font-black">${tx.type === 'expense' ? formatCOP(tx.amount) : ''}</td>
-                    <td class="py-4 px-5 text-emerald-500 font-black">${tx.type === 'income' ? formatCOP(tx.amount) : ''}</td>
-                    <td class="py-4 px-5 font-black text-gray-900 bg-gray-50/50 border-l border-gray-50">-</td>
-                    <td class="py-4 px-5 text-center bg-gray-50/50">
-                        <div class="flex justify-center gap-1.5">
-                            <button onclick="window.editTransaction('${tx.id}')" class="w-8 h-8 rounded-xl bg-white border border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-100 shadow-sm transition flex items-center justify-center transform active:scale-90"><i class="ph-bold ph-pencil-simple"></i></button>
-                            <button onclick="window.deleteTransaction('${tx.id}')" class="w-8 h-8 rounded-xl bg-white border border-gray-100 text-gray-400 hover:text-rose-600 hover:border-rose-100 shadow-sm transition flex items-center justify-center transform active:scale-90"><i class="ph-bold ph-trash"></i></button>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
+            // Llenar Lista Completa (Libro Mayor)
+            if (filteredTransactions.length === 0) {
+                ledgerList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium">No se encontraron movimientos</div>`;
+            } else {
+                // Invertimos para ver los más nuevos arriba en la lista nativa
+                [...filteredTransactions].reverse().forEach(tx => {
+                    ledgerList.innerHTML += createListItem(tx);
+                });
+            }
 
-            if (filteredTransactions.length === 0 && transactions.length > 0) tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-gray-400 text-xs font-bold uppercase tracking-widest">Sin resultados</td></tr>`;
-
-            const recentTx = [...transactions].reverse().slice(0, 4);
-            recentTx.forEach(tx => {
-                const isInc = tx.type === 'income';
-                let iconClass = isInc ? 'ph-arrow-down-left text-emerald-500' : 'ph-arrow-up-right text-rose-500';
-                let bgClass = isInc ? 'bg-emerald-50' : 'bg-rose-50';
-                const li = document.createElement('div');
-                li.className = "flex items-center justify-between p-4 rounded-[1.5rem] bg-white border border-gray-100 hover:shadow-md transition group shadow-[0_4px_10px_rgba(0,0,0,0.01)]";
-                li.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-[1rem] ${bgClass} flex items-center justify-center group-hover:scale-105 transition-transform shadow-inner"><i class="ph-bold ${iconClass} text-xl"></i></div>
-                        <div>
-                            <p class="font-black text-sm text-gray-900">${tx.desc}</p>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">${tx.category}</p>
-                        </div>
-                    </div>
-                    <div class="font-black text-base ${isInc ? 'text-emerald-500' : 'text-gray-900'}">${isInc ? '+' : '-'} ${formatCOP(tx.amount)}</div>
-                `;
-                txList.appendChild(li);
-            });
-
-            if(recentTx.length === 0) txList.innerHTML = `<div class="flex flex-col items-center justify-center py-10 bg-white rounded-[1.5rem] border border-dashed border-gray-200 shadow-sm"><i class="ph-fill ph-receipt text-4xl text-gray-200 mb-2"></i><p class="text-[11px] font-bold uppercase tracking-widest text-gray-400">Sin movimientos</p></div>`;
+            // Llenar Lista Reciente (Dashboard)
+            const recentTx = [...transactions].reverse().slice(0, 3); // Solo 3 en inicio
+            if(recentTx.length === 0) {
+                txList.innerHTML = `<div class="p-6 text-center text-gray-400 text-sm font-medium">Aún no hay registros</div>`;
+            } else {
+                recentTx.forEach(tx => txList.innerHTML += createListItem(tx, true));
+            }
 
             balanceEl.innerText = formatCOP(totalBalance); availableEl.innerText = formatCOP(totalIncome); spentEl.innerText = formatCOP(totalExpense);
             const badge = document.getElementById('status-badge');
             if (badge) {
-                if (totalBalance > 0) { badge.innerHTML = '<i class="ph-bold ph-trend-up mr-1.5"></i> Saludable'; badge.className = 'text-[11px] font-bold text-emerald-300 bg-white/10 border border-white/20 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md shadow-inner transition-all'; } 
-                else if (totalBalance < 0) { badge.innerHTML = '<i class="ph-bold ph-trend-down mr-1.5"></i> En Rojo'; badge.className = 'text-[11px] font-bold text-rose-300 bg-white/10 border border-white/20 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md shadow-inner transition-all'; } 
-                else { badge.innerHTML = '<i class="ph-bold ph-minus mr-1.5"></i> Estable'; badge.className = 'text-[11px] font-bold text-gray-300 bg-white/10 border border-white/20 inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-md transition-all'; }
+                if (totalBalance > 0) { badge.innerHTML = '<i class="ph-bold ph-trend-up"></i> Positivo'; } 
+                else if (totalBalance < 0) { badge.innerHTML = '<i class="ph-bold ph-trend-down"></i> Negativo'; badge.className = 'text-xs font-semibold bg-rose-500/20 text-rose-100 px-3 py-1.5 rounded-full flex items-center gap-1'; } 
+                else { badge.innerHTML = '<i class="ph-bold ph-minus"></i> Estable'; }
             }
             
             if(!myChart) {
                 myChart = new Chart(document.getElementById('myChart').getContext('2d'), {
-                    type: 'doughnut', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [0.01, 0.01], backgroundColor: ['#e5e7eb', '#e5e7eb'], borderWidth: 0, cutout: '75%' }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { animateScale: true, animateRotate: true } }
+                    type: 'doughnut', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [0.01, 0.01], backgroundColor: ['#F2F2F7', '#F2F2F7'], borderWidth: 0, cutout: '80%' }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { animateScale: true } }
                 });
             }
 
@@ -1022,36 +849,33 @@
 
         window.exportToPDF = () => {
             const monthInput = document.getElementById('export-month').value;
-            if (!monthInput) return window.showCustomAlert('Mes Requerido', 'Selecciona el mes para generar tu PDF.', 'ph-calendar', 'text-orange-500', 'bg-orange-50');
+            if (!monthInput) return window.showCustomAlert('Mes Requerido', 'Selecciona el mes a exportar.', 'ph-calendar text-gray-500');
             const [year, month] = monthInput.split('-'); const txExport = transactions.filter(tx => tx.date.startsWith(`${year}-${month}`));
-            if (txExport.length === 0) return window.showCustomAlert('Libro Vacío', `No registraste movimientos en ${month}/${year}.`, 'ph-folder-open', 'text-gray-500', 'bg-gray-100');
+            if (txExport.length === 0) return window.showCustomAlert('Vacío', 'No hay registros en este mes.', 'ph-warning-circle text-gray-500');
 
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("FinSight Reporte", 14, 20);
-            doc.setFontSize(11); doc.setFont("helvetica", "normal"); doc.setTextColor(100); doc.text(`Periodo evaluado: ${month}/${year}`, 14, 28);
+            doc.setFontSize(20); doc.setFont("helvetica", "bold"); doc.text("FinSight Reporte", 14, 20);
+            doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`Periodo: ${month}/${year}`, 14, 28);
             
             let totalIn = 0, totalOut = 0; txExport.forEach(t => { if(t.type === 'income') totalIn += t.amount; else totalOut += t.amount; });
-            doc.setTextColor(31, 41, 55); doc.text(`Ingresos: ${formatCOP(totalIn)}`, 14, 40); doc.text(`Gastos: ${formatCOP(totalOut)}`, 14, 47);
+            doc.text(`Ingresos: ${formatCOP(totalIn)} | Gastos: ${formatCOP(totalOut)}`, 14, 38);
             
-            const bal = totalIn - totalOut; doc.setFont("helvetica", "bold");
-            if(bal >= 0) doc.setTextColor(16, 185, 129); else doc.setTextColor(244, 63, 94); 
-            doc.text(`Balance Neto: ${formatCOP(bal)}`, 14, 56);
-
-            doc.autoTable({ startY: 65, head: [['#', 'Fecha', 'Detalle', 'Categoría', 'Cuenta', 'Ingreso', 'Gasto']], body: txExport.map((tx, i) => [ i + 1, tx.date, tx.desc, tx.category, tx.account || '-', tx.type === 'income' ? formatCOP(tx.amount) : '', tx.type === 'expense' ? formatCOP(tx.amount) : '' ]), theme: 'grid', headStyles: { fillColor: [17, 24, 39], fontSize: 9 }, bodyStyles: { fontSize: 9 } });
+            doc.autoTable({ startY: 45, head: [['Fecha', 'Detalle', 'Categoría', 'Cuenta', 'Ingreso', 'Gasto']], body: txExport.map(tx => [tx.date, tx.desc, tx.category, tx.account || '-', tx.type === 'income' ? formatCOP(tx.amount) : '', tx.type === 'expense' ? formatCOP(tx.amount) : '' ]), theme: 'plain', headStyles: { fillColor: [242, 242, 247], textColor: 0, fontStyle: 'bold' }, styles: { fontSize: 8, cellPadding: 3, borderBottomWidth: 0.1, lineColor: [200,200,200] } });
             doc.save(`FinSight_${year}_${month}.pdf`);
-            window.showCustomAlert('¡Excelente!', 'Tu PDF ha sido generado y descargado.', 'ph-file-pdf', 'text-indigo-500', 'bg-indigo-50');
         }
 
-        window.showCustomAlert = (t, m, i, c, b) => { const a = document.getElementById('custom-alert'); document.getElementById('alert-icon-container').className = `w-16 h-16 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 shadow-inner ${b}`; document.getElementById('alert-icon').className = `ph-fill ${i} text-4xl ${c}`; document.getElementById('alert-title').innerText = t; document.getElementById('alert-message').innerText = m; a.classList.remove('hidden'); a.classList.add('flex'); }
+        window.showCustomAlert = (t, m, i) => { 
+            const a = document.getElementById('custom-alert'); 
+            document.getElementById('alert-icon').className = `ph-fill ${i}`; 
+            document.getElementById('alert-title').innerText = t; document.getElementById('alert-message').innerText = m; 
+            a.classList.remove('hidden'); a.classList.add('flex'); 
+        }
         window.closeAlert = () => { document.getElementById('custom-alert').classList.add('hidden'); document.getElementById('custom-alert').classList.remove('flex'); }
 
         window.showConfirm = (title, message, callback) => { confirmActionCallback = callback; document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message; document.getElementById('confirm-modal').classList.remove('hidden'); document.getElementById('confirm-modal').classList.add('flex'); }
         window.closeConfirm = () => { document.getElementById('confirm-modal').classList.add('hidden'); document.getElementById('confirm-modal').classList.remove('flex'); confirmActionCallback = null; }
         window.executeConfirm = () => { if (confirmActionCallback) confirmActionCallback(); }
 
-        // =====================================
-        // LÓGICA SIMULADOR CREDIT IQ
-        // =====================================
         const calculateFinancialDates = (purchaseDateStr, cutDay, payDay) => {
             let purchaseDate = dayjs(purchaseDateStr); let currentMonthCut = purchaseDate.date(cutDay); let activeCutDate = currentMonthCut;
             if (purchaseDate.isAfter(currentMonthCut, 'day') || purchaseDate.date() === cutDay) activeCutDate = currentMonthCut.add(1, 'month');
@@ -1063,40 +887,34 @@
         function initSimulator() {
             let ops = `<option value="" disabled selected>Día</option>`; for (let i=1; i<=31; i++) ops += `<option value="${i}">${i}</option>`;
             document.getElementById('sim-cut').innerHTML = ops; document.getElementById('sim-pay').innerHTML = ops;
-            const d = document.getElementById('sim-date'); d.value = ''; d.addEventListener('change', (e) => { if(e.target.value) e.target.classList.replace('text-gray-400', 'text-gray-900'); });
+            const d = document.getElementById('sim-date'); d.value = ''; d.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-gray-500'); });
             ['sim-cut', 'sim-pay', 'sim-amount', 'sim-installments', 'sim-date'].forEach(id => document.getElementById(id).addEventListener('input', runSimulation));
         }
 
         function runSimulation() {
             const cutDay = parseInt(document.getElementById('sim-cut').value), payDay = parseInt(document.getElementById('sim-pay').value), amount = parseFloat(document.getElementById('sim-amount').value), cuotas = parseInt(document.getElementById('sim-installments').value) || 1, dateStr = document.getElementById('sim-date').value;
             const res = document.getElementById('sim-results');
-            if (isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { res.innerHTML = `<div class="text-center py-10 px-4 glass-panel rounded-[2rem] border border-dashed border-gray-300 animate-fadeIn"><i class="ph-fill ph-calculator mx-auto text-gray-300 text-5xl mb-3"></i><p class="text-gray-400 text-xs font-bold uppercase tracking-wider mt-2">Llena los datos para simular</p></div>`; return; }
+            if (isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { res.innerHTML = `<div class="text-center py-10 px-4"><i class="ph-bold ph-calculator mx-auto text-gray-300 text-4xl mb-2"></i><p class="text-gray-400 text-xs font-medium">Llena los datos para simular</p></div>`; return; }
 
-            const { activeCutDate, firstPaymentDate, daysUntilPayment, daysUntilCut } = calculateFinancialDates(dateStr, cutDay, payDay);
+            const { activeCutDate, firstPaymentDate, daysUntilPayment } = calculateFinancialDates(dateStr, cutDay, payDay);
             let sCol, sBg, sIcon, sTit;
-            if (daysUntilPayment >= 40) { sCol = 'text-emerald-700'; sBg = 'bg-emerald-50 border-emerald-200'; sIcon = 'ph-check-circle'; sTit = 'Excelente momento'; } 
-            else if (daysUntilPayment <= 20) { sCol = 'text-rose-700'; sBg = 'bg-rose-50 border-rose-200'; sIcon = 'ph-warning-circle'; sTit = 'Espera al corte'; } 
-            else { sCol = 'text-yellow-700'; sBg = 'bg-yellow-50 border-yellow-200'; sIcon = 'ph-info'; sTit = 'Momento neutral'; }
+            if (daysUntilPayment >= 40) { sCol = 'text-emerald-700'; sBg = 'bg-emerald-50'; sIcon = 'ph-check-circle'; sTit = 'Excelente momento'; } 
+            else if (daysUntilPayment <= 20) { sCol = 'text-rose-700'; sBg = 'bg-rose-50'; sIcon = 'ph-warning-circle'; sTit = 'Espera al corte'; } 
+            else { sCol = 'text-yellow-700'; sBg = 'bg-yellow-50'; sIcon = 'ph-info'; sTit = 'Momento neutral'; }
 
             res.innerHTML = `
-                <div class="p-5 rounded-[1.5rem] flex items-start gap-4 border animate-slideUp shadow-sm ${sBg} ${sCol}">
-                    <div class="mt-0.5"><i class="ph-fill ${sIcon} text-2xl"></i></div>
-                    <div><p class="font-black text-sm mb-1">${sTit}</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-black">${daysUntilPayment} días</strong> sin pagar intereses antes de la primera cuota.</p></div>
+                <div class="p-4 rounded-2xl flex gap-3 animate-fade ${sBg} ${sCol}">
+                    <i class="ph-fill ${sIcon} text-xl mt-0.5"></i>
+                    <div><p class="font-bold text-sm mb-1">${sTit}</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-bold">${daysUntilPayment} días</strong> sin pagar intereses.</p></div>
                 </div>
-                <div class="glass-panel border border-gray-100 rounded-[2rem] p-7 shadow-sm space-y-6 pt-7 animate-slideUp mt-4" style="animation-delay: 0.1s;">
-                    <div class="relative w-full px-2 mb-8 mt-2">
-                        <div class="absolute top-[20px] left-[15%] right-[15%] h-[2px] bg-gray-200 z-0"></div>
-                        <div class="relative z-10 flex justify-between items-start w-full">
-                            <div class="flex flex-col items-center w-16"><div class="w-10 h-10 rounded-[1rem] bg-indigo-50 text-indigo-500 flex items-center justify-center border-4 border-white z-10 shadow-sm"><i class="ph-bold ph-shopping-bag text-lg"></i></div><div class="text-center mt-3"><p class="text-[9px] uppercase font-black text-gray-400 tracking-wider">Compra</p><p class="text-xs font-black text-gray-900 mt-0.5">${dayjs(dateStr).format('D MMM')}</p></div></div>
-                            <div class="flex flex-col items-center w-16"><div class="w-10 h-10 rounded-[1rem] bg-gray-100 text-gray-500 flex items-center justify-center border-4 border-white z-10 shadow-sm"><i class="ph-bold ph-clock text-lg"></i></div><div class="text-center mt-3"><p class="text-[9px] uppercase font-black text-gray-400 tracking-wider">Corte</p><p class="text-xs font-black text-gray-900 mt-0.5">${activeCutDate.format('D MMM')}</p><p class="text-[9px] text-gray-500 font-bold bg-white px-2 py-0.5 rounded-full mt-1.5 shadow-sm border border-gray-100">+${daysUntilCut}d</p></div></div>
-                            <div class="flex flex-col items-center w-16"><div class="w-10 h-10 rounded-[1rem] bg-rose-50 text-rose-500 flex items-center justify-center border-4 border-white z-10 shadow-sm"><i class="ph-bold ph-currency-dollar text-lg"></i></div><div class="text-center mt-3"><p class="text-[9px] uppercase font-black text-rose-400 tracking-wider">Pago</p><p class="text-xs font-black text-rose-500 mt-0.5">${firstPaymentDate.format('D MMM')}</p><p class="text-[9px] text-rose-500 font-bold bg-white px-2 py-0.5 rounded-full mt-1.5 shadow-sm border border-gray-100">+${daysUntilPayment - daysUntilCut}d</p></div></div>
-                        </div>
+                <div class="native-card p-5 mt-4 space-y-4 animate-fade" style="animation-delay: 0.1s;">
+                    <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+                        <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Corte</p><p class="text-sm font-bold">${activeCutDate.format('DD MMM')}</p></div>
+                        <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Límite pago</p><p class="text-sm font-bold text-rose-500">${firstPaymentDate.format('DD MMM')}</p></div>
                     </div>
-                    <div class="grid grid-cols-2 gap-y-7 gap-x-4 border-t border-gray-100 pt-6">
-                        <div><p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Corte compra</p><p class="text-sm font-black text-gray-900">${activeCutDate.format('DD [de] MMMM')}</p></div>
-                        <div><p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Límite pago</p><p class="text-sm font-black text-rose-500">${firstPaymentDate.format('DD [de] MMMM')}</p></div>
-                        <div><p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Valor cuota</p><p class="text-base font-black text-gray-900">${formatCOP(amount/cuotas)}</p></div>
-                        <div><p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Finalizas en</p><p class="text-sm font-black text-gray-900 capitalize">${firstPaymentDate.add(cuotas-1,'month').format('MMM YYYY')}</p></div>
+                    <div class="flex justify-between items-center">
+                        <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Cuota mensual</p><p class="text-base font-bold">${formatCOP(amount/cuotas)}</p></div>
+                        <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Finaliza</p><p class="text-sm font-bold capitalize">${firstPaymentDate.add(cuotas-1,'month').format('MMM YY')}</p></div>
                     </div>
                 </div>`;
         }
