@@ -262,9 +262,16 @@
                             </select>
                         </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-semibold text-gray-500 ml-1">Fecha Compra</label>
-                        <input type="date" id="sim-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200 text-gray-500">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-gray-500 ml-1">Fecha Compra</label>
+                            <input type="date" id="sim-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200 text-gray-500">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-gray-500 ml-1">Interés Mensual (%)</label>
+                            <input type="number" step="0.01" id="sim-interest" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-medium focus:ring-2 focus:ring-gray-200" placeholder="Ej. 2.5">
+                        </div>
                     </div>
                 </div>
                 
@@ -841,10 +848,12 @@
         }
 
         window.switchTab = (tab) => {
-            ['dashboard-view', 'ledger-view', 'simulador-view', 'settings-view'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            ['dashboard-view', 'ledger-view', 'simulador-view', 'settings-view'].forEach(t => {
+                document.getElementById(t)?.classList.add('hidden');
+            });
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`${tab}-view`).classList.remove('hidden');
-            document.getElementById(`nav-${tab}`).classList.add('active');
+            document.getElementById(`${tab}-view`)?.classList.remove('hidden');
+            document.getElementById(`nav-${tab}`)?.classList.add('active');
         }
 
         window.exportToPDF = () => {
@@ -888,15 +897,46 @@
             let ops = `<option value="" disabled selected>Día</option>`; for (let i=1; i<=31; i++) ops += `<option value="${i}">${i}</option>`;
             document.getElementById('sim-cut').innerHTML = ops; document.getElementById('sim-pay').innerHTML = ops;
             const d = document.getElementById('sim-date'); d.value = ''; d.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-gray-500'); });
-            ['sim-cut', 'sim-pay', 'sim-amount', 'sim-installments', 'sim-date'].forEach(id => document.getElementById(id).addEventListener('input', runSimulation));
+            
+            // Recorremos los inputs verificando que existan para no romper la app
+            ['sim-cut', 'sim-pay', 'sim-amount', 'sim-installments', 'sim-date', 'sim-interest'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('input', runSimulation);
+            });
         }
 
         function runSimulation() {
-            const cutDay = parseInt(document.getElementById('sim-cut').value), payDay = parseInt(document.getElementById('sim-pay').value), amount = parseFloat(document.getElementById('sim-amount').value), cuotas = parseInt(document.getElementById('sim-installments').value) || 1, dateStr = document.getElementById('sim-date').value;
+            const cutDay = parseInt(document.getElementById('sim-cut').value);
+            const payDay = parseInt(document.getElementById('sim-pay').value);
+            const amount = parseFloat(document.getElementById('sim-amount').value);
+            const cuotas = parseInt(document.getElementById('sim-installments').value) || 1;
+            const dateStr = document.getElementById('sim-date').value;
+            
+            // Leemos el interés de forma segura
+            const interestEl = document.getElementById('sim-interest');
+            const interestStr = interestEl ? interestEl.value : '0';
+            
             const res = document.getElementById('sim-results');
-            if (isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { res.innerHTML = `<div class="text-center py-10 px-4"><i class="ph-bold ph-calculator mx-auto text-gray-300 text-4xl mb-2"></i><p class="text-gray-400 text-xs font-medium">Llena los datos para simular</p></div>`; return; }
+            
+            if (isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { 
+                res.innerHTML = `<div class="text-center py-10 px-4"><i class="ph-bold ph-calculator mx-auto text-gray-300 text-4xl mb-2"></i><p class="text-gray-400 text-xs font-medium">Llena los datos para simular</p></div>`; 
+                return; 
+            }
 
             const { activeCutDate, firstPaymentDate, daysUntilPayment } = calculateFinancialDates(dateStr, cutDay, payDay);
+            
+            // Fórmula bancaria de amortización (Cuota Fija)
+            const interestRate = parseFloat(interestStr) || 0;
+            let monthlyPayment = amount / cuotas;
+            let totalInterest = 0;
+            
+            if (cuotas > 1 && interestRate > 0) {
+                const i = interestRate / 100;
+                // PMT = P * (i * (1 + i)^n) / ((1 + i)^n - 1)
+                monthlyPayment = amount * (i * Math.pow(1 + i, cuotas)) / (Math.pow(1 + i, cuotas) - 1);
+                totalInterest = (monthlyPayment * cuotas) - amount;
+            }
+
             let sCol, sBg, sIcon, sTit;
             if (daysUntilPayment >= 40) { sCol = 'text-emerald-700'; sBg = 'bg-emerald-50'; sIcon = 'ph-check-circle'; sTit = 'Excelente momento'; } 
             else if (daysUntilPayment <= 20) { sCol = 'text-rose-700'; sBg = 'bg-rose-50'; sIcon = 'ph-warning-circle'; sTit = 'Espera al corte'; } 
@@ -905,17 +945,23 @@
             res.innerHTML = `
                 <div class="p-4 rounded-2xl flex gap-3 animate-fade ${sBg} ${sCol}">
                     <i class="ph-fill ${sIcon} text-xl mt-0.5"></i>
-                    <div><p class="font-bold text-sm mb-1">${sTit}</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-bold">${daysUntilPayment} días</strong> sin pagar intereses.</p></div>
+                    <div><p class="font-bold text-sm mb-1">${sTit}</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-bold">${daysUntilPayment} días</strong> sin pagar intereses (si es a 1 cuota).</p></div>
                 </div>
                 <div class="native-card p-5 mt-4 space-y-4 animate-fade" style="animation-delay: 0.1s;">
                     <div class="flex justify-between items-center pb-4 border-b border-gray-100">
                         <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Corte</p><p class="text-sm font-bold">${activeCutDate.format('DD MMM')}</p></div>
                         <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Límite pago</p><p class="text-sm font-bold text-rose-500">${firstPaymentDate.format('DD MMM')}</p></div>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Cuota mensual</p><p class="text-base font-bold">${formatCOP(amount/cuotas)}</p></div>
+                    <div class="flex justify-between items-center pb-4 ${cuotas > 1 && totalInterest > 0 ? 'border-b border-gray-100' : ''}">
+                        <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Cuota mensual</p><p class="text-base font-bold">${formatCOP(monthlyPayment)}</p></div>
                         <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Finaliza</p><p class="text-sm font-bold capitalize">${firstPaymentDate.add(cuotas-1,'month').format('MMM YY')}</p></div>
                     </div>
+                    ${cuotas > 1 && totalInterest > 0 ? `
+                    <div class="flex justify-between items-center">
+                        <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Total a pagar</p><p class="text-sm font-bold">${formatCOP(amount + totalInterest)}</p></div>
+                        <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Total Intereses</p><p class="text-sm font-bold text-rose-500">+${formatCOP(totalInterest)}</p></div>
+                    </div>
+                    ` : ''}
                 </div>`;
         }
     </script>
