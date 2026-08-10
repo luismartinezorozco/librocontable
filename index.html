@@ -10,30 +10,33 @@
     <link rel="apple-touch-icon" href="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="FinSight">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#F2F2F7">
     
-    <!-- Tailwind CSS con Configuración de Modo Oscuro -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class', // Habilita el modo oscuro por clase
-            theme: {
-                extend: {
-                    colors: {
-                        iosbg: '#F2F2F7',
-                        iosdark: '#000000',
-                    }
-                }
-            }
+            darkMode: 'class', // Habilitar modo oscuro manual por clase
         }
     </script>
     
-    <!-- Dependencias -->
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- jsPDF para exportar reportes -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Day.js -->
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/es.js"></script>
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -46,39 +49,41 @@
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
+        /* Native App Animations */
         @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .animate-sheet { animation: slideUpSheet 0.3s cubic-bezier(0.175, 0.885, 0.32, 1) forwards; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade { animation: fadeIn 0.2s ease-out forwards; }
         
+        /* Select Reset */
         input, select, textarea { font-size: 16px !important; }
         .custom-select {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 9l4-4 4 4m0 6l-4 4-4-4'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.2em 1.2em;
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em 1.2em;
         }
 
+        /* Nav Active State (Light & Dark) */
         .nav-item.active { color: #000000; }
         .dark .nav-item.active { color: #ffffff; }
         .nav-item.active i { font-weight: bold; }
 
+        /* Estructura base para tarjetas */
         .native-card { border-radius: 20px; transition: background-color 0.3s, border-color 0.3s; }
         .balance-card { border-radius: 24px; transition: background-color 0.3s, border-color 0.3s; }
+        
+        /* Safe area fallback */
+        .pb-safe { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
     </style>
-    
-    <script>
-        // Aplicar modo oscuro inmediatamente para evitar parpadeos
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
 </head>
-<body class="flex items-center justify-center min-h-screen sm:p-4 bg-iosbg dark:bg-iosdark text-gray-900 dark:text-gray-100 transition-colors duration-300">
+<body class="flex items-center justify-center min-h-screen sm:p-4 bg-[#F2F2F7] dark:bg-[#000000] text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-    <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 animate-fade relative overflow-hidden sm:border-[8px] sm:border-gray-900 dark:sm:border-gray-700 transition-colors duration-300">
+    <!-- LOGIN LIMPIO Y NATIVO -->
+    <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 animate-fade relative overflow-hidden sm:border-[8px] sm:border-gray-900 transition-colors">
+        
         <div class="text-center mb-10">
             <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden shadow-lg shadow-gray-200 dark:shadow-none">
                 <img src="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png" alt="FinSight Logo" class="w-full h-full object-cover">
@@ -88,63 +93,97 @@
         </div>
         
         <form id="auth-form" onsubmit="window.handleAuthSubmit(event)" class="space-y-4">
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="ph-bold ph-envelope-simple text-gray-400"></i></div>
-                <input type="email" id="auth-email" required placeholder="Correo electrónico" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+            <div>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="ph-bold ph-envelope-simple text-gray-400"></i>
+                    </div>
+                    <input type="email" id="auth-email" required placeholder="Correo electrónico" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                </div>
             </div>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="ph-bold ph-lock-key text-gray-400"></i></div>
-                <input type="password" id="auth-password" required placeholder="Contraseña" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-12 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                <button type="button" onclick="window.togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"><i id="eye-icon" class="ph-bold ph-eye"></i></button>
+            
+            <div>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="ph-bold ph-lock-key text-gray-400"></i>
+                    </div>
+                    <input type="password" id="auth-password" required placeholder="Contraseña" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-12 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    <button type="button" onclick="window.togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <i id="eye-icon" class="ph-bold ph-eye"></i>
+                    </button>
+                </div>
             </div>
+            
             <button type="submit" id="auth-submit-btn" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3.5 rounded-2xl hover:bg-black dark:hover:bg-gray-200 transition-all shadow-md active:scale-[0.98] mt-6 flex justify-center items-center gap-2">
                 Entrar a la bóveda
             </button>
         </form>
     </div>
 
-    <div id="main-app-view" class="hidden w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-iosbg dark:bg-iosdark sm:rounded-[3rem] sm:shadow-2xl flex flex-col relative overflow-hidden sm:border-[8px] sm:border-gray-900 dark:sm:border-gray-700 transition-colors duration-300">
+    <!-- APP CONTAINER -->
+    <div id="main-app-view" class="hidden w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#F2F2F7] dark:bg-[#000000] sm:rounded-[3rem] sm:shadow-2xl flex flex-col relative overflow-hidden sm:border-[8px] sm:border-gray-900 transition-colors">
         
-        <header class="px-5 pt-12 pb-3 bg-iosbg dark:bg-iosdark z-10 sticky top-0 flex justify-between items-center transition-colors duration-300">
+        <!-- HEADER NATIVO -->
+        <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] dark:bg-[#000000] z-10 sticky top-0 flex justify-between items-center transition-colors">
             <div class="flex items-center gap-3">
-                <div id="user-initials" class="w-10 h-10 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center font-bold text-sm shadow-sm">--</div>
-                <div>
+                <div id="user-initials" class="w-10 h-10 rounded-full bg-gray-900 dark:bg-gray-800 text-white flex items-center justify-center font-bold text-sm shadow-sm border border-transparent dark:border-gray-700">
+                    --
+                </div>
+                <div class="min-w-0">
                     <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Hola,</p>
-                    <p id="user-name" class="text-base font-bold text-gray-900 dark:text-white leading-tight">Usuario</p>
+                    <p id="user-name" class="text-base font-bold text-gray-900 dark:text-white leading-tight truncate">Usuario</p>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto hide-scroll pb-24 px-5">
             
+            <!-- VISTA 1: DASHBOARD -->
             <div id="dashboard-view" class="block animate-fade">
-                <div class="balance-card bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-700 border border-transparent dark:border-gray-600 text-white p-6 mb-6 shadow-lg shadow-gray-900/10 dark:shadow-none">
+                <!-- Tarjeta Balance -->
+                <div class="balance-card bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 text-white p-6 mb-6 shadow-lg shadow-gray-900/10 border border-transparent dark:border-gray-700">
                     <p class="text-xs text-gray-300 font-medium mb-1">Balance Total</p>
                     <h2 class="text-3xl font-extrabold tracking-tight" id="total-balance">$ 0</h2>
                     <div class="mt-4 flex items-center justify-between">
-                        <div id="status-badge" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1"><i class="ph-bold ph-minus"></i> Analizando</div>
+                        <div id="status-badge" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1">
+                            <i class="ph-bold ph-minus"></i> Analizando
+                        </div>
                         <i class="ph-fill ph-wallet text-2xl text-white/20"></i>
                     </div>
                 </div>
 
+                <!-- Action Buttons Grid -->
                 <div class="grid grid-cols-2 gap-3 mb-6">
                     <button onclick="window.openFormModal('expense')" class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-4 flex flex-col items-center justify-center gap-2 active:bg-gray-50 dark:active:bg-gray-700 transition">
-                        <div class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-500/20 text-rose-500 flex items-center justify-center"><i class="ph-bold ph-arrow-up-right text-lg"></i></div>
-                        <span class="text-xs font-bold text-gray-700 dark:text-gray-200">Gasto</span>
+                        <div class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-500/20 text-rose-500 flex items-center justify-center">
+                            <i class="ph-bold ph-arrow-up-right text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Gasto</span>
                     </button>
                     <button onclick="window.openFormModal('income')" class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-4 flex flex-col items-center justify-center gap-2 active:bg-gray-50 dark:active:bg-gray-700 transition">
-                        <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center"><i class="ph-bold ph-arrow-down-left text-lg"></i></div>
-                        <span class="text-xs font-bold text-gray-700 dark:text-gray-200">Ingreso</span>
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                            <i class="ph-bold ph-arrow-down-left text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Ingreso</span>
                     </button>
                 </div>
 
+                <!-- Gráfico Minimalista -->
                 <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 mb-6">
                     <h3 class="font-bold text-sm mb-4 dark:text-white">Flujo de Caja</h3>
                     <div class="flex items-center gap-4">
-                        <div class="relative w-24 h-24 shrink-0"><canvas id="myChart"></canvas></div>
+                        <div class="relative w-24 h-24 shrink-0">
+                            <canvas id="myChart"></canvas>
+                        </div>
                         <div class="flex-1 space-y-3">
-                            <div><p class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ingresos</p><p class="font-bold text-sm dark:text-white" id="available-amount">$ 0</p></div>
-                            <div><p class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-400"></span> Gastos</p><p class="font-bold text-sm dark:text-white" id="spent-amount">$ 0</p></div>
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ingresos</p>
+                                <p class="font-bold text-sm dark:text-white" id="available-amount">$ 0</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-400"></span> Gastos</p>
+                                <p class="font-bold text-sm dark:text-white" id="spent-amount">$ 0</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,76 +191,86 @@
                 <div>
                     <div class="flex justify-between items-end mb-3">
                         <h3 class="font-bold text-lg dark:text-white">Recientes</h3>
-                        <button onclick="window.switchTab('ledger')" class="text-xs font-semibold text-blue-500 dark:text-blue-400 p-1">Ver todo</button>
+                        <button onclick="window.switchTab('ledger')" class="text-xs font-semibold text-blue-500 dark:text-blue-400">Ver todo</button>
                     </div>
+                    <!-- Lista de Recientes -->
                     <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm overflow-hidden">
-                        <div id="tx-list" class="divide-y divide-gray-100 dark:divide-gray-800 flex flex-col">
-                            <p class="text-center text-gray-400 text-sm py-4">Cargando...</p>
+                        <div id="tx-list" class="divide-y divide-gray-100 dark:divide-gray-700 flex flex-col">
+                            <div class="p-6 text-center text-gray-400 text-sm font-medium">Cargando...</div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- VISTA 2: LIBRO CONTABLE (Lista Nativa) -->
             <div id="ledger-view" class="hidden animate-fade">
                 <h2 class="text-3xl font-extrabold mb-4 dark:text-white">Movimientos</h2>
+
+                <!-- Barra de búsqueda y escáner combinados -->
                 <div class="flex gap-2 mb-4">
-                    <div class="relative flex-1">
+                    <div class="relative flex-1 min-w-0">
                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-xl pl-10 pr-4 py-3 text-sm font-medium dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 shadow-sm">
+                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-xl pl-10 pr-4 py-3 text-sm font-medium dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm block min-w-0 box-border">
                     </div>
-                    <label class="w-12 h-12 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition">
+                    <label class="w-12 h-12 shrink-0 bg-gray-900 dark:bg-gray-700 text-white rounded-xl flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition">
                         <i class="ph-bold ph-camera text-xl"></i>
                         <input type="file" id="invoice-upload" accept="image/jpeg, image/png, image/jpg" class="hidden" onchange="window.processInvoiceWithOpenRouter(this)">
                     </label>
                 </div>
+
+                <!-- Filtros estilo Chips -->
                 <div class="flex gap-2 mb-5 overflow-x-auto hide-scroll pb-1">
-                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn active-filter px-4 py-2 rounded-full text-xs font-bold bg-gray-900 dark:bg-white text-white dark:text-gray-900 whitespace-nowrap shadow-sm transition">Todos</button>
-                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-700 whitespace-nowrap transition">Gastos</button>
-                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-700 whitespace-nowrap transition">Ingresos</button>
+                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-gray-900 dark:bg-white text-white dark:text-gray-900 whitespace-nowrap shadow-sm border border-transparent">Todos</button>
+                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 whitespace-nowrap">Gastos</button>
+                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 whitespace-nowrap">Ingresos</button>
                 </div>
-                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm overflow-hidden">
-                    <div id="ledger-list" class="divide-y divide-gray-100 dark:divide-gray-800 flex flex-col">
-                        <!-- Items JS -->
+
+                <!-- Lista de Transacciones Completa -->
+                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm overflow-hidden mb-6">
+                    <div id="ledger-list" class="divide-y divide-gray-100 dark:divide-gray-700 flex flex-col">
+                        <!-- Items inyectados por JS -->
                     </div>
                 </div>
             </div>
 
-            <div id="credit-view" class="hidden animate-fade">
+            <!-- VISTA 3: T. CRÉDITO -->
+            <div id="simulador-view" class="hidden animate-fade">
                 <h2 class="text-3xl font-extrabold mb-1 dark:text-white">T. Crédito</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Simula y gestiona tus deudas aisladas.</p>
 
                 <h3 class="font-bold text-lg mb-3 dark:text-white">Nueva Compra / Simulación</h3>
-                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 space-y-4 mb-6">
-                    <div class="grid grid-cols-2 gap-4">
+                <!-- Formulario T. Credito Ajustado para overflow -->
+                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-4 sm:p-5 space-y-4 mb-6 w-full box-border overflow-hidden">
+                    <div class="grid grid-cols-2 gap-3">
                         <div class="space-y-1 col-span-2 mb-2">
-                            <label class="text-xs font-semibold text-gray-500 ml-1">Descripción</label>
-                            <input type="text" id="sim-desc" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Ej. iPhone 15, Vuelos...">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Descripción</label>
+                            <input type="text" id="sim-desc" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Ej. iPhone 15, Vuelos...">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-semibold text-gray-500 ml-1">Corte</label>
-                            <select id="sim-cut" class="custom-select w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Corte</label>
+                            <select id="sim-cut" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-semibold text-gray-500 ml-1">Pago</label>
-                            <select id="sim-pay" class="custom-select w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Pago</label>
+                            <select id="sim-pay" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-semibold text-gray-500 ml-1">Valor</label>
-                            <input type="number" id="sim-amount" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Valor</label>
+                            <input type="number" id="sim-amount" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-semibold text-gray-500 ml-1">Cuotas</label>
-                            <select id="sim-installments" class="custom-select w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Cuotas</label>
+                            <select id="sim-installments" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
                                 <option value="1">1 cuota</option><option value="2">2 cuotas</option><option value="3">3 cuotas</option><option value="6">6 cuotas</option><option value="12">12 cuotas</option><option value="24">24 cuotas</option>
                             </select>
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-semibold text-gray-500 ml-1">Fecha</label>
-                            <input type="date" id="sim-date" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 text-gray-500">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Fecha</label>
+                            <input type="date" id="sim-date" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 text-gray-500">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-semibold text-gray-500 ml-1">Interés Mensual (%)</label>
-                            <input type="number" step="0.01" id="sim-interest" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0.00">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Interés Mensual (%)</label>
+                            <input type="number" step="0.01" id="sim-interest" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0.00">
                         </div>
                     </div>
                 </div>
@@ -229,47 +278,55 @@
                 <div id="sim-results">
                     <div class="text-center py-10 px-4">
                         <i class="ph-bold ph-calculator mx-auto text-gray-300 dark:text-gray-600 text-4xl mb-2"></i>
-                        <p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Llena los datos para simular o guardar</p>
+                        <p class="text-gray-400 text-xs font-medium">Llena los datos para simular o guardar</p>
                     </div>
                 </div>
 
-                <h3 class="font-bold text-lg mb-3 mt-8 dark:text-white">Deudas Activas y Pagos</h3>
+                <h3 class="font-bold text-lg mt-8 mb-3 dark:text-white">Deudas Activas y Pagos</h3>
                 <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm overflow-hidden mb-6">
-                    <div id="credit-list" class="divide-y divide-gray-100 dark:divide-gray-800 flex flex-col">
-                        <!-- Items JS -->
+                    <div id="credit-list" class="divide-y divide-gray-100 dark:divide-gray-700 flex flex-col">
+                        <!-- Items inyectados por JS -->
                     </div>
                 </div>
             </div>
 
+            <!-- VISTA 4: AJUSTES -->
             <div id="settings-view" class="hidden animate-fade">
                 <h2 class="text-3xl font-extrabold mb-6 dark:text-white">Ajustes</h2>
 
+                <!-- Modo Oscuro -->
                 <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 mb-5 flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 flex items-center justify-center"><i class="ph-bold ph-moon text-lg"></i></div>
-                        <h3 class="font-bold text-sm dark:text-white">Modo Oscuro</h3>
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/20 text-indigo-500 flex items-center justify-center">
+                            <i class="ph-bold ph-moon text-lg"></i>
+                        </div>
+                        <span class="font-bold text-sm dark:text-white">Modo Oscuro</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="dark-mode-toggle" class="sr-only peer" onchange="window.toggleDarkMode(this)">
-                        <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500 dark:border-gray-600"></div>
+                        <input type="checkbox" id="theme-toggle" class="sr-only peer" onchange="window.toggleTheme()">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-500"></div>
                     </label>
                 </div>
 
-                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 mb-5">
-                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white"><div class="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-500/20 text-rose-500 flex items-center justify-center"><i class="ph-bold ph-file-pdf text-lg"></i></div> Exportar Reporte</h3>
+                <!-- Exportar -->
+                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 mb-5 w-full box-border overflow-hidden">
+                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white"><i class="ph-bold ph-file-pdf text-rose-500"></i> Exportar Reporte</h3>
                     <div class="flex gap-2">
-                        <input type="month" id="export-month" class="flex-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600">
-                        <button onclick="window.exportToPDF()" class="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-bold px-4 rounded-xl active:scale-95 transition shadow-sm border border-transparent dark:border-gray-600">PDF</button>
+                        <input type="month" id="export-month" class="flex-1 block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <button onclick="window.exportToPDF()" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold px-4 rounded-xl active:scale-95 transition shrink-0">PDF</button>
                     </div>
                 </div>
 
-                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 mb-5">
-                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white"><div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/20 text-blue-500 flex items-center justify-center"><i class="ph-bold ph-bank text-lg"></i></div> Mis Cuentas</h3>
+                <!-- Cuentas -->
+                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 mb-5 w-full box-border overflow-hidden">
+                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white"><i class="ph-bold ph-bank text-blue-500"></i> Mis Cuentas</h3>
                     <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-4">
-                        <input type="text" id="new-account-name" placeholder="Ej. Efectivo, Nequi..." required class="flex-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 placeholder-gray-400 dark:placeholder-gray-500">
-                        <button type="submit" id="btn-add-account" class="bg-blue-500 text-white font-bold px-4 rounded-xl active:scale-95 transition shadow-sm text-xl">+</button>
+                        <input type="text" id="new-account-name" placeholder="Ej. Efectivo, Nequi..." required class="flex-1 block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" id="btn-add-account" class="bg-blue-500 text-white font-bold px-4 rounded-xl active:scale-95 transition shrink-0">+</button>
                     </form>
-                    <div id="accounts-list" class="flex flex-col divide-y divide-gray-100 dark:divide-gray-800 max-h-[300px] overflow-y-auto hide-scroll"></div>
+                    <div id="accounts-list" class="flex flex-col divide-y divide-gray-100 dark:divide-gray-700 max-h-[300px] overflow-y-auto hide-scroll">
+                        <!-- Cuentas JS -->
+                    </div>
                 </div>
                 
                 <button onclick="window.logout()" class="w-full native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-4 text-center text-rose-500 font-bold active:bg-gray-50 dark:active:bg-gray-700 transition">
@@ -278,73 +335,88 @@
             </div>
         </main>
 
-        <nav class="absolute bottom-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 flex justify-around items-center pb-safe pt-2 z-20" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
-            <button id="nav-home" onclick="window.switchTab('dashboard')" class="nav-item active flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 w-16 transition-colors">
-                <i class="ph-fill ph-house text-2xl"></i><span class="text-[10px] font-semibold">Inicio</span>
+        <!-- BOTTOM TAB BAR (Estilo iOS) -->
+        <nav class="absolute bottom-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 flex justify-around items-center pb-safe pt-2 z-20 transition-colors">
+            <button id="nav-home" onclick="window.switchTab('dashboard')" class="nav-item active flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-house text-2xl"></i>
+                <span class="text-[10px] font-semibold">Inicio</span>
             </button>
-            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-item flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 w-16 transition-colors">
-                <i class="ph-fill ph-list-bullets text-2xl"></i><span class="text-[10px] font-semibold">Movimientos</span>
+            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-list-bullets text-2xl"></i>
+                <span class="text-[10px] font-semibold">Movimientos</span>
             </button>
-            <button id="nav-credit" onclick="window.switchTab('credit')" class="nav-item flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 w-16 transition-colors">
-                <i class="ph-fill ph-credit-card text-2xl"></i><span class="text-[10px] font-semibold">T. Crédito</span>
+            <button id="nav-simulador" onclick="window.switchTab('simulador')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-credit-card text-2xl"></i>
+                <span class="text-[10px] font-semibold">T. Crédito</span>
             </button>
-            <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-item flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 w-16 transition-colors">
-                <i class="ph-fill ph-gear text-2xl"></i><span class="text-[10px] font-semibold">Ajustes</span>
+            <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
+                <i class="ph-fill ph-gear text-2xl"></i>
+                <span class="text-[10px] font-semibold">Ajustes</span>
             </button>
         </nav>
 
-        <!-- Modal General Movimiento -->
-        <div id="form-modal" class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
-            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-6 animate-sheet pb-safe" style="padding-bottom: max(24px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,0.1);">
+        <!-- MODAL FORMULARIO GASTO/INGRESO -->
+        <div id="form-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
+            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors w-full box-border">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="modal-title" class="text-xl font-bold dark:text-white">Añadir</h3>
-                    <button onclick="window.closeFormModal()" class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold active:bg-gray-200 dark:active:bg-gray-600"><i class="ph-bold ph-x"></i></button>
+                    <button onclick="window.closeFormModal()" class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300 font-bold active:bg-gray-200 dark:active:bg-gray-600"><i class="ph-bold ph-x"></i></button>
                 </div>
-                <form id="transaction-form" onsubmit="window.handleFormSubmit(event)" class="space-y-4">
+
+                <form id="transaction-form" onsubmit="window.handleFormSubmit(event)" class="space-y-4 w-full overflow-hidden">
                     <input type="hidden" id="edit-tx-id" value="">
+                    
                     <div class="flex items-center bg-gray-50 dark:bg-gray-900 rounded-2xl px-4 py-2 border border-gray-100 dark:border-gray-700">
                         <span class="text-gray-400 font-bold text-lg mr-2">$</span>
-                        <input type="number" step="1" id="form-amount" required class="w-full bg-transparent text-2xl font-bold text-gray-900 dark:text-white focus:outline-none py-2" placeholder="0">
+                        <input type="number" step="1" id="form-amount" required class="w-full block min-w-0 box-border bg-transparent text-2xl font-bold text-gray-900 dark:text-white focus:outline-none py-2" placeholder="0">
                     </div>
-                    <div class="relative">
+                    
+                    <div class="relative w-full">
                         <i class="ph-bold ph-text-aa absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="form-desc" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Descripción">
+                        <input type="text" id="form-desc" required class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Descripción">
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <select id="form-category" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500 custom-select"></select>
-                        <select id="form-account" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500 custom-select"></select>
+                    
+                    <div class="grid grid-cols-2 gap-3 w-full">
+                        <select id="form-category" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500 custom-select"></select>
+                        <select id="form-account" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500 custom-select"></select>
                     </div>
-                    <input type="date" id="form-date" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+
+                    <input type="date" id="form-date" required class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+
                     <div class="flex gap-3 pt-2">
+                        <!-- Botón borrar que solo aparece al editar -->
                         <button type="button" id="btn-delete-tx" onclick="window.deleteCurrentTx()" class="hidden w-14 h-[52px] bg-rose-50 dark:bg-rose-500/20 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 dark:active:bg-rose-500/30 transition shrink-0"><i class="ph-bold ph-trash text-xl"></i></button>
-                        <button type="submit" id="submit-btn" class="flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3.5 rounded-2xl active:scale-[0.98] transition shadow-md">Guardar</button>
+                        <button type="submit" id="submit-btn" class="flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3.5 rounded-2xl active:bg-black dark:active:bg-gray-200 transition">Guardar</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Modal Pago Tarjeta Crédito -->
-        <div id="credit-detail-modal" class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
-            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-6 animate-sheet pb-safe" style="padding-bottom: max(24px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,0.1);">
+        <!-- MODAL DETALLE DEUDA TC -->
+        <div id="credit-detail-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[55] hidden flex-col justify-end transition-opacity">
+            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors w-full box-border">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
-                <div class="flex justify-between items-center mb-5">
-                    <h3 class="text-xl font-bold dark:text-white">Pagar Cuota</h3>
-                    <button onclick="window.closeCreditDetailModal()" class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold active:bg-gray-200 dark:active:bg-gray-600"><i class="ph-bold ph-x"></i></button>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold dark:text-white">Detalle Deuda</h3>
+                    <button onclick="window.closeCreditDetail()" class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300 font-bold active:bg-gray-200 dark:active:bg-gray-600"><i class="ph-bold ph-x"></i></button>
                 </div>
-                <div id="credit-detail-content"></div>
+                
+                <div id="credit-detail-content" class="space-y-4">
+                    <!-- Inyectado por JS -->
+                </div>
             </div>
         </div>
 
-        <!-- Otros Modales Pequeños -->
-        <div id="edit-account-modal" class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-[60] hidden items-center justify-center p-5">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700">
-                <h3 class="text-lg font-bold mb-4 dark:text-white">Renombrar</h3>
+        <!-- OTROS MODALES (Alertas, Confirmar, Editar Cuenta) -->
+        <div id="edit-account-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[60] hidden items-center justify-center p-5">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl">
+                <h3 class="text-lg font-bold mb-4 dark:text-white">Renombrar Cuenta</h3>
                 <form id="edit-account-form" onsubmit="window.handleEditAccount(event)">
                     <input type="hidden" id="edit-account-id">
-                    <input type="text" id="edit-account-name" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="edit-account-name" required class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-blue-500">
                     <div class="flex gap-2">
-                        <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200 dark:active:bg-gray-600">Cancelar</button>
+                        <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200 dark:active:bg-gray-600">Cancelar</button>
                         <button type="submit" id="btn-save-account" class="flex-1 bg-blue-500 text-white font-bold py-3 rounded-xl active:bg-blue-600">Guardar</button>
                     </div>
                 </form>
@@ -353,26 +425,26 @@
 
         <div id="scan-loader" class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-[60] hidden flex-col items-center justify-center backdrop-blur-md">
             <i class="ph-bold ph-spinner animate-spin text-4xl text-blue-500 mb-3"></i>
-            <h3 class="text-gray-900 dark:text-white font-bold">Procesando IA...</h3>
+            <h3 class="text-gray-900 dark:text-white font-bold">Procesando...</h3>
         </div>
 
-        <div id="custom-alert" class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-[70] hidden items-center justify-center p-5">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700">
+        <div id="custom-alert" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[70] hidden items-center justify-center p-5">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl">
                 <i id="alert-icon" class="text-4xl mb-3 inline-block"></i>
                 <h3 id="alert-title" class="text-lg font-bold mb-1 dark:text-white">Título</h3>
                 <p id="alert-message" class="text-sm text-gray-500 dark:text-gray-400 mb-5">Mensaje</p>
-                <button onclick="window.closeAlert()" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 rounded-xl active:bg-black dark:active:bg-gray-200 shadow-sm">Entendido</button>
+                <button onclick="window.closeAlert()" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 rounded-xl active:bg-black dark:active:bg-gray-200">Entendido</button>
             </div>
         </div>
 
-        <div id="confirm-modal" class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-[80] hidden items-center justify-center p-5">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700">
+        <div id="confirm-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[80] hidden items-center justify-center p-5">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl">
                 <i id="confirm-icon" class="ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block"></i>
                 <h3 id="confirm-title" class="text-lg font-bold mb-1 dark:text-white">Confirmar</h3>
                 <p id="confirm-message" class="text-sm text-gray-500 dark:text-gray-400 mb-5">¿Seguro?</p>
                 <div class="flex gap-2">
                     <button onclick="window.closeConfirm()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200 dark:active:bg-gray-600">Cancelar</button>
-                    <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600">Confirmar</button>
+                    <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600">Borrar</button>
                 </div>
             </div>
         </div>
@@ -383,431 +455,476 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg", authDomain: "librocontable-6dcdc.firebaseapp.com",
-            databaseURL: "https://librocontable-6dcdc-default-rtdb.firebaseio.com", projectId: "librocontable-6dcdc",
-            storageBucket: "librocontable-6dcdc.firebasestorage.app", messagingSenderId: "1015207314787", appId: "1:1015207314787:web:4e5bc42a03fa9697683f56"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg", authDomain: "librocontable-6dcdc.firebaseapp.com", databaseURL: "https://librocontable-6dcdc-default-rtdb.firebaseio.com", projectId: "librocontable-6dcdc", storageBucket: "librocontable-6dcdc.firebasestorage.app", messagingSenderId: "1015207314787", appId: "1:1015207314787:web:4e5bc42a03fa9697683f56" };
 
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()}) });
         
-        let currentUser = null; let transactions = []; let filteredTransactions = []; let accounts = [];
-        let isExpense = true; let currentFilter = 'Todos'; let searchQuery = ''; let myChart = null;
-        let unsubscribeDB = null; let unsubscribeAccountsDB = null; let confirmActionCallback = null;
+        let currentUser = null;
+        let transactions = []; let filteredTransactions = []; let accounts = [];
+        let isExpense = true; let currentFilter = 'Todos'; let searchQuery = '';
+        let myChart = null; let unsubscribeDB = null; let unsubscribeAccountsDB = null;
+        let confirmActionCallback = null;
+        let activeCreditDeuda = null; // Para el modal de pagos
 
         const sanitizeInput = (str) => str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)).trim();
         const formatCOP = (amount) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount).replace(/\s/g, '.').replace(',', '.');
-        const getCategoryIcon = (cat) => ({ 'Operaciones': 'ph-briefcase', 'Inventario': 'ph-package', 'Servicios': 'ph-lightning', 'Nómina': 'ph-users', 'Ventas': 'ph-storefront', 'Aportes': 'ph-piggy-bank' }[cat] || 'ph-receipt');
 
-        window.onload = () => { 
-            document.getElementById('dark-mode-toggle').checked = document.documentElement.classList.contains('dark');
-            if(typeof initSimulator === 'function') initSimulator(); 
+        window.initTheme = () => {
+            const toggle = document.getElementById('theme-toggle');
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark'); toggle.checked = true;
+            } else {
+                document.documentElement.classList.remove('dark'); toggle.checked = false;
+            }
+        };
+        
+        window.toggleTheme = () => {
+            const toggle = document.getElementById('theme-toggle');
+            if (toggle.checked) { document.documentElement.classList.add('dark'); localStorage.setItem('color-theme', 'dark'); } 
+            else { document.documentElement.classList.remove('dark'); localStorage.setItem('color-theme', 'light'); }
+            updateUI(); // Refrescar gráfica
         };
 
-        window.toggleDarkMode = (el) => {
-            if (el.checked) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); } 
-            else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
-        }
+        window.onload = () => { window.initTheme(); if(typeof initSimulator === 'function') initSimulator(); };
 
         onAuthStateChanged(auth, (user) => {
-            const loginView = document.getElementById('login-view'); const mainAppView = document.getElementById('main-app-view');
-            const authBtn = document.getElementById('auth-submit-btn');
-
+            const loginView = document.getElementById('login-view'); const mainAppView = document.getElementById('main-app-view'); const authBtn = document.getElementById('auth-submit-btn');
             if (user) {
-                currentUser = user; if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = 'Entrar a la bóveda'; }
-                if(loginView) loginView.classList.add('hidden'); if(mainAppView) mainAppView.classList.remove('hidden');
+                currentUser = user;
+                if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = 'Entrar a la bóveda'; }
+                if(loginView) loginView.classList.add('hidden');
+                if(mainAppView) mainAppView.classList.remove('hidden');
                 document.getElementById('user-name').innerText = user.email.split('@')[0];
                 document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
                 listenToTransactions(); listenToAccounts();
             } else {
                 currentUser = null; transactions = []; filteredTransactions = []; accounts = [];
-                if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; } if (unsubscribeAccountsDB) { unsubscribeAccountsDB(); unsubscribeAccountsDB = null; }
-                updateUI(); updateAccountsUI(); updateCreditUI();
-                if(loginView) loginView.classList.remove('hidden'); if(mainAppView) mainAppView.classList.add('hidden');
+                if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
+                if (unsubscribeAccountsDB) { unsubscribeAccountsDB(); unsubscribeAccountsDB = null; }
+                updateUI(); updateAccountsUI();
+                if(loginView) loginView.classList.remove('hidden');
+                if(mainAppView) mainAppView.classList.add('hidden');
             }
         });
 
         window.handleAuthSubmit = async (e) => {
             e.preventDefault();
-            const email = sanitizeInput(document.getElementById('auth-email').value).toLowerCase(); const password = document.getElementById('auth-password').value.trim();
+            const emailRaw = document.getElementById('auth-email').value; const passwordRaw = document.getElementById('auth-password').value;
             const btn = document.getElementById('auth-submit-btn');
-            if (!email || !password) return window.showCustomAlert('Datos', 'Ingresa correo y clave.', 'ph-warning-circle text-orange-500');
+            const email = sanitizeInput(emailRaw).toLowerCase(); const password = passwordRaw.trim();
+            if (!email || !password) return window.showCustomAlert('Datos incompletos', 'Ingresa correo y clave.', 'ph-warning-circle text-orange-500');
+
+            let intentos = parseInt(localStorage.getItem('boveda_intentos') || '0');
+            let tiempoDesbloqueo = parseInt(localStorage.getItem('boveda_bloqueo_hasta') || '0');
+            const ahora = new Date().getTime();
+
+            if (ahora < tiempoDesbloqueo) { return window.showCustomAlert('Bloqueado', `Intenta de nuevo en ${Math.ceil((tiempoDesbloqueo - ahora) / 60000)} minuto(s).`, 'ph-lock-key text-red-500'); } 
+            else if (tiempoDesbloqueo !== 0) { intentos = 0; localStorage.setItem('boveda_intentos', '0'); localStorage.setItem('boveda_bloqueo_hasta', '0'); }
             
             btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-lg"></i>';
-            try { await signInWithEmailAndPassword(auth, email, password); } 
-            catch(error) { window.showCustomAlert('Error', 'Credenciales incorrectas.', 'ph-shield-warning text-red-500'); btn.disabled = false; btn.innerHTML = 'Entrar a la bóveda'; }
+            try { await signInWithEmailAndPassword(auth, email, password); localStorage.setItem('boveda_intentos', '0'); } 
+            catch(error) {
+                intentos++; localStorage.setItem('boveda_intentos', intentos);
+                if (intentos >= 3) { localStorage.setItem('boveda_bloqueo_hasta', (ahora + (5 * 60 * 1000)).toString()); window.showCustomAlert('Seguridad', 'Bóveda bloqueada.', 'ph-shield-slash text-red-500'); } 
+                else { window.showCustomAlert('Acceso Denegado', `Credenciales incorrectas. Intentos: ${3 - intentos}`, 'ph-shield-warning text-red-500'); }
+                btn.disabled = false; btn.innerHTML = 'Entrar a la bóveda';
+            }
         };
-        window.logout = async () => { try { await signOut(auth); } catch(e){} };
-        window.togglePassword = () => {
-            const p = document.getElementById('auth-password'); const i = document.getElementById('eye-icon');
-            if(p.type === 'password'){ p.type = 'text'; i.classList.replace('ph-eye','ph-eye-slash'); } else { p.type = 'password'; i.classList.replace('ph-eye-slash','ph-eye'); }
-        };
+
+        window.logout = async () => { try { await signOut(auth); } catch (error) { console.error("Error", error); } };
+        window.togglePassword = () => { const p = document.getElementById('auth-password'); const i = document.getElementById('eye-icon'); if (p.type === 'password') { p.type = 'text'; i.classList.replace('ph-eye', 'ph-eye-slash'); } else { p.type = 'password'; i.classList.replace('ph-eye-slash', 'ph-eye'); } };
 
         function listenToTransactions() {
             if (!currentUser) return;
-            unsubscribeDB = onSnapshot(query(collection(db, "transactions"), orderBy("date", "asc")), (snapshot) => {
-                transactions = []; snapshot.forEach(doc => { if (doc.data().userId === currentUser.uid) transactions.push({ id: doc.id, ...doc.data() }); });
-                applyFiltersAndSearch(); updateCreditUI();
+            const q = query(collection(db, "transactions"), orderBy("date", "asc"));
+            unsubscribeDB = onSnapshot(q, (snapshot) => {
+                transactions = []; snapshot.forEach((doc) => { if (doc.data().userId === currentUser.uid) transactions.push({ id: doc.id, ...doc.data() }); });
+                applyFiltersAndSearch(); 
             });
         }
         function listenToAccounts() {
             if (!currentUser) return;
-            unsubscribeAccountsDB = onSnapshot(query(collection(db, "accounts")), (snapshot) => {
-                accounts = []; snapshot.forEach(doc => { if (doc.data().userId === currentUser.uid) accounts.push({ id: doc.id, ...doc.data() }); });
+            const q = query(collection(db, "accounts"));
+            unsubscribeAccountsDB = onSnapshot(q, (snapshot) => {
+                accounts = []; snapshot.forEach((doc) => { if (doc.data().userId === currentUser.uid) accounts.push({ id: doc.id, ...doc.data() }); });
                 accounts.sort((a, b) => a.name.localeCompare(b.name)); updateAccountsUI();
             });
         }
 
         function updateAccountsUI() {
-            const formAcc = document.getElementById('form-account'); const accList = document.getElementById('accounts-list');
-            if(formAcc) formAcc.innerHTML = ''; if(accList) accList.innerHTML = '';
+            const formAccount = document.getElementById('form-account'); const accountsList = document.getElementById('accounts-list');
+            if (formAccount) formAccount.innerHTML = ''; if (accountsList) accountsList.innerHTML = '';
             if (accounts.length === 0) {
-                if(formAcc) formAcc.innerHTML = '<option value="" disabled selected>Sin cuentas</option>';
-                if(accList) accList.innerHTML = '<p class="text-center py-4 text-xs font-bold text-gray-400">Crea tu primera cuenta</p>'; return;
+                if(formAccount) formAccount.innerHTML = '<option value="" disabled selected>Sin cuentas</option>';
+                if(accountsList) accountsList.innerHTML = '<p class="text-center py-4 text-xs font-bold text-gray-400">Crea tu primera cuenta</p>'; return;
             }
-            let htmlList = ''; let htmlOpt = '';
+            let htmlAcc = ''; let htmlOpts = '';
             accounts.forEach(acc => {
-                htmlOpt += `<option value="${acc.name}">${acc.name}</option>`;
-                htmlList += `
-                    <div class="flex justify-between items-center py-3">
-                        <div class="flex items-center gap-3"><i class="ph-fill ph-wallet text-gray-400 dark:text-gray-500 text-xl"></i><span class="font-bold text-sm text-gray-800 dark:text-gray-200">${acc.name}</span></div>
-                        <div class="flex gap-1">
-                            <button onclick="window.openEditAccountModal('${acc.id}', '${acc.name.replace(/'/g, "\\'")}')" class="p-2 text-gray-400 hover:text-blue-500"><i class="ph-bold ph-pencil-simple"></i></button>
-                            <button onclick="window.deleteAccount('${acc.id}')" class="p-2 text-gray-400 hover:text-rose-500"><i class="ph-bold ph-trash"></i></button>
-                        </div>
-                    </div>`;
+                htmlOpts += `<option value="${acc.name}">${acc.name}</option>`;
+                htmlAcc += `<div class="flex justify-between items-center py-3"><div class="flex items-center gap-3"><i class="ph-fill ph-wallet text-gray-400 dark:text-gray-500 text-xl"></i><span class="font-bold text-sm text-gray-800 dark:text-gray-200">${acc.name}</span></div><div class="flex gap-1"><button onclick="window.openEditAccountModal('${acc.id}', '${acc.name.replace(/'/g, "\\'")}')" class="p-2 text-gray-400 hover:text-blue-500"><i class="ph-bold ph-pencil-simple"></i></button><button onclick="window.deleteAccount('${acc.id}')" class="p-2 text-gray-400 hover:text-rose-500"><i class="ph-bold ph-trash"></i></button></div></div>`;
             });
-            if(formAcc) formAcc.innerHTML = htmlOpt; if(accList) accList.innerHTML = htmlList;
+            if(formAccount) formAccount.innerHTML = htmlOpts; if(accountsList) accountsList.innerHTML = htmlAcc;
         }
 
         window.handleAddAccount = async (e) => {
-            e.preventDefault(); const name = document.getElementById('new-account-name').value.trim(); if (!name || !currentUser) return;
+            e.preventDefault(); const input = document.getElementById('new-account-name'); const name = input.value.trim();
+            if (!name || !currentUser) return;
             const btn = document.getElementById('btn-add-account'); btn.disabled = true; btn.innerHTML = '...';
-            try { await addDoc(collection(db, "accounts"), { userId: currentUser.uid, name, createdAt: serverTimestamp() }); document.getElementById('new-account-name').value = ''; } 
-            catch(e){ window.showCustomAlert('Error', 'Fallo al crear.', 'ph-warning-circle text-rose-500'); } finally { btn.disabled = false; btn.innerHTML = '+'; }
+            try { await addDoc(collection(db, "accounts"), { userId: currentUser.uid, name: name, createdAt: serverTimestamp() }); input.value = ''; } 
+            catch (error) { window.showCustomAlert('Error', 'Fallo al crear.', 'ph-warning-circle text-rose-500'); } finally { btn.disabled = false; btn.innerHTML = '+'; }
         }
-        window.openEditAccountModal = (id, name) => { document.getElementById('edit-account-id').value = id; document.getElementById('edit-account-name').value = name; document.getElementById('edit-account-modal').classList.replace('hidden','flex'); }
-        window.closeEditAccountModal = () => { document.getElementById('edit-account-modal').classList.replace('flex','hidden'); }
+        window.openEditAccountModal = (id, name) => { document.getElementById('edit-account-id').value = id; document.getElementById('edit-account-name').value = name; const m = document.getElementById('edit-account-modal'); m.classList.remove('hidden'); m.classList.add('flex'); }
+        window.closeEditAccountModal = () => { const m = document.getElementById('edit-account-modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
         window.handleEditAccount = async (e) => {
-            e.preventDefault(); const id = document.getElementById('edit-account-id').value; const name = document.getElementById('edit-account-name').value.trim();
-            if(!name || !id) return; try { await updateDoc(doc(db, "accounts", id), { name }); window.closeEditAccountModal(); } catch(e){}
+            e.preventDefault(); const id = document.getElementById('edit-account-id').value; const newName = document.getElementById('edit-account-name').value.trim();
+            if (!newName || !id) return;
+            try { await updateDoc(doc(db, "accounts", id), { name: newName }); window.closeEditAccountModal(); } catch (error) { window.showCustomAlert('Error', 'No se actualizó.', 'ph-warning-circle text-rose-500'); }
         }
-        window.deleteAccount = (id) => window.showConfirm('Borrar Cuenta', '¿Seguro? Los registros se mantendrán.', async () => { try { await deleteDoc(doc(db, "accounts", id)); window.closeConfirm(); } catch(e){} });
+        window.deleteAccount = (id) => { window.showConfirm('Borrar Cuenta', '¿Seguro? Los registros se mantendrán.', async () => { try { await deleteDoc(doc(db, "accounts", id)); window.closeConfirm(); } catch (error) { window.closeConfirm(); } }, false); }
 
-        window.handleSearch = () => { searchQuery = document.getElementById('search-input').value.toLowerCase(); applyFiltersAndSearch(); }
-        window.filterLedger = (type, btnElement) => {
-            currentFilter = type;
-            document.querySelectorAll('.filter-btn').forEach(btn => { btn.classList.replace('bg-gray-900', 'bg-white'); btn.classList.replace('dark:bg-white', 'dark:bg-gray-800'); btn.classList.replace('text-white', 'text-gray-500'); btn.classList.replace('dark:text-gray-900', 'dark:text-gray-300'); btn.classList.add('border-gray-200', 'dark:border-gray-700'); });
-            btnElement.classList.replace('bg-white', 'bg-gray-900'); btnElement.classList.replace('dark:bg-gray-800', 'dark:bg-white'); btnElement.classList.replace('text-gray-500', 'text-white'); btnElement.classList.replace('dark:text-gray-300', 'dark:text-gray-900'); btnElement.classList.remove('border-gray-200', 'dark:border-gray-700');
-            applyFiltersAndSearch();
-        }
-
-        function applyFiltersAndSearch() {
-            filteredTransactions = transactions.filter(tx => tx.type !== 'credit' && tx.type !== 'credit_payment').filter(tx => {
-                const matchesFilter = currentFilter === 'Todos' || tx.type === currentFilter;
-                const matchesSearch = tx.desc.toLowerCase().includes(searchQuery) || tx.category.toLowerCase().includes(searchQuery) || (tx.account && tx.account.toLowerCase().includes(searchQuery));
-                return matchesFilter && matchesSearch;
-            });
-            updateUI();
-        }
-
-        function createListItem(tx) {
-            const isInc = tx.type === 'income'; const color = isInc ? 'emerald' : 'rose'; const sign = isInc ? '+' : '-'; const icon = getCategoryIcon(tx.category);
-            return `
-                <div class="flex justify-between items-center p-4 active:bg-gray-50 dark:active:bg-gray-700 transition cursor-pointer" onclick="window.editTransaction('${tx.id}')">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-${color}-50 dark:bg-${color}-900/20 text-${color}-500 flex items-center justify-center shrink-0"><i class="ph-bold ${icon} text-lg"></i></div>
-                        <div class="overflow-hidden">
-                            <p class="font-bold text-gray-900 dark:text-white text-sm truncate max-w-[150px] sm:max-w-[200px]">${tx.desc}</p>
-                            <p class="text-xs text-gray-400 font-medium truncate">${tx.date} • ${tx.account || 'Sin cuenta'}</p>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0"><p class="font-bold text-${color}-500 text-sm">${sign} ${formatCOP(tx.amount)}</p></div>
-                </div>`;
-        }
-
-        function updateUI() {
-            let totalBalance = 0; let totalIncome = 0; let totalExpense = 0;
-            let listHTML = ''; let recentHTML = '';
-
-            // Solo iterar ingresos y gastos (excluye credit y credit_payment para el balance general)
-            transactions.filter(t => t.type === 'income' || t.type === 'expense').forEach((tx) => {
-                const amount = parseFloat(tx.amount);
-                if (tx.type === 'income') { totalBalance += amount; totalIncome += amount; } else { totalBalance -= amount; totalExpense += amount; }
-            });
-
-            if (filteredTransactions.length === 0) listHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center"><i class="ph-bold ph-receipt text-3xl mb-2 opacity-50"></i>No hay movimientos</div>`;
-            else [...filteredTransactions].reverse().forEach(tx => listHTML += createListItem(tx));
-
-            const recentTx = [...transactions].filter(t => t.type === 'income' || t.type === 'expense').reverse().slice(0, 3);
-            if(recentTx.length === 0) recentHTML = `<div class="p-6 text-center text-gray-400 text-sm font-medium">Aún no hay registros</div>`;
-            else recentTx.forEach(tx => recentHTML += createListItem(tx));
-
-            document.getElementById('ledger-list').innerHTML = listHTML; document.getElementById('tx-list').innerHTML = recentHTML;
-            document.getElementById('total-balance').innerText = formatCOP(totalBalance); document.getElementById('available-amount').innerText = formatCOP(totalIncome); document.getElementById('spent-amount').innerText = formatCOP(totalExpense);
-            
-            const badge = document.getElementById('status-badge');
-            if (badge) {
-                if (totalBalance > 0) { badge.innerHTML = '<i class="ph-bold ph-trend-up"></i> Positivo'; badge.className = 'text-xs font-semibold bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-full flex items-center gap-1'; } 
-                else if (totalBalance < 0) { badge.innerHTML = '<i class="ph-bold ph-trend-down"></i> Negativo'; badge.className = 'text-xs font-semibold bg-rose-500/20 text-rose-300 px-3 py-1.5 rounded-full flex items-center gap-1'; } 
-                else { badge.innerHTML = '<i class="ph-bold ph-minus"></i> Estable'; badge.className = 'text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1'; }
-            }
-            
-            if(!myChart) {
-                myChart = new Chart(document.getElementById('myChart').getContext('2d'), {
-                    type: 'doughnut', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [0.01, 0.01], backgroundColor: ['#F2F2F7', '#F2F2F7'], borderWidth: 0, cutout: '80%' }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { animateScale: true } }
-                });
-            }
-            if (totalIncome === 0 && totalExpense === 0) { myChart.data.datasets[0].data = [0.01, 0.01]; myChart.data.datasets[0].backgroundColor = ['#9ca3af', '#9ca3af']; } 
-            else { myChart.data.datasets[0].data = [totalIncome, totalExpense]; myChart.data.datasets[0].backgroundColor = ['#34d399', '#fb7185']; }
-            myChart.update();
-        }
-
-        window.openFormModal = (type) => {
-            isExpense = type === 'expense'; document.getElementById('modal-title').innerText = isExpense ? 'Gasto' : 'Ingreso';
-            document.getElementById('edit-tx-id').value = ''; const catSel = document.getElementById('form-category'); catSel.innerHTML = '';
-            document.getElementById('btn-delete-tx').classList.add('hidden');
-            const opts = isExpense ? ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros Gastos'] : ['Ventas', 'Aportes', 'Rendimientos', 'Otros Ingresos'];
-            opts.forEach(opt => { const el = document.createElement('option'); el.value = opt; el.innerText = opt; catSel.appendChild(el); });
-            document.getElementById('transaction-form').reset(); document.getElementById('form-date').valueAsDate = new Date();
-            if(accounts.length > 0) document.getElementById('form-account').value = accounts[0].name;
-            document.getElementById('form-modal').classList.replace('hidden', 'flex');
-        }
-        window.closeFormModal = () => document.getElementById('form-modal').classList.replace('flex', 'hidden');
-
-        window.handleFormSubmit = async (e) => {
-            e.preventDefault(); if (!currentUser) return;
-            if (accounts.length === 0) return window.showCustomAlert('Falta Cuenta', 'Crea una cuenta en Ajustes primero.', 'ph-bank text-blue-500');
-            const amount = parseFloat(document.getElementById('form-amount').value);
-            if (isNaN(amount) || amount <= 0) return;
-            
-            const btn = document.getElementById('submit-btn'); btn.disabled = true; btn.innerText = '...';
-            const data = { userId: currentUser.uid, type: isExpense ? 'expense' : 'income', amount, desc: document.getElementById('form-desc').value, category: document.getElementById('form-category').value, date: document.getElementById('form-date').value, account: document.getElementById('form-account').value };
-            const id = document.getElementById('edit-tx-id').value;
-            try {
-                if (id) await updateDoc(doc(db, "transactions", id), data); else await addDoc(collection(db, "transactions"), { ...data, createdAt: serverTimestamp() });
-                window.closeFormModal();
-            } catch(e) {} finally { btn.disabled = false; btn.innerText = 'Guardar'; }
+        window.deleteCurrentTx = () => {
+            const txId = document.getElementById('edit-tx-id').value; if (!txId) return;
+            window.closeFormModal();
+            window.showConfirm('Borrar', '¿Eliminar este registro permanentemente?', async () => { try { await deleteDoc(doc(db, "transactions", txId)); window.closeConfirm(); } catch(error) { window.showCustomAlert('Error', 'Fallo al borrar.', 'ph-warning-circle text-rose-500'); window.closeConfirm(); } }, false);
         }
 
         window.editTransaction = (id) => {
             const tx = transactions.find(t => t.id === id); if (!tx) return;
-            window.openFormModal(tx.type); document.getElementById('modal-title').innerText = 'Editar';
+            if (tx.type === 'credit_active' || tx.type === 'credit_payment') return; // Se gestionan en T. Credito
+            
+            isExpense = tx.type === 'expense'; window.openFormModal(tx.type, false); document.getElementById('modal-title').innerText = 'Editar';
             document.getElementById('edit-tx-id').value = tx.id; document.getElementById('form-amount').value = tx.amount; document.getElementById('form-desc').value = tx.desc; document.getElementById('form-date').value = tx.date;
             document.getElementById('btn-delete-tx').classList.remove('hidden');
             setTimeout(() => { document.getElementById('form-category').value = tx.category; document.getElementById('form-account').value = tx.account; }, 50);
         }
-        window.deleteCurrentTx = () => {
-            const id = document.getElementById('edit-tx-id').value; if (!id) return; window.closeFormModal();
-            window.showConfirm('Borrar Registro', '¿Eliminar esto permanentemente?', async () => { try { await deleteDoc(doc(db, "transactions", id)); window.closeConfirm(); } catch(e){} }, 'ph-warning-circle', 'Borrar', 'rose');
+
+        window.handleSearch = () => { searchQuery = document.getElementById('search-input').value.toLowerCase(); applyFiltersAndSearch(); }
+        window.filterLedger = (type, btnElement) => {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(btn => { btn.classList.replace('bg-gray-900', 'bg-white'); btn.classList.replace('dark:bg-white', 'dark:bg-gray-800'); btn.classList.replace('text-white', 'text-gray-500'); btn.classList.replace('dark:text-gray-900', 'dark:text-gray-400'); btn.classList.add('border-gray-200'); btn.classList.add('dark:border-gray-700'); btn.classList.remove('border-transparent'); });
+            btnElement.classList.replace('bg-white', 'bg-gray-900'); btnElement.classList.replace('dark:bg-gray-800', 'dark:bg-white'); btnElement.classList.replace('text-gray-500', 'text-white'); btnElement.classList.replace('dark:text-gray-400', 'dark:text-gray-900'); btnElement.classList.remove('border-gray-200'); btnElement.classList.remove('dark:border-gray-700'); btnElement.classList.add('border-transparent');
+            applyFiltersAndSearch();
         }
 
-        window.switchTab = (tab) => {
-            ['dashboard-view', 'ledger-view', 'credit-view', 'settings-view'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`${tab}-view`)?.classList.remove('hidden'); document.getElementById(`nav-${tab}`)?.classList.add('active');
+        function applyFiltersAndSearch() {
+            // Excluir SIEMPRE los movimientos de tarjeta de crédito de la vista general
+            const baseTxs = transactions.filter(tx => tx.type !== 'credit_active' && tx.type !== 'credit_payment');
+            filteredTransactions = baseTxs.filter(tx => {
+                const matchesFilter = currentFilter === 'Todos' || tx.type === currentFilter;
+                const matchesSearch = tx.desc.toLowerCase().includes(searchQuery) || tx.category.toLowerCase().includes(searchQuery) || (tx.account && tx.account.toLowerCase().includes(searchQuery));
+                return matchesFilter && matchesSearch;
+            });
+            updateUI(); updateCreditUI(); // Actualizar ambos paneles
         }
 
-        window.showCustomAlert = (t, m, i) => { 
-            const a = document.getElementById('custom-alert'); document.getElementById('alert-icon').className = `ph-fill ${i}`; 
-            document.getElementById('alert-title').innerText = t; document.getElementById('alert-message').innerText = m; 
-            a.classList.replace('hidden', 'flex'); 
-        }
-        window.closeAlert = () => document.getElementById('custom-alert').classList.replace('flex', 'hidden');
+        window.handleFormSubmit = async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+            if (accounts.length === 0) return window.showCustomAlert('Falta Cuenta', 'Crea una cuenta en Ajustes primero.', 'ph-bank text-blue-500');
 
-        // Confirm dinámico (sirve para borrar o pagar cuota)
-        window.showConfirm = (title, message, callback, icon = 'ph-warning-circle', btnText = 'Confirmar', color = 'rose') => { 
-            confirmActionCallback = callback; document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message; 
-            const iconEl = document.getElementById('confirm-icon'); iconEl.className = `ph-fill ${icon} text-${color}-500 text-4xl mb-3 inline-block`;
-            const btnEl = document.getElementById('btn-confirm-action'); btnEl.innerText = btnText; btnEl.className = `flex-1 bg-${color}-500 text-white font-bold py-3 rounded-xl active:bg-${color}-600`;
-            document.getElementById('confirm-modal').classList.replace('hidden', 'flex'); 
-        }
-        window.closeConfirm = () => { document.getElementById('confirm-modal').classList.replace('flex', 'hidden'); confirmActionCallback = null; }
-        window.executeConfirm = () => { if (confirmActionCallback) confirmActionCallback(); }
+            const type = isExpense ? 'expense' : 'income'; const amount = parseFloat(document.getElementById('form-amount').value);
+            const desc = document.getElementById('form-desc').value; const category = document.getElementById('form-category').value || 'Otros';
+            const date = document.getElementById('form-date').value; const account = document.getElementById('form-account').value;
+            const txId = document.getElementById('edit-tx-id').value;
 
-        window.exportToPDF = () => {
-            const d = document.getElementById('export-month').value; if (!d) return window.showCustomAlert('Mes Requerido', 'Selecciona el mes.', 'ph-calendar text-gray-500');
-            const [y, m] = d.split('-'); const tx = transactions.filter(t => t.date.startsWith(`${y}-${m}`));
-            if (tx.length === 0) return window.showCustomAlert('Vacío', 'No hay registros.', 'ph-warning-circle text-gray-500');
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.text("FinSight Reporte", 14, 20); doc.setFontSize(10); doc.text(`Periodo: ${m}/${y}`, 14, 28);
-            doc.autoTable({ startY: 35, head: [['Fecha', 'Detalle', 'Tipo', 'Monto']], body: tx.map(t => [t.date, t.desc, t.type, formatCOP(t.amount)]) });
-            doc.save(`FinSight_${y}_${m}.pdf`);
+            if (isNaN(amount) || amount <= 0) return;
+            const submitBtn = document.getElementById('submit-btn'); submitBtn.disabled = true; submitBtn.innerText = '...';
+
+            try {
+                if (txId) { await updateDoc(doc(db, "transactions", txId), { type, amount, desc, category, date, account }); } 
+                else { await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type, amount, desc, category, date, account, createdAt: serverTimestamp() }); }
+                window.closeFormModal(); document.getElementById('transaction-form').reset(); document.getElementById('edit-tx-id').value = '';
+            } catch (error) { window.showCustomAlert('Error', 'Fallo al guardar.', 'ph-warning-circle text-rose-500'); } 
+            finally { submitBtn.disabled = false; submitBtn.innerText = 'Guardar'; }
         }
 
-        function calculateFinancialDates(purchaseDateStr, cutDay, payDay) {
+        window.openFormModal = (type, fromScanner = false) => {
+            isExpense = type === 'expense'; document.getElementById('modal-title').innerText = isExpense ? 'Gasto' : 'Ingreso';
+            document.getElementById('edit-tx-id').value = ''; const catSelect = document.getElementById('form-category'); catSelect.innerHTML = '';
+            document.getElementById('btn-delete-tx').classList.add('hidden');
+            const optionsList = isExpense ? ['Operaciones', 'Inventario', 'Servicios', 'Nómina', 'Otros Gastos'] : ['Ventas', 'Aportes', 'Rendimientos', 'Otros Ingresos'];
+            optionsList.forEach(opt => { const el = document.createElement('option'); el.value = opt; el.innerText = opt; catSelect.appendChild(el); });
+
+            if (!fromScanner) {
+                document.getElementById('transaction-form').reset(); document.getElementById('form-date').valueAsDate = new Date();
+                if(accounts.length > 0) document.getElementById('form-account').value = accounts[0].name;
+            }
+            const m = document.getElementById('form-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        }
+        window.closeFormModal = () => { const m = document.getElementById('form-modal'); m.classList.add('hidden'); m.classList.remove('flex'); document.getElementById('edit-tx-id').value = ''; }
+
+        function getCategoryIcon(cat) { const icons = { 'Operaciones': 'ph-briefcase', 'Inventario': 'ph-package', 'Servicios': 'ph-lightning', 'Nómina': 'ph-users', 'Ventas': 'ph-storefront', 'Aportes': 'ph-piggy-bank' }; return icons[cat] || 'ph-receipt'; }
+        function createListItem(tx) {
+            const isInc = tx.type === 'income'; const color = isInc ? 'emerald' : 'rose'; const sign = isInc ? '+' : '-'; const icon = getCategoryIcon(tx.category);
+            return `<div class="flex justify-between items-center p-4 active:bg-gray-50 dark:active:bg-gray-700 transition cursor-pointer" onclick="window.editTransaction('${tx.id}')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-${color}-50 dark:bg-${color}-500/20 text-${color}-500 flex items-center justify-center shrink-0"><i class="ph-bold ${icon} text-lg"></i></div><div class="overflow-hidden"><p class="font-bold text-gray-900 dark:text-white text-sm truncate max-w-[150px] sm:max-w-[200px]">${tx.desc}</p><p class="text-xs text-gray-400 font-medium truncate">${tx.date} • ${tx.account || 'Sin cuenta'}</p></div></div><div class="text-right shrink-0"><p class="font-bold text-${color}-500 text-sm">${sign} ${formatCOP(tx.amount)}</p></div></div>`;
+        }
+
+        function updateUI() {
+            let totalBalance = 0; let totalIncome = 0; let totalExpense = 0;
+            // Solo tomar transacciones normales (ignorar tarjetas de credito)
+            const normalTxs = transactions.filter(tx => tx.type !== 'credit_active' && tx.type !== 'credit_payment');
+            
+            normalTxs.forEach((tx) => { const amount = parseFloat(tx.amount); if (tx.type === 'income') { totalBalance += amount; totalIncome += amount; } else if (tx.type === 'expense') { totalBalance -= amount; totalExpense += amount; } });
+
+            const txList = document.getElementById('tx-list'); const ledgerList = document.getElementById('ledger-list');
+            
+            if (filteredTransactions.length === 0) { ledgerList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium">No se encontraron movimientos</div>`; } 
+            else { let lHtml = ''; [...filteredTransactions].reverse().forEach(tx => lHtml += createListItem(tx)); ledgerList.innerHTML = lHtml; }
+
+            const recentTx = [...normalTxs].reverse().slice(0, 3);
+            if(recentTx.length === 0) { txList.innerHTML = `<div class="p-6 text-center text-gray-400 text-sm font-medium"><i class="ph-bold ph-receipt text-3xl mb-2 text-gray-300"></i><br>Aún no hay registros</div>`; } 
+            else { let rHtml = ''; recentTx.forEach(tx => rHtml += createListItem(tx)); txList.innerHTML = rHtml; }
+
+            document.getElementById('total-balance').innerText = formatCOP(totalBalance); document.getElementById('available-amount').innerText = formatCOP(totalIncome); document.getElementById('spent-amount').innerText = formatCOP(totalExpense);
+            const badge = document.getElementById('status-badge');
+            if (badge) {
+                if (totalBalance > 0) { badge.innerHTML = '<i class="ph-bold ph-trend-up"></i> Positivo'; badge.className = 'text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1'; } 
+                else if (totalBalance < 0) { badge.innerHTML = '<i class="ph-bold ph-trend-down"></i> Negativo'; badge.className = 'text-xs font-semibold bg-rose-500/20 text-rose-100 px-3 py-1.5 rounded-full flex items-center gap-1'; } 
+                else { badge.innerHTML = '<i class="ph-bold ph-minus"></i> Estable'; badge.className = 'text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1';}
+            }
+            
+            if(!myChart) {
+                myChart = new Chart(document.getElementById('myChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [0.01, 0.01], borderWidth: 0, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { animateScale: true } } });
+            }
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            const emptyColor = isDark ? '#374151' : '#e5e7eb';
+            if (totalIncome === 0 && totalExpense === 0) { myChart.data.datasets[0].data = [0.01, 0.01]; myChart.data.datasets[0].backgroundColor = [emptyColor, emptyColor]; } 
+            else { myChart.data.datasets[0].data = [totalIncome, totalExpense]; myChart.data.datasets[0].backgroundColor = ['#34d399', '#fb7185']; }
+            myChart.update();
+        }
+
+        const calculateFinancialDates = (purchaseDateStr, cutDay, payDay) => {
             let purchaseDate = dayjs(purchaseDateStr); let currentMonthCut = purchaseDate.date(cutDay); let activeCutDate = currentMonthCut;
             if (purchaseDate.isAfter(currentMonthCut, 'day') || purchaseDate.date() === cutDay) activeCutDate = currentMonthCut.add(1, 'month');
             let firstPaymentDate = activeCutDate.date(payDay);
             if (payDay < cutDay || firstPaymentDate.diff(activeCutDate, 'day') < 10) firstPaymentDate = firstPaymentDate.add(1, 'month');
-            return { activeCutDate, firstPaymentDate, daysUntilPayment: firstPaymentDate.diff(purchaseDate, 'day') };
-        }
+            return { activeCutDate, firstPaymentDate, daysUntilPayment: firstPaymentDate.diff(purchaseDate, 'day'), daysUntilCut: activeCutDate.diff(purchaseDate, 'day') };
+        };
 
         function initSimulator() {
             let ops = `<option value="" disabled selected>Día</option>`; for (let i=1; i<=31; i++) ops += `<option value="${i}">${i}</option>`;
             document.getElementById('sim-cut').innerHTML = ops; document.getElementById('sim-pay').innerHTML = ops;
-            ['sim-cut', 'sim-pay', 'sim-amount', 'sim-installments', 'sim-date', 'sim-interest'].forEach(id => {
-                const el = document.getElementById(id); if(el) el.addEventListener('input', runSimulation);
-            });
+            const d = document.getElementById('sim-date'); d.value = ''; d.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-gray-500'); });
+            ['sim-desc', 'sim-cut', 'sim-pay', 'sim-amount', 'sim-installments', 'sim-date', 'sim-interest'].forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('input', runSimulation); });
+        }
+
+        window.saveCreditTx = async (amount, desc, date, cutDay, payDay, cuotas, interestRate, monthlyPayment, totalInterest) => {
+            if (!currentUser) return;
+            try {
+                await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit_active', amount: amount, desc: desc, date: date, cutDay, payDay, totalInstallments: cuotas, paidInstallments: 0, interestRate, monthlyPayment, totalInterest, pendingAmount: (amount + totalInterest), createdAt: serverTimestamp() });
+                
+                // Limpiar Simulador
+                document.getElementById('sim-desc').value = ''; document.getElementById('sim-amount').value = ''; document.getElementById('sim-date').value = ''; document.getElementById('sim-interest').value = ''; document.getElementById('sim-installments').value = '1';
+                document.getElementById('sim-date').classList.add('text-gray-500');
+                runSimulation(); window.showCustomAlert('Guardado', 'Compra con TC registrada aisladamente.', 'ph-check-circle text-emerald-500');
+            } catch(e) { window.showCustomAlert('Error', 'Fallo al guardar deuda.', 'ph-warning-circle text-rose-500'); }
         }
 
         function runSimulation() {
-            const cutDay = parseInt(document.getElementById('sim-cut').value); const payDay = parseInt(document.getElementById('sim-pay').value);
-            const amount = parseFloat(document.getElementById('sim-amount').value); const cuotas = parseInt(document.getElementById('sim-installments').value) || 1;
-            const dateStr = document.getElementById('sim-date').value; const interestStr = document.getElementById('sim-interest').value || '0';
-            const res = document.getElementById('sim-results');
+            const desc = document.getElementById('sim-desc').value.trim(); const cutDay = parseInt(document.getElementById('sim-cut').value);
+            const payDay = parseInt(document.getElementById('sim-pay').value); const amount = parseFloat(document.getElementById('sim-amount').value);
+            const cuotas = parseInt(document.getElementById('sim-installments').value) || 1; const dateStr = document.getElementById('sim-date').value;
+            const interestStr = document.getElementById('sim-interest').value; const res = document.getElementById('sim-results');
             
-            if (isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { 
-                res.innerHTML = `<div class="text-center py-10 px-4"><i class="ph-bold ph-calculator mx-auto text-gray-300 dark:text-gray-600 text-4xl mb-2"></i><p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Llena los datos para simular o guardar</p></div>`; return; 
+            if (!desc || isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { 
+                res.innerHTML = `<div class="text-center py-10 px-4"><i class="ph-bold ph-calculator mx-auto text-gray-300 dark:text-gray-600 text-4xl mb-2"></i><p class="text-gray-400 text-xs font-medium">Llena los datos para simular o guardar</p></div>`; return; 
             }
 
             const { activeCutDate, firstPaymentDate, daysUntilPayment } = calculateFinancialDates(dateStr, cutDay, payDay);
-            const i = (parseFloat(interestStr) || 0) / 100;
-            const monthlyPayment = (cuotas > 1 && i > 0) ? amount * (i * Math.pow(1 + i, cuotas)) / (Math.pow(1 + i, cuotas) - 1) : amount / cuotas;
-            const totalInterest = (monthlyPayment * cuotas) - amount;
+            const interestRate = parseFloat(interestStr) || 0; let monthlyPayment = amount / cuotas; let totalInterest = 0;
+            
+            if (cuotas > 1 && interestRate > 0) {
+                const i = interestRate / 100;
+                monthlyPayment = amount * (i * Math.pow(1 + i, cuotas)) / (Math.pow(1 + i, cuotas) - 1);
+                totalInterest = (monthlyPayment * cuotas) - amount;
+            }
 
-            let sCol = daysUntilPayment >= 40 ? 'text-emerald-700 dark:text-emerald-400' : daysUntilPayment <= 20 ? 'text-rose-700 dark:text-rose-400' : 'text-yellow-700 dark:text-yellow-400';
-            let sBg = daysUntilPayment >= 40 ? 'bg-emerald-50 dark:bg-emerald-900/20' : daysUntilPayment <= 20 ? 'bg-rose-50 dark:bg-rose-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20';
+            let sCol, sBg, sIcon, sTit;
+            if (daysUntilPayment >= 40) { sCol = 'text-emerald-700 dark:text-emerald-400'; sBg = 'bg-emerald-50 dark:bg-emerald-500/10'; sIcon = 'ph-check-circle'; sTit = 'Excelente momento'; } 
+            else if (daysUntilPayment <= 20) { sCol = 'text-rose-700 dark:text-rose-400'; sBg = 'bg-rose-50 dark:bg-rose-500/10'; sIcon = 'ph-warning-circle'; sTit = 'Espera al corte'; } 
+            else { sCol = 'text-yellow-700 dark:text-yellow-400'; sBg = 'bg-yellow-50 dark:bg-yellow-500/10'; sIcon = 'ph-info'; sTit = 'Momento neutral'; }
 
             res.innerHTML = `
                 <div class="p-4 rounded-2xl flex gap-3 animate-fade ${sBg} ${sCol}">
-                    <i class="ph-fill ph-info text-xl mt-0.5"></i>
-                    <div><p class="font-bold text-sm mb-1">Simulación</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-bold">${daysUntilPayment} días</strong> sin pagar intereses (a 1 cuota).</p></div>
+                    <i class="ph-fill ${sIcon} text-xl mt-0.5"></i>
+                    <div><p class="font-bold text-sm mb-1">${sTit}</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-bold">${daysUntilPayment} días</strong> sin pagar intereses (si es a 1 cuota).</p></div>
                 </div>
-                <div class="native-card bg-gray-50 dark:bg-gray-900 p-5 mt-4 border border-gray-100 dark:border-gray-700 space-y-4 animate-fade" style="animation-delay: 0.1s;">
-                    <div class="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-800">
+                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-5 mt-4 space-y-4 animate-fade" style="animation-delay: 0.1s;">
+                    <div class="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-700">
                         <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Corte</p><p class="text-sm font-bold dark:text-white">${activeCutDate.format('DD MMM')}</p></div>
                         <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Límite pago</p><p class="text-sm font-bold text-rose-500">${firstPaymentDate.format('DD MMM')}</p></div>
                     </div>
-                    <div class="flex justify-between items-center pb-4 ${cuotas > 1 && totalInterest > 0 ? 'border-b border-gray-200 dark:border-gray-800' : ''}">
+                    <div class="flex justify-between items-center pb-4 ${cuotas > 1 && totalInterest > 0 ? 'border-b border-gray-100 dark:border-gray-700' : ''}">
                         <div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Cuota mensual</p><p class="text-base font-bold dark:text-white">${formatCOP(monthlyPayment)}</p></div>
                         <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Finaliza</p><p class="text-sm font-bold capitalize dark:text-white">${firstPaymentDate.add(cuotas-1,'month').format('MMM YY')}</p></div>
                     </div>
                     ${cuotas > 1 && totalInterest > 0 ? `<div class="flex justify-between items-center"><div><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Total a pagar</p><p class="text-sm font-bold dark:text-white">${formatCOP(amount + totalInterest)}</p></div><div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Total Intereses</p><p class="text-sm font-bold text-rose-500">+${formatCOP(totalInterest)}</p></div></div>` : ''}
-                </div>
-                <button onclick="window.saveCreditPurchase()" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-2xl active:bg-blue-600 transition shadow-md mt-4 flex justify-center items-center gap-2 animate-fade" style="animation-delay: 0.2s;">
-                    <i class="ph-bold ph-floppy-disk"></i> Guardar Compra
-                </button>`;
-        }
-
-        window.saveCreditPurchase = async () => {
-            const desc = document.getElementById('sim-desc').value.trim(); const amount = parseFloat(document.getElementById('sim-amount').value);
-            const cuotas = parseInt(document.getElementById('sim-installments').value); const interestRate = parseFloat(document.getElementById('sim-interest').value) || 0;
-            const date = document.getElementById('sim-date').value; const cutDay = document.getElementById('sim-cut').value; const payDay = document.getElementById('sim-pay').value;
-            if(!desc || !amount || !date || !cutDay || !payDay) return window.showCustomAlert('Faltan Datos', 'Llena todos los campos.', 'ph-warning-circle text-orange-500');
-            
-            try {
-                await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit', desc, amount, cuotas, interestRate, date, cutDay, payDay, createdAt: serverTimestamp() });
-                window.showCustomAlert('Éxito', 'Compra guardada en tu tarjeta.', 'ph-check-circle text-emerald-500');
-                // Limpiar form
-                document.getElementById('sim-desc').value = ''; document.getElementById('sim-amount').value = ''; document.getElementById('sim-date').value = '';
-                document.getElementById('sim-results').innerHTML = `<div class="text-center py-10 px-4"><i class="ph-bold ph-check-circle mx-auto text-emerald-500 text-4xl mb-2"></i><p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Guardado exitosamente</p></div>`;
-            } catch(e) { window.showCustomAlert('Error', 'Fallo al guardar.', 'ph-warning-circle text-rose-500'); }
-        }
-
-        function calculateCreditStats(tx) {
-            const i = tx.interestRate / 100; const originalAmount = parseFloat(tx.amount); const originalCuotas = parseInt(tx.cuotas);
-            const monthlyPayment = (originalCuotas > 1 && i > 0) ? originalAmount * (i * Math.pow(1 + i, originalCuotas)) / (Math.pow(1 + i, originalCuotas) - 1) : originalAmount / originalCuotas;
-            const payments = transactions.filter(t => t.type === 'credit_payment' && t.parentCreditId === tx.id);
-            const paidCuotas = payments.length; const remainingCuotas = Math.max(0, originalCuotas - paidCuotas);
-            const remainingBalance = remainingCuotas * monthlyPayment;
-            return { monthlyPayment, paidCuotas, remainingCuotas, remainingBalance, originalCuotas, originalAmount };
-        }
-
-        function updateCreditUI() {
-            const listEl = document.getElementById('credit-list'); if(!listEl) return; let html = '';
-            
-            // 1. Mostrar las deudas Activas
-            const activeCredits = transactions.filter(t => t.type === 'credit');
-            activeCredits.forEach(tx => {
-                const stats = calculateCreditStats(tx);
-                if(stats.remainingCuotas > 0) {
-                    html += `
-                        <div class="flex justify-between items-center p-4 active:bg-gray-50 dark:active:bg-gray-700 transition cursor-pointer" onclick="window.openCreditDetail('${tx.id}')">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-credit-card text-lg"></i></div>
-                                <div class="overflow-hidden"><p class="font-bold text-gray-900 dark:text-white text-sm truncate max-w-[150px] sm:max-w-[200px]">${tx.desc}</p><p class="text-xs text-gray-400 font-medium truncate">${tx.date} • Faltan ${stats.remainingCuotas}/${stats.originalCuotas} cuotas</p></div>
-                            </div>
-                            <div class="text-right shrink-0"><p class="font-bold text-blue-500 text-sm">${formatCOP(stats.remainingBalance)}</p></div>
-                        </div>`;
-                }
-            });
-
-            // 2. Mostrar los pagos realizados
-            const payments = transactions.filter(t => t.type === 'credit_payment');
-            payments.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(tx => {
-                html += `
-                    <div class="flex justify-between items-center p-4 bg-gray-50/50 dark:bg-gray-800/50 cursor-pointer active:bg-gray-100 dark:active:bg-gray-700 transition" onclick="window.confirmDeletePayment('${tx.id}')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 flex items-center justify-center shrink-0"><i class="ph-bold ph-check text-lg"></i></div>
-                            <div class="overflow-hidden"><p class="font-bold text-gray-500 dark:text-gray-400 text-sm truncate">Pago: ${tx.desc}</p><p class="text-xs text-gray-400 font-medium truncate">${tx.date} • ${tx.account}</p></div>
-                        </div>
-                        <div class="text-right shrink-0"><p class="font-bold text-gray-500 dark:text-gray-400 text-sm">-${formatCOP(tx.amount)}</p></div>
-                    </div>`;
-            });
-
-            if (html === '') html = `<div class="p-8 text-center text-gray-400 text-sm font-medium">No hay deudas ni pagos de tarjeta</div>`;
-            listEl.innerHTML = html;
+                    <button onclick="window.saveCreditTx(${amount}, '${desc}', '${dateStr}', ${cutDay}, ${payDay}, ${cuotas}, ${interestRate}, ${monthlyPayment}, ${totalInterest})" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition active:scale-95 shadow-md flex justify-center items-center gap-2 mt-2"><i class="ph-bold ph-floppy-disk"></i> Guardar Compra TC</button>
+                </div>`;
         }
 
         window.openCreditDetail = (id) => {
-            const tx = transactions.find(t => t.id === id); if (!tx) return;
-            const stats = calculateCreditStats(tx);
-            let accountOptions = accounts.length > 0 ? accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join('') : '<option value="" disabled selected>Sin cuentas</option>';
-
-            document.getElementById('credit-detail-content').innerHTML = `
-                <div class="native-card bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 shadow-sm p-4 mb-4">
-                    <h4 class="font-bold text-lg mb-1 dark:text-white">${tx.desc}</h4>
-                    <p class="text-xs text-gray-500 font-medium">Comprado el ${tx.date}</p>
-                    <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-                        <div><p class="text-gray-400 text-[10px] uppercase font-bold">Saldo Original</p><p class="font-bold dark:text-white">${formatCOP(stats.originalAmount)}</p></div>
-                        <div><p class="text-gray-400 text-[10px] uppercase font-bold">Cuotas Pagadas</p><p class="font-bold text-emerald-500">${stats.paidCuotas} de ${stats.originalCuotas}</p></div>
-                        <div><p class="text-gray-400 text-[10px] uppercase font-bold">Saldo Pendiente</p><p class="font-bold text-blue-500">${formatCOP(stats.remainingBalance)}</p></div>
-                        <div><p class="text-gray-400 text-[10px] uppercase font-bold">Valor de Cuota</p><p class="font-bold dark:text-white">${formatCOP(stats.monthlyPayment)}</p></div>
-                    </div>
+            const tx = transactions.find(t => t.id === id); if(!tx) return; activeCreditDeuda = tx;
+            const content = document.getElementById('credit-detail-content'); const isPaidOut = tx.paidInstallments >= tx.totalInstallments;
+            let accOptions = ''; accounts.forEach(a => accOptions += `<option value="${a.name}">${a.name}</option>`);
+            
+            content.innerHTML = `
+                <div class="text-center mb-6">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-1">Saldo Pendiente</p>
+                    <h2 class="text-3xl font-extrabold dark:text-white">${formatCOP(tx.pendingAmount)}</h2>
+                    <p class="text-sm font-medium text-gray-400 mt-1">${tx.desc} • ${tx.paidInstallments}/${tx.totalInstallments} cuotas</p>
                 </div>
-                <div class="space-y-3">
-                    <label class="text-xs font-semibold text-gray-500 ml-1">¿Desde qué cuenta pagarás la cuota?</label>
-                    <select id="credit-payment-account" class="custom-select w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 mb-4">${accountOptions}</select>
-                    <div class="flex gap-2">
-                        <button onclick="window.confirmDeleteCredit('${tx.id}')" class="w-14 h-[52px] bg-rose-50 dark:bg-rose-500/20 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 transition shrink-0"><i class="ph-bold ph-trash text-xl"></i></button>
-                        <button onclick="window.registerCreditPayment('${tx.id}', ${stats.monthlyPayment})" class="flex-1 bg-blue-500 text-white font-bold py-3.5 rounded-2xl active:bg-blue-600 transition shadow-md flex justify-center items-center gap-2">
-                            <i class="ph-bold ph-check-circle"></i> Pagar Cuota
-                        </button>
-                    </div>
-                </div>`;
-            document.getElementById('credit-detail-modal').classList.replace('hidden', 'flex');
+                ${!isPaidOut ? `
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+                    <p class="text-xs font-bold text-gray-400 mb-2">Pago de Cuota (${formatCOP(tx.monthlyPayment)})</p>
+                    <select id="pay-credit-account" class="w-full block min-w-0 box-border bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 custom-select mb-3">${accounts.length>0?accOptions:'<option disabled>No hay cuentas</option>'}</select>
+                    <button onclick="window.payCreditInstallment()" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 rounded-xl active:bg-black dark:active:bg-gray-200 transition" ${accounts.length===0?'disabled':''}>Pagar 1 Cuota</button>
+                </div>
+                ` : `<div class="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 p-4 rounded-xl text-center font-bold text-sm"><i class="ph-fill ph-check-circle text-xl mb-1 block mx-auto"></i> Deuda saldada</div>`}
+                <button onclick="window.deleteCreditTx('${tx.id}')" class="w-full bg-rose-50 dark:bg-rose-500/10 text-rose-500 font-bold py-3 rounded-xl active:bg-rose-100 dark:active:bg-rose-500/20 transition mt-2"><i class="ph-bold ph-trash"></i> Eliminar Historial</button>
+            `;
+            const m = document.getElementById('credit-detail-modal'); m.classList.remove('hidden'); m.classList.add('flex');
         }
-        window.closeCreditDetailModal = () => document.getElementById('credit-detail-modal').classList.replace('flex', 'hidden');
 
-        window.registerCreditPayment = (creditId, amount) => {
-            const accSelect = document.getElementById('credit-payment-account'); const account = accSelect ? accSelect.value : null;
-            if(!account) return window.showCustomAlert('Falta Cuenta', 'Crea una cuenta en Ajustes para pagar.', 'ph-bank text-blue-500');
-            const tx = transactions.find(t => t.id === creditId); if (!tx) return;
+        window.closeCreditDetail = () => { const m = document.getElementById('credit-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); activeCreditDeuda = null; }
 
-            window.showConfirm('Pagar Cuota', `Se descontarán ${formatCOP(amount)} de ${account}. ¿Continuar?`, async () => {
+        window.payCreditInstallment = async () => {
+            if(!activeCreditDeuda || !currentUser) return;
+            const account = document.getElementById('pay-credit-account').value;
+            window.showConfirm('Pagar Cuota', `Se descontará ${formatCOP(activeCreditDeuda.monthlyPayment)} de ${account}. ¿Confirmar?`, async () => {
                 try {
-                    // 1. Crear el gasto real que descuenta dinero de la cuenta
-                    await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'expense', amount, desc: `Pago Cuota: ${tx.desc}`, category: 'Otros Gastos', date: new Date().toISOString().split('T')[0], account, createdAt: serverTimestamp() });
-                    // 2. Crear el registro aislado de pago de tarjeta (no afecta contabilidad principal)
-                    await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit_payment', parentCreditId: creditId, amount, desc: tx.desc, date: new Date().toISOString().split('T')[0], account, createdAt: serverTimestamp() });
-                    window.closeConfirm(); window.closeCreditDetailModal();
+                    window.closeConfirm(); window.closeCreditDetail();
+                    const newPaid = activeCreditDeuda.paidInstallments + 1;
+                    const newPending = Math.max(0, activeCreditDeuda.pendingAmount - activeCreditDeuda.monthlyPayment);
+                    // Actualizar deuda
+                    await updateDoc(doc(db, "transactions", activeCreditDeuda.id), { paidInstallments: newPaid, pendingAmount: newPending });
+                    // Registrar pago aislado
+                    await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit_payment', parentCreditId: activeCreditDeuda.id, amount: activeCreditDeuda.monthlyPayment, desc: `Pago Cuota ${newPaid}/${activeCreditDeuda.totalInstallments}: ${activeCreditDeuda.desc}`, date: dayjs().format('YYYY-MM-DD'), account: account, createdAt: serverTimestamp() });
+                    // Descontar saldo real de la cuenta como un gasto
+                    await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'expense', amount: activeCreditDeuda.monthlyPayment, desc: `Pago TC: ${activeCreditDeuda.desc}`, category: 'Operaciones', date: dayjs().format('YYYY-MM-DD'), account: account, createdAt: serverTimestamp() });
+                } catch(e) { window.showCustomAlert('Error', 'Fallo al pagar.', 'ph-warning-circle text-rose-500'); }
+            }, true);
+        }
+
+        window.deleteCreditTx = (id) => {
+            window.showConfirm('Borrar Registro', '¿Seguro? No afectará tu contabilidad general.', async () => {
+                try { await deleteDoc(doc(db, "transactions", id)); window.closeConfirm(); window.closeCreditDetail(); } catch(e) {}
+            }, false);
+        }
+
+        window.askDeleteCreditPayment = (paymentId, parentId, amount) => {
+            window.showConfirm('Borrar Pago', '¿Eliminar historial de este pago? La deuda volverá a aumentar. No reembolsará tu cuenta bancaria automáticamente.', async () => {
+                try {
+                    window.closeConfirm();
+                    // Buscar la deuda padre y revertir 1 cuota
+                    const parentTx = transactions.find(t => t.id === parentId);
+                    if(parentTx) {
+                        const newPaid = Math.max(0, parentTx.paidInstallments - 1);
+                        const newPending = parentTx.pendingAmount + amount;
+                        await updateDoc(doc(db, "transactions", parentId), { paidInstallments: newPaid, pendingAmount: newPending });
+                    }
+                    await deleteDoc(doc(db, "transactions", paymentId));
                 } catch(e) {}
-            }, 'ph-credit-card', 'Pagar', 'blue');
+            }, false);
         }
+
+        function updateCreditUI() {
+            const list = document.getElementById('credit-list');
+            const credTxs = [...transactions].filter(tx => tx.type === 'credit_active' || tx.type === 'credit_payment').reverse();
+            
+            if(credTxs.length === 0) { list.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium">No hay deudas ni pagos de tarjeta</div>`; return; }
+            
+            let html = '';
+            credTxs.forEach(tx => {
+                if(tx.type === 'credit_active') {
+                    const isPaidOut = tx.paidInstallments >= tx.totalInstallments;
+                    html += `
+                        <div class="flex justify-between items-center p-4 active:bg-gray-50 dark:active:bg-gray-700 transition cursor-pointer" onclick="window.openCreditDetail('${tx.id}')">
+                            <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/20 text-blue-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-credit-card text-lg"></i></div>
+                            <div class="overflow-hidden"><p class="font-bold text-gray-900 dark:text-white text-sm truncate max-w-[150px] sm:max-w-[200px]">${tx.desc}</p><p class="text-xs ${isPaidOut?'text-emerald-500':'text-gray-400'} font-medium truncate">${isPaidOut ? 'Saldada' : `${tx.paidInstallments}/${tx.totalInstallments} cuotas • Pend: ${formatCOP(tx.pendingAmount)}`}</p></div></div>
+                            <div class="text-right shrink-0"><p class="font-bold text-blue-500 text-sm">${formatCOP(tx.amount)}</p></div>
+                        </div>`;
+                } else if (tx.type === 'credit_payment') {
+                    html += `
+                        <div class="flex justify-between items-center p-4 bg-gray-50/50 dark:bg-gray-800/50 active:bg-gray-100 dark:active:bg-gray-700 transition cursor-pointer" onclick="window.askDeleteCreditPayment('${tx.id}', '${tx.parentCreditId}', ${tx.amount})">
+                            <div class="flex items-center gap-3 ml-4"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center shrink-0"><i class="ph-bold ph-check text-sm"></i></div>
+                            <div class="overflow-hidden"><p class="font-bold text-gray-600 dark:text-gray-300 text-xs truncate max-w-[130px] sm:max-w-[180px]">${tx.desc}</p><p class="text-[10px] text-gray-400 font-medium truncate">${tx.date} • ${tx.account}</p></div></div>
+                            <div class="text-right shrink-0"><p class="font-bold text-gray-500 dark:text-gray-400 text-xs">${formatCOP(tx.amount)}</p></div>
+                        </div>`;
+                }
+            });
+            list.innerHTML = html;
+        }
+
+        window.switchTab = (tab) => {
+            ['dashboard-view', 'ledger-view', 'simulador-view', 'settings-view'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`${tab}-view`)?.classList.remove('hidden'); document.getElementById(`nav-${tab}`)?.classList.add('active');
+        }
+
+        window.showCustomAlert = (t, m, i) => { const a = document.getElementById('custom-alert'); document.getElementById('alert-icon').className = `ph-fill ${i}`; document.getElementById('alert-title').innerText = t; document.getElementById('alert-message').innerText = m; a.classList.remove('hidden'); a.classList.add('flex'); }
+        window.closeAlert = () => { const a = document.getElementById('custom-alert'); a.classList.add('hidden'); a.classList.remove('flex'); }
         
-        window.confirmDeleteCredit = (id) => {
-            window.closeCreditDetailModal();
-            window.showConfirm('Borrar Deuda', 'Se eliminará la deuda. Si hiciste pagos a cuotas, esos pagos (gastos) seguirán en tus movimientos normales.', async () => {
-                try { await deleteDoc(doc(db, "transactions", id)); window.closeConfirm(); } catch(e){}
+        window.showConfirm = (title, message, callback, isAction = false) => {
+            confirmActionCallback = callback; document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message;
+            const btn = document.getElementById('btn-confirm-action'); const icon = document.getElementById('confirm-icon');
+            if(isAction) { btn.innerText = 'Pagar Cuota'; btn.className = 'flex-1 bg-blue-500 text-white font-bold py-3 rounded-xl active:bg-blue-600'; icon.className = 'ph-fill ph-check-circle text-blue-500 text-4xl mb-3 inline-block'; } 
+            else { btn.innerText = 'Borrar'; btn.className = 'flex-1 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600'; icon.className = 'ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block'; }
+            const m = document.getElementById('confirm-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        }
+        window.closeConfirm = () => { const m = document.getElementById('confirm-modal'); m.classList.add('hidden'); m.classList.remove('flex'); confirmActionCallback = null; }
+        window.executeConfirm = () => { if (confirmActionCallback) confirmActionCallback(); }
+
+        window.exportToPDF = () => {
+            const monthInput = document.getElementById('export-month').value; if (!monthInput) return window.showCustomAlert('Mes Requerido', 'Selecciona el mes a exportar.', 'ph-calendar text-gray-500');
+            const [year, month] = monthInput.split('-'); const txExport = transactions.filter(tx => tx.date.startsWith(`${year}-${month}`) && tx.type !== 'credit_active' && tx.type !== 'credit_payment');
+            if (txExport.length === 0) return window.showCustomAlert('Vacío', 'No hay registros en este mes.', 'ph-warning-circle text-gray-500');
+
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(20); doc.setFont("helvetica", "bold"); doc.text("FinSight Reporte", 14, 20); doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`Periodo: ${month}/${year}`, 14, 28);
+            let totalIn = 0, totalOut = 0; txExport.forEach(t => { if(t.type === 'income') totalIn += t.amount; else totalOut += t.amount; });
+            doc.text(`Ingresos: ${formatCOP(totalIn)} | Gastos: ${formatCOP(totalOut)}`, 14, 38);
+            
+            doc.autoTable({ startY: 45, head: [['Fecha', 'Detalle', 'Categoría', 'Cuenta', 'Ingreso', 'Gasto']], body: txExport.map(tx => [tx.date, tx.desc, tx.category, tx.account || '-', tx.type === 'income' ? formatCOP(tx.amount) : '', tx.type === 'expense' ? formatCOP(tx.amount) : '' ]), theme: 'plain', headStyles: { fillColor: [242, 242, 247], textColor: 0, fontStyle: 'bold' }, styles: { fontSize: 8, cellPadding: 3, borderBottomWidth: 0.1, lineColor: [200,200,200] } });
+            doc.save(`FinSight_${year}_${month}.pdf`);
+        }
+
+        function compressImageForOCR(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); let {width, height} = img; if (width > height && width > 800) { height *= 800 / width; width = 800; } else if (height > 800) { width *= 800 / height; height = 800; } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.8)); }; img.onerror = () => reject("Error imagen"); img.src = event.target.result; }; 
+                reader.onerror = () => reject("Error archivo"); reader.readAsDataURL(file); 
             });
         }
-        window.confirmDeletePayment = (id) => {
-            window.showConfirm('Borrar Pago de Cuota', 'Se eliminará este pago del historial y tu deuda volverá a aumentar. (Esto NO reembolsa el dinero en tus movimientos normales).', async () => {
-                try { await deleteDoc(doc(db, "transactions", id)); window.closeConfirm(); } catch(e){}
-            });
+
+        window.processInvoiceWithOpenRouter = async (input) => {
+            if (!input.files || input.files.length === 0) return;
+            const loader = document.getElementById('scan-loader'); loader.classList.remove('hidden'); loader.classList.add('flex');
+            const OPENROUTER_API_KEY = "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";
+
+            try {
+                const base64 = await compressImageForOCR(input.files[0]);
+                const prompt = `Analiza la imagen. Si es cobro/venta para mi es "income", si es ticket que pagué es "expense". Devuelve SOLO JSON con: "type": "income" o "expense", "amount": numero total sin comas, "description": texto corto, "category": (Si expense: Operaciones, Inventario, Servicios, Nómina, Otros Gastos. Si income: Ventas, Aportes, Rendimientos, Otros Ingresos), "date": YYYY-MM-DD. SI NO SE VE LA FECHA CLARA, DEVUELVE null.`;
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", { method: "POST", headers: { "Authorization": `Bearer ${OPENROUTER_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ model: "openai/gpt-4o-mini", response_format: { type: "json_object" }, messages: [ { role: "user", content: [ { type: "text", text: prompt }, { type: "image_url", image_url: { url: base64 } } ] } ] }) });
+                if (!response.ok) throw new Error(`OpenRouter (${response.status}): Revisa tu API Key.`);
+                const data = await response.json(); const jsonMatch = data.choices[0].message.content.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("La IA no devolvió datos estructurados.");
+                
+                const ext = JSON.parse(jsonMatch[0]); const txType = ext.type === 'income' ? 'income' : 'expense';
+                window.openFormModal(txType, true);
+                document.getElementById('form-amount').value = ext.amount || ''; document.getElementById('form-desc').value = (ext.description || "Recibo IA").substring(0, 30);
+                if (ext.date && ext.date !== "null" && ext.date !== null) { document.getElementById('form-date').value = ext.date; } 
+                else { const now = new Date(); document.getElementById('form-date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; }
+                
+                const catSelect = document.getElementById('form-category'); let found = false;
+                for (let i = 0; i < catSelect.options.length; i++) { if (catSelect.options[i].value === ext.category) { catSelect.selectedIndex = i; found = true; break; } }
+                if (!found) catSelect.value = txType === 'income' ? 'Otros Ingresos' : 'Otros Gastos';
+                if(accounts.length > 0) document.getElementById('form-account').value = accounts[0].name;
+            } catch (error) { window.showCustomAlert('Error del Escáner', error.message || error, 'ph-warning-circle text-rose-500'); } 
+            finally { loader.classList.add('hidden'); loader.classList.remove('flex'); input.value = ''; }
         }
     </script>
 </body>
