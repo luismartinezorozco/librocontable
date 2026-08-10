@@ -52,7 +52,24 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade { animation: fadeIn 0.2s ease-out forwards; }
         
-        input, select, textarea { font-size: 16px !important; }
+        /* 
+         * FIX CRÍTICO PARA IOS/ANDROID OVERFLOW 
+         * Forzamos a todos los inputs a respetar su contenedor.
+         */
+        *, *::before, *::after {
+            box-sizing: border-box !important;
+        }
+        
+        input, select, textarea { 
+            font-size: 16px !important; /* Previene zoom automático en iOS */
+            max-width: 100% !important; 
+            width: 100%;
+        }
+        
+        input[type="date"] {
+            min-height: 48px;
+            display: block;
+        }
         
         .custom-select {
             appearance: none;
@@ -69,8 +86,8 @@
 </head>
 <body class="flex items-center justify-center min-h-screen sm:p-4 bg-[#F2F2F7] dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 selection:bg-indigo-100 selection:text-indigo-900">
 
+    <!-- LOGIN -->
     <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 animate-fade relative overflow-hidden sm:border-[8px] sm:border-gray-900 transition-colors">
-        
         <div class="text-center mb-10">
             <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden shadow-lg shadow-gray-200 dark:shadow-none">
                 <img src="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png" alt="FinSight Logo" class="w-full h-full object-cover">
@@ -84,25 +101,24 @@
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="ph-bold ph-envelope-simple text-gray-400"></i>
                 </div>
-                <input type="email" id="auth-email" required placeholder="Correo electrónico" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-all">
+                <input type="email" id="auth-email" required placeholder="Correo electrónico" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-all">
             </div>
-            
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="ph-bold ph-lock-key text-gray-400"></i>
                 </div>
-                <input type="password" id="auth-password" required placeholder="Contraseña" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-12 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-all">
+                <input type="password" id="auth-password" required placeholder="Contraseña" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-12 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-all">
                 <button type="button" onclick="window.togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
                     <i id="eye-icon" class="ph-bold ph-eye"></i>
                 </button>
             </div>
-            
             <button type="submit" id="auth-submit-btn" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3.5 rounded-2xl hover:bg-black transition-all shadow-md active:scale-[0.98] mt-6 flex justify-center items-center gap-2">
                 Entrar a la bóveda
             </button>
         </form>
     </div>
 
+    <!-- MAIN APP CONTAINER -->
     <div id="main-app-view" class="hidden w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#F2F2F7] dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col relative overflow-hidden sm:border-[8px] sm:border-gray-900 transition-colors">
         
         <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] dark:bg-gray-900 z-10 sticky top-0 flex justify-between items-center transition-colors">
@@ -185,7 +201,7 @@
                 <div class="flex gap-2 mb-4">
                     <div class="relative flex-1">
                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full block min-w-0 box-border bg-white dark:bg-gray-800 rounded-xl pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 shadow-sm border border-transparent dark:border-gray-700 dark:text-white">
+                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full block bg-white dark:bg-gray-800 rounded-xl pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 shadow-sm border border-transparent dark:border-gray-700 dark:text-white">
                     </div>
                     <label class="w-12 h-12 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition">
                         <i class="ph-bold ph-camera text-xl"></i>
@@ -222,37 +238,42 @@
                 </div>
 
                 <h3 class="font-bold text-lg mb-3 dark:text-white">Registrar Nueva Compra</h3>
-                <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm rounded-2xl p-4 sm:p-5 mb-6 w-full box-border overflow-hidden">
-                    <div class="grid grid-cols-2 gap-2"> 
-                        <div class="space-y-1 col-span-2 mb-2">
+                <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm rounded-2xl p-4 sm:p-5 mb-6 w-full overflow-hidden">
+                    <!-- Formulario T. Crédito con Layout Estructural Reparado -->
+                    <div class="grid grid-cols-2 gap-3"> 
+                        <div class="space-y-1 col-span-2 mb-1">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Descripción</label>
-                            <input type="text" id="credit-desc" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Ej. iPhone 15, Vuelos...">
+                            <input type="text" id="credit-desc" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Ej. iPhone 15, Vuelos...">
                         </div>
-                        <div class="space-y-1">
+                        
+                        <div class="space-y-1 col-span-1">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Corte</label>
-                            <select id="credit-cut" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
+                            <select id="credit-cut" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
                         </div>
-                        <div class="space-y-1">
+                        <div class="space-y-1 col-span-1">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Pago</label>
-                            <select id="credit-pay" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
+                            <select id="credit-pay" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
                         </div>
-                        <div class="space-y-1 mt-2">
+                        
+                        <div class="space-y-1 col-span-1 mt-1">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Valor</label>
-                            <input type="number" id="credit-amount" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0">
+                            <input type="number" id="credit-amount" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0">
                         </div>
-                        <div class="space-y-1 mt-2">
+                        <div class="space-y-1 col-span-1 mt-1">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Cuotas</label>
-                            <select id="credit-installments" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+                            <select id="credit-installments" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
                                 <option value="1">1 cuota</option><option value="2">2 cuotas</option><option value="3">3 cuotas</option><option value="6">6 cuotas</option><option value="12">12 cuotas</option><option value="24">24 cuotas</option>
                             </select>
                         </div>
-                        <div class="space-y-1 mt-2">
+                        
+                        <!-- FECHA E INTERÉS EN FILAS COMPLETAS (COL-SPAN-2) PARA EVITAR OVERFLOW EN IOS -->
+                        <div class="space-y-1 col-span-2 mt-1">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Fecha</label>
-                            <input type="date" id="credit-date" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 text-gray-500">
+                            <input type="date" id="credit-date" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 text-gray-500">
                         </div>
-                        <div class="space-y-1 mt-2">
+                        <div class="space-y-1 col-span-2 mt-1">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Interés (%)</label> 
-                            <input type="number" step="0.01" id="credit-interest" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0.00">
+                            <input type="number" step="0.01" id="credit-interest" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0.00">
                         </div>
                     </div>
                 </div>
@@ -293,7 +314,7 @@
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm p-5 mb-5">
                     <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white"><div class="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center"><i class="ph-bold ph-file-pdf"></i></div> Exportar Reporte</h3>
                     <div class="flex gap-2">
-                        <input type="month" id="export-month" class="flex-1 w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-gray-200">
+                        <input type="month" id="export-month" class="flex-1 w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-gray-200">
                         <button onclick="window.exportToPDF()" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold px-4 rounded-xl active:scale-95 transition">PDF</button>
                     </div>
                 </div>
@@ -301,7 +322,7 @@
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm p-5 mb-5">
                     <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white"><div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center"><i class="ph-bold ph-bank"></i></div> Mis Cuentas</h3>
                     <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-4">
-                        <input type="text" id="new-account-name" placeholder="Ej. Efectivo, Nequi..." required class="flex-1 w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="new-account-name" placeholder="Ej. Efectivo, Nequi..." required class="flex-1 w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
                         <button type="submit" id="btn-add-account" class="bg-blue-500 text-white font-bold px-4 rounded-xl active:scale-95 transition shrink-0">+</button>
                     </form>
                     <div id="accounts-list" class="flex flex-col divide-y divide-gray-100 dark:divide-gray-700 max-h-[300px] overflow-y-auto hide-scroll"></div>
@@ -332,7 +353,7 @@
             </button>
         </nav>
 
-        <!-- Modal Ingreso/Gasto -->
+        <!-- Modal Ingreso/Gasto (Inputs en Stack para evitar overflow móvil) -->
         <div id="form-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
             <div class="bg-white dark:bg-gray-900 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
@@ -345,19 +366,19 @@
                     <input type="hidden" id="edit-tx-id" value="">
                     <div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-2xl px-4 py-2 border border-gray-100 dark:border-gray-700">
                         <span class="text-gray-400 font-bold text-lg mr-2">$</span>
-                        <input type="number" step="1" id="form-amount" required class="w-full block min-w-0 box-border bg-transparent text-2xl font-bold text-gray-900 dark:text-white focus:outline-none py-2" placeholder="0">
+                        <input type="number" step="1" id="form-amount" required class="w-full block bg-transparent text-2xl font-bold text-gray-900 dark:text-white focus:outline-none py-2" placeholder="0">
                     </div>
                     
                     <div class="relative">
                         <i class="ph-bold ph-text-aa absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="form-desc" required class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200" placeholder="Descripción">
+                        <input type="text" id="form-desc" required class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200" placeholder="Descripción">
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="form-category" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200 custom-select"></select>
-                        <select id="form-account" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200 custom-select"></select>
+                    <div class="flex flex-col gap-3">
+                        <select id="form-category" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200 custom-select"></select>
+                        <select id="form-account" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200 custom-select"></select>
                     </div>
-                    <input type="date" id="form-date" required class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200">
+                    <input type="date" id="form-date" required class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200">
 
                     <div class="flex gap-3 pt-2">
                         <button type="button" id="btn-delete-tx" onclick="window.deleteCurrentTx()" class="hidden w-14 h-[52px] bg-rose-50 dark:bg-rose-900/30 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 transition shrink-0">
@@ -398,7 +419,7 @@
                 <h3 class="text-lg font-bold mb-4 dark:text-white">Renombrar Cuenta</h3>
                 <form id="edit-account-form" onsubmit="window.handleEditAccount(event)">
                     <input type="hidden" id="edit-account-id">
-                    <input type="text" id="edit-account-name" required class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="edit-account-name" required class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-blue-500">
                     <div class="flex gap-2">
                         <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200">Cancelar</button>
                         <button type="submit" id="btn-save-account" class="flex-1 bg-blue-500 text-white font-bold py-3 rounded-xl active:bg-blue-600">Guardar</button>
