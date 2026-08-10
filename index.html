@@ -56,8 +56,22 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade { animation: fadeIn 0.2s ease-out forwards; }
         
-        /* Select Reset */
-        input, select, textarea { font-size: 16px !important; }
+        /* FIX: Corrección estricta para desbordes en iOS/Safari (Grid y Flex) */
+        input, select, textarea { 
+            font-size: 16px !important; 
+            min-width: 0 !important; 
+            max-width: 100% !important; 
+            box-sizing: border-box !important;
+        }
+
+        /* FIX: Forzar al input de fecha a comportarse bien en móviles Apple */
+        input[type="date"] {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            display: block;
+            width: 100%;
+        }
+
         .custom-select {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 9l4-4 4 4m0 6l-4 4-4-4'/%3E%3C/svg%3E");
@@ -239,9 +253,9 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Simula y gestiona tus deudas aisladas.</p>
 
                 <h3 class="font-bold text-lg mb-3 dark:text-white">Nueva Compra / Simulación</h3>
-                <!-- Formulario T. Credito Ajustado para overflow -->
-                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-4 sm:p-5 space-y-4 mb-6 w-full box-border overflow-hidden">
-                    <div class="grid grid-cols-2 gap-3">
+                <!-- Formulario T. Credito Ajustado para evitar desbordes móviles -->
+                <div class="native-card bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm p-4 sm:p-5 mb-6 w-full box-border overflow-hidden">
+                    <div class="grid grid-cols-2 gap-2"> <!-- Modificado gap-3 por gap-2 para más espacio -->
                         <div class="space-y-1 col-span-2 mb-2">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Descripción</label>
                             <input type="text" id="sim-desc" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Ej. iPhone 15, Vuelos...">
@@ -254,22 +268,23 @@
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Pago</label>
                             <select id="sim-pay" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
                         </div>
-                        <div class="space-y-1">
+                        <div class="space-y-1 mt-2">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Valor</label>
                             <input type="number" id="sim-amount" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0">
                         </div>
-                        <div class="space-y-1">
+                        <div class="space-y-1 mt-2">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Cuotas</label>
                             <select id="sim-installments" class="custom-select w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
                                 <option value="1">1 cuota</option><option value="2">2 cuotas</option><option value="3">3 cuotas</option><option value="6">6 cuotas</option><option value="12">12 cuotas</option><option value="24">24 cuotas</option>
                             </select>
                         </div>
-                        <div class="space-y-1">
+                        <!-- Fechas e Interés optimizados para ancho reducido -->
+                        <div class="space-y-1 mt-2">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Fecha</label>
                             <input type="date" id="sim-date" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 text-gray-500">
                         </div>
-                        <div class="space-y-1">
-                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Interés Mensual (%)</label>
+                        <div class="space-y-1 mt-2">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Interés (%)</label> <!-- Título más corto -->
                             <input type="number" step="0.01" id="sim-interest" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0.00">
                         </div>
                     </div>
@@ -357,7 +372,7 @@
 
         <!-- MODAL FORMULARIO GASTO/INGRESO -->
         <div id="form-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
-            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors w-full box-border">
+            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-5 sm:p-6 animate-sheet pb-safe transition-colors box-border">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="modal-title" class="text-xl font-bold dark:text-white">Añadir</h3>
@@ -377,7 +392,7 @@
                         <input type="text" id="form-desc" required class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Descripción">
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-3 w-full">
+                    <div class="grid grid-cols-2 gap-2 w-full">
                         <select id="form-category" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500 custom-select"></select>
                         <select id="form-account" class="w-full block min-w-0 box-border bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-blue-500 custom-select"></select>
                     </div>
@@ -395,7 +410,7 @@
 
         <!-- MODAL DETALLE DEUDA TC -->
         <div id="credit-detail-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[55] hidden flex-col justify-end transition-opacity">
-            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors w-full box-border">
+            <div class="bg-white dark:bg-gray-800 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors box-border">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold dark:text-white">Detalle Deuda</h3>
