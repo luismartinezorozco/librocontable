@@ -52,16 +52,11 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade { animation: fadeIn 0.2s ease-out forwards; }
         
-        /* 
-         * FIX CRÍTICO Y DEFINITIVO PARA IOS/ANDROID OVERFLOW 
-         * Usamos fuerza bruta para obligar a los inputs a no crecer más de su padre.
-         */
-        *, *::before, *::after {
-            box-sizing: border-box !important;
-        }
+        /* FIX iOS/Android Desborde - Estricto */
+        *, *::before, *::after { box-sizing: border-box !important; }
         
         input, select, textarea { 
-            font-size: 16px !important; /* Previene zoom automático en iOS */
+            font-size: 16px !important; 
             width: 100% !important;
             max-width: 100% !important; 
             min-width: 0 !important;
@@ -91,49 +86,84 @@
 </head>
 <body class="flex items-center justify-center min-h-screen sm:p-4 bg-[#F2F2F7] dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 selection:bg-indigo-100 selection:text-indigo-900 relative">
 
-    <!-- LOGIN (Ahora con animación dinámica fluida) -->
+    <!-- LOGIN / REGISTRO -->
     <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-gray-900 transition-all duration-500 ease-in-out opacity-100">
         <div class="text-center mb-10">
             <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden shadow-lg shadow-gray-200 dark:shadow-none transition-transform duration-300 hover:scale-105">
                 <img src="https://www.image2url.com/r2/default/images/1785892671931-f14328ad-2e9a-462e-9f1f-9594ed81cdd8.png" alt="FinSight Logo" class="w-full h-full object-cover">
             </div>
-            <h1 class="text-3xl font-extrabold tracking-tight dark:text-white">FinSight</h1>
-            <p class="text-sm text-gray-500 font-medium mt-1">Tu bóveda financiera</p>
+            <h1 class="text-3xl font-extrabold tracking-tight dark:text-white" id="auth-title">FinSight</h1>
+            <p class="text-sm text-gray-500 font-medium mt-1" id="auth-subtitle">Tu bóveda financiera</p>
         </div>
         
         <form id="auth-form" onsubmit="window.handleAuthSubmit(event)" class="space-y-4">
-            <div class="relative">
+            <div class="relative min-w-0">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="ph-bold ph-envelope-simple text-gray-400"></i>
                 </div>
                 <input type="email" id="auth-email" required placeholder="Correo electrónico" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-all">
             </div>
-            <div class="relative">
+            <div class="relative min-w-0">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="ph-bold ph-lock-key text-gray-400"></i>
                 </div>
                 <input type="password" id="auth-password" required placeholder="Contraseña" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl pl-11 pr-12 py-3.5 text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-all">
-                <button type="button" onclick="window.togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
+                <button type="button" onclick="window.togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors shrink-0">
                     <i id="eye-icon" class="ph-bold ph-eye"></i>
                 </button>
             </div>
-            <button type="submit" id="auth-submit-btn" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3.5 rounded-2xl hover:bg-black transition-all shadow-md active:scale-[0.98] mt-6 flex justify-center items-center gap-2">
+            <button type="submit" id="auth-submit-btn" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3.5 rounded-2xl hover:bg-black transition-all shadow-md active:scale-[0.98] mt-6 flex justify-center items-center gap-2 truncate">
                 <span>Entrar a la bóveda</span>
             </button>
         </form>
+
+        <div class="mt-6 text-center">
+            <button type="button" onclick="window.toggleAuthMode()" id="toggle-auth-btn" class="text-sm font-semibold text-gray-500 hover:text-gray-800 dark:hover:text-white transition">¿No tienes cuenta? Solicita acceso</button>
+        </div>
     </div>
 
-    <!-- MAIN APP CONTAINER (Empieza oculto y transparente) -->
+    <!-- PANTALLA DE ESPERA / SUSPENSIÓN (Para usuarios no aprobados) -->
+    <div id="status-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-40 absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-gray-900 transition-all duration-500 ease-in-out">
+        <div class="text-center mb-10">
+            <i id="status-icon" class="ph-fill ph-hourglass text-6xl text-blue-500 mb-4 inline-block animate-pulse"></i>
+            <h2 id="status-title" class="text-2xl font-extrabold tracking-tight dark:text-white mb-2">Cuenta Pendiente</h2>
+            <p id="status-message" class="text-sm text-gray-500 font-medium">El administrador debe autorizar tu acceso a la bóveda. Por favor, espera.</p>
+        </div>
+        <button onclick="window.logout()" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-bold py-3.5 rounded-2xl active:scale-95 transition-all shadow-sm">
+            Cerrar Sesión
+        </button>
+    </div>
+
+    <!-- PANEL DEL SUPER ADMINISTRADOR -->
+    <div id="admin-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#F2F2F7] dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-gray-900 transition-all duration-500 ease-in-out">
+        <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] dark:bg-gray-900 z-10 sticky top-0 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+            <div>
+                <p class="text-xs text-blue-500 font-bold uppercase tracking-wider mb-1">Super Admin</p>
+                <h1 class="text-xl font-extrabold text-gray-900 dark:text-white leading-none">Panel de Control</h1>
+            </div>
+            <button onclick="window.logout()" class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center shadow-sm">
+                <i class="ph-bold ph-sign-out text-lg"></i>
+            </button>
+        </header>
+        <main class="flex-1 overflow-y-auto hide-scroll p-5">
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Gestión de accesos y suscripciones de usuarios. No tienes acceso a sus datos financieros.</p>
+            <div id="admin-users-list" class="space-y-4 w-full">
+                <div class="text-center py-10"><i class="ph-bold ph-spinner animate-spin text-2xl text-gray-400"></i></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MAIN APP CONTAINER (La App normal) -->
     <div id="main-app-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#F2F2F7] dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-gray-900 transition-all duration-500 ease-in-out">
         
         <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] dark:bg-gray-900 z-10 sticky top-0 flex justify-between items-center transition-colors">
             <div class="flex items-center gap-3">
-                <div id="user-initials" class="w-10 h-10 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center font-bold text-sm shadow-sm">
+                <div id="user-initials" class="w-10 h-10 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
                     --
                 </div>
-                <div>
-                    <p class="text-xs text-gray-500 font-medium leading-none mb-1">Hola,</p>
-                    <p id="user-name" class="text-base font-bold text-gray-900 dark:text-white leading-none truncate max-w-[150px]">Usuario</p>
+                <div class="min-w-0">
+                    <p class="text-xs text-gray-500 font-medium leading-none mb-1 truncate">Hola,</p>
+                    <p id="user-name" class="text-base font-bold text-gray-900 dark:text-white leading-none truncate w-full">Usuario</p>
                 </div>
             </div>
         </header>
@@ -146,10 +176,10 @@
                     <p class="text-xs text-gray-300 font-medium mb-1">Balance Total</p>
                     <h2 class="text-3xl font-extrabold tracking-tight truncate w-full" id="total-balance">$ 0</h2>
                     <div class="mt-4 flex items-center justify-between">
-                        <div id="status-badge" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1">
+                        <div id="status-badge" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1 shrink-0">
                             <i class="ph-bold ph-minus"></i> Analizando
                         </div>
-                        <i class="ph-fill ph-wallet text-2xl text-white/20"></i>
+                        <i class="ph-fill ph-wallet text-2xl text-white/20 shrink-0"></i>
                     </div>
                 </div>
 
@@ -192,9 +222,9 @@
                         <h3 class="font-bold text-lg dark:text-white">Recientes</h3>
                         <button onclick="window.switchTab('ledger')" class="text-xs font-semibold text-blue-500">Ver todo</button>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden w-full">
                         <div id="tx-list" class="divide-y divide-gray-100 dark:divide-gray-700 flex flex-col w-full">
-                            <div class="p-6 text-center text-gray-400 text-sm font-medium flex flex-col items-center"><i class="ph-bold ph-ghost text-3xl mb-1 opacity-30"></i>Cargando...</div>
+                            <div class="p-6 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-ghost text-3xl mb-1 opacity-30"></i><span class="truncate w-full">Cargando...</span></div>
                         </div>
                     </div>
                 </div>
@@ -205,7 +235,7 @@
                 <h2 class="text-3xl font-extrabold mb-4 dark:text-white">Movimientos</h2>
                 <div class="flex gap-2 mb-4 w-full">
                     <div class="relative flex-1 min-w-0">
-                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 shrink-0"></i>
                         <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full block bg-white dark:bg-gray-800 rounded-xl pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 shadow-sm border border-transparent dark:border-gray-700 dark:text-white">
                     </div>
                     <label class="w-12 h-12 shrink-0 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition">
@@ -214,9 +244,9 @@
                     </label>
                 </div>
                 <div class="flex gap-2 mb-5 overflow-x-auto hide-scroll pb-1 w-full">
-                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-gray-900 dark:bg-white text-white dark:text-gray-900 whitespace-nowrap shadow-sm transition">Todos</button>
-                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 border border-gray-200 dark:border-gray-700 whitespace-nowrap transition">Gastos</button>
-                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 border border-gray-200 dark:border-gray-700 whitespace-nowrap transition">Ingresos</button>
+                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-gray-900 dark:bg-white text-white dark:text-gray-900 whitespace-nowrap shadow-sm transition shrink-0">Todos</button>
+                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 border border-gray-200 dark:border-gray-700 whitespace-nowrap transition shrink-0">Gastos</button>
+                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-gray-800 text-gray-500 border border-gray-200 dark:border-gray-700 whitespace-nowrap transition shrink-0">Ingresos</button>
                 </div>
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden w-full">
                     <div id="ledger-list" class="divide-y divide-gray-100 dark:divide-gray-700 flex flex-col w-full">
@@ -228,9 +258,9 @@
             <!-- VISTA 3: T. CREDITO -->
             <div id="credit-view" class="hidden animate-fade">
                 <h2 class="text-3xl font-extrabold mb-1 dark:text-white truncate">T. Crédito</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 truncate">Gestiona tus deudas aisladas.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 truncate">Gestiona tus deudas y compras aisladas.</p>
 
-                <!-- Tarjeta Deuda Total TC -->
+                <!-- Tarjeta Deuda Total TC Aislada -->
                 <div class="bg-gradient-to-br from-blue-900 to-blue-800 dark:from-blue-900/80 dark:to-blue-900/50 text-white rounded-[24px] p-6 mb-6 shadow-lg shadow-blue-900/10 border border-transparent dark:border-blue-700/30 w-full min-w-0">
                     <p class="text-xs text-blue-200 font-medium mb-1 truncate">Deuda Total Pendiente</p>
                     <h2 class="text-3xl font-extrabold tracking-tight truncate w-full" id="total-credit-debt">$ 0</h2>
@@ -243,46 +273,37 @@
                 </div>
 
                 <h3 class="font-bold text-lg mb-3 dark:text-white truncate">Registrar Nueva Compra</h3>
-                <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm rounded-2xl p-4 sm:p-5 mb-6 w-full">
+                <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 shadow-sm rounded-2xl p-4 sm:p-5 mb-6 w-full min-w-0">
                     
-                    <!-- Formulario T. Crédito - ESTRUCTURA FLEX ESTRICTA PARA EVITAR DESBORDE -->
-                    <div class="flex flex-col gap-3 w-full"> 
-                        
-                        <!-- Descripción 100% ancho -->
+                    <div class="flex flex-col gap-3 w-full min-w-0"> 
                         <div class="space-y-1 w-full min-w-0">
                             <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Descripción</label>
                             <input type="text" id="credit-desc" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="Ej. iPhone 15, Vuelos...">
                         </div>
                         
-                        <!-- Corte y Pago en Flex 50/50 -->
-                        <div class="flex gap-3 w-full">
-                            <div class="flex-1 min-w-0 space-y-1">
-                                <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Corte</label>
-                                <select id="credit-cut" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
-                            </div>
-                            <div class="flex-1 min-w-0 space-y-1">
-                                <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Pago</label>
-                                <select id="credit-pay" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
-                            </div>
-                        </div>
-                        
-                        <!-- Valor y Cuotas en Flex 50/50 -->
-                        <div class="flex gap-3 w-full">
-                            <div class="flex-1 min-w-0 space-y-1">
-                                <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Valor</label>
-                                <input type="number" id="credit-amount" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0">
-                            </div>
-                            <div class="flex-1 min-w-0 space-y-1">
-                                <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Cuotas</label>
-                                <select id="credit-installments" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
-                                    <option value="1">1 cuota</option><option value="2">2 cuotas</option><option value="3">3 cuotas</option><option value="6">6 cuotas</option><option value="12">12 cuotas</option><option value="24">24 cuotas</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <!-- Fecha y Tasa de Interés APILADOS verticalmente para cero problemas -->
+                        <!-- Fechas de corte y pago apiladas para evitar desbordes -->
                         <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Fecha</label>
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Día de Corte</label>
+                            <select id="credit-cut" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
+                        </div>
+                        <div class="space-y-1 w-full min-w-0">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Día de Pago Máximo</label>
+                            <select id="credit-pay" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500"></select>
+                        </div>
+                        
+                        <div class="space-y-1 w-full min-w-0">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Valor de la Compra</label>
+                            <input type="number" id="credit-amount" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500" placeholder="0">
+                        </div>
+                        <div class="space-y-1 w-full min-w-0">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Cuotas</label>
+                            <select id="credit-installments" class="custom-select w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
+                                <option value="1">1 cuota</option><option value="2">2 cuotas</option><option value="3">3 cuotas</option><option value="6">6 cuotas</option><option value="12">12 cuotas</option><option value="24">24 cuotas</option>
+                            </select>
+                        </div>
+                        
+                        <div class="space-y-1 w-full min-w-0">
+                            <label class="text-xs font-semibold text-gray-500 ml-1 block truncate">Fecha de Compra</label>
                             <input type="date" id="credit-date" class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500 text-gray-500">
                         </div>
                         <div class="space-y-1 w-full min-w-0">
@@ -292,17 +313,17 @@
                     </div>
                 </div>
                 
-                <div id="credit-results" class="w-full">
+                <div id="credit-results" class="w-full min-w-0">
                     <div class="text-center py-10 px-4 w-full">
                         <i class="ph-bold ph-calculator mx-auto text-gray-300 dark:text-gray-600 text-4xl mb-2"></i>
-                        <p class="text-gray-400 text-xs font-medium truncate">Ingresa los datos para calcular</p>
+                        <p class="text-gray-400 text-xs font-medium truncate w-full">Ingresa los datos para calcular y guardar</p>
                     </div>
                 </div>
 
                 <h3 class="font-bold text-lg mb-3 mt-6 dark:text-white truncate">Deudas Activas y Pagos</h3>
-                <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden mb-6 w-full">
+                <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden mb-6 w-full min-w-0">
                     <div id="credit-list" class="divide-y divide-gray-100 dark:divide-gray-700 flex flex-col w-full">
-                        <div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center"><i class="ph-bold ph-credit-card text-3xl mb-2 opacity-30"></i><span class="truncate w-full">No hay deudas activas</span></div>
+                        <div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-credit-card text-3xl mb-2 opacity-30"></i><span class="truncate w-full">No hay deudas ni pagos de tarjeta</span></div>
                     </div>
                 </div>
             </div>
@@ -311,7 +332,6 @@
             <div id="settings-view" class="hidden animate-fade">
                 <h2 class="text-3xl font-extrabold mb-6 dark:text-white">Ajustes</h2>
 
-                <!-- Dark Mode Toggle -->
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm p-5 mb-5 flex justify-between items-center w-full min-w-0">
                     <div class="flex items-center gap-3 min-w-0">
                         <div class="w-8 h-8 shrink-0 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 flex items-center justify-center">
@@ -327,7 +347,7 @@
 
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm p-5 mb-5 w-full min-w-0">
                     <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white truncate"><div class="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-file-pdf"></i></div> Exportar Reporte</h3>
-                    <div class="flex gap-2 w-full">
+                    <div class="flex gap-2 w-full min-w-0">
                         <input type="month" id="export-month" class="flex-1 min-w-0 block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-gray-200">
                         <button onclick="window.exportToPDF()" class="shrink-0 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold px-4 rounded-xl active:scale-95 transition">PDF</button>
                     </div>
@@ -335,7 +355,7 @@
 
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm p-5 mb-5 w-full min-w-0">
                     <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white truncate"><div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-bank"></i></div> Mis Cuentas</h3>
-                    <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-4 w-full">
+                    <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-4 w-full min-w-0">
                         <input type="text" id="new-account-name" placeholder="Ej. Efectivo..." required class="flex-1 min-w-0 block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-blue-500">
                         <button type="submit" id="btn-add-account" class="shrink-0 bg-blue-500 text-white font-bold px-4 rounded-xl active:scale-95 transition">+</button>
                     </form>
@@ -351,23 +371,23 @@
         <nav class="absolute bottom-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 flex justify-around items-center pb-safe pt-2 z-20 transition-colors" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
             <button id="nav-home" onclick="window.switchTab('dashboard')" class="nav-item active flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
                 <i class="ph-fill ph-house text-2xl"></i>
-                <span class="text-[10px] font-semibold truncate">Inicio</span>
+                <span class="text-[10px] font-semibold truncate w-full text-center">Inicio</span>
             </button>
             <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
                 <i class="ph-fill ph-list-bullets text-2xl"></i>
-                <span class="text-[10px] font-semibold truncate">Movimientos</span>
+                <span class="text-[10px] font-semibold truncate w-full text-center">Movimientos</span>
             </button>
             <button id="nav-credit" onclick="window.switchTab('credit')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
                 <i class="ph-fill ph-credit-card text-2xl"></i>
-                <span class="text-[10px] font-semibold truncate">T. Crédito</span>
+                <span class="text-[10px] font-semibold truncate w-full text-center">T. Crédito</span>
             </button>
             <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-16 transition-colors">
                 <i class="ph-fill ph-gear text-2xl"></i>
-                <span class="text-[10px] font-semibold truncate">Ajustes</span>
+                <span class="text-[10px] font-semibold truncate w-full text-center">Ajustes</span>
             </button>
         </nav>
 
-        <!-- Modal Ingreso/Gasto (Estructura Flex pura anti-desborde) -->
+        <!-- Modal Ingreso/Gasto (Apilado para CERO desborde móvil) -->
         <div id="form-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
             <div class="bg-white dark:bg-gray-900 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
@@ -389,14 +409,14 @@
                         <input type="text" id="form-desc" required class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200" placeholder="Descripción">
                     </div>
                     
-                    <!-- Apilados para cero riesgo de desborde móvil -->
-                    <div class="flex flex-col gap-3 w-full min-w-0">
+                    <!-- APILADOS VERTICALMENTE -->
+                    <div class="space-y-3 w-full min-w-0">
                         <select id="form-category" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200 custom-select"></select>
                         <select id="form-account" class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200 custom-select"></select>
                         <input type="date" id="form-date" required class="w-full block bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-gray-200 text-gray-500">
                     </div>
 
-                    <div class="flex gap-3 pt-2 w-full">
+                    <div class="flex gap-3 pt-2 w-full min-w-0">
                         <button type="button" id="btn-delete-tx" onclick="window.deleteCurrentTx()" class="hidden w-14 h-[52px] bg-rose-50 dark:bg-rose-900/30 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 transition shrink-0">
                             <i class="ph-bold ph-trash text-xl"></i>
                         </button>
@@ -419,7 +439,7 @@
                 
                 <div id="credit-detail-content" class="mb-5 space-y-3 w-full"></div>
 
-                <div class="flex gap-3 w-full">
+                <div class="flex gap-3 w-full min-w-0">
                     <button type="button" id="btn-delete-credit" onclick="window.deleteCurrentCredit()" class="w-14 h-[52px] bg-rose-50 dark:bg-rose-900/30 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 transition shrink-0">
                         <i class="ph-bold ph-trash text-xl"></i>
                     </button>
@@ -429,54 +449,53 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Modales de Alertas e Info (Adaptados para no desbordar) -->
-        <div id="edit-account-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[60] hidden items-center justify-center p-5 w-full">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700 min-w-0">
-                <h3 class="text-lg font-bold mb-4 dark:text-white truncate">Renombrar Cuenta</h3>
-                <form id="edit-account-form" onsubmit="window.handleEditAccount(event)" class="w-full">
-                    <input type="hidden" id="edit-account-id">
-                    <input type="text" id="edit-account-name" required class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-blue-500 min-w-0">
-                    <div class="flex gap-2 w-full">
-                        <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 min-w-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200 truncate">Cancelar</button>
-                        <button type="submit" id="btn-save-account" class="flex-1 min-w-0 bg-blue-500 text-white font-bold py-3 rounded-xl active:bg-blue-600 truncate">Guardar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div id="scan-loader" class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-[60] hidden flex-col items-center justify-center backdrop-blur-md">
-            <i class="ph-bold ph-spinner animate-spin text-4xl text-blue-500 mb-3"></i>
-            <h3 class="text-gray-900 dark:text-white font-bold truncate">Procesando...</h3>
-        </div>
-
-        <div id="custom-alert" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[70] hidden items-center justify-center p-5 w-full">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700 min-w-0">
-                <i id="alert-icon" class="text-4xl mb-3 inline-block"></i>
-                <h3 id="alert-title" class="text-lg font-bold mb-1 dark:text-white truncate w-full">Título</h3>
-                <p id="alert-message" class="text-sm text-gray-500 dark:text-gray-400 mb-5 break-words w-full">Mensaje</p>
-                <button onclick="window.closeAlert()" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 rounded-xl active:scale-95 transition truncate">Entendido</button>
-            </div>
-        </div>
-
-        <div id="confirm-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[80] hidden items-center justify-center p-5 w-full">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700 min-w-0">
-                <i id="confirm-icon" class="ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block"></i>
-                <h3 id="confirm-title" class="text-lg font-bold mb-1 dark:text-white truncate w-full">Confirmar</h3>
-                <p id="confirm-message" class="text-sm text-gray-500 dark:text-gray-400 mb-5 break-words w-full">¿Seguro?</p>
-                <div class="flex gap-2 w-full">
-                    <button onclick="window.closeConfirm()" class="flex-1 min-w-0 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200 truncate">Cancelar</button>
-                    <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 min-w-0 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600 truncate">Confirmar</button>
+    <!-- Modales Globales (Alertas y Cargas) -->
+    <div id="edit-account-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[60] hidden items-center justify-center p-5 w-full">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700 min-w-0">
+            <h3 class="text-lg font-bold mb-4 dark:text-white truncate">Renombrar Cuenta</h3>
+            <form id="edit-account-form" onsubmit="window.handleEditAccount(event)" class="w-full">
+                <input type="hidden" id="edit-account-id">
+                <input type="text" id="edit-account-name" required class="w-full block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-blue-500 min-w-0">
+                <div class="flex gap-2 w-full min-w-0">
+                    <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 min-w-0 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200 truncate">Cancelar</button>
+                    <button type="submit" id="btn-save-account" class="flex-1 min-w-0 bg-blue-500 text-white font-bold py-3 rounded-xl active:bg-blue-600 truncate">Guardar</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="scan-loader" class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-[60] hidden flex-col items-center justify-center backdrop-blur-md">
+        <i class="ph-bold ph-spinner animate-spin text-4xl text-blue-500 mb-3"></i>
+        <h3 class="text-gray-900 dark:text-white font-bold truncate">Procesando...</h3>
+    </div>
+
+    <div id="custom-alert" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[70] hidden items-center justify-center p-5 w-full">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700 min-w-0">
+            <i id="alert-icon" class="text-4xl mb-3 inline-block"></i>
+            <h3 id="alert-title" class="text-lg font-bold mb-1 dark:text-white truncate w-full">Título</h3>
+            <p id="alert-message" class="text-sm text-gray-500 dark:text-gray-400 mb-5 break-words w-full">Mensaje</p>
+            <button onclick="window.closeAlert()" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 rounded-xl active:scale-95 transition truncate">Entendido</button>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[80] hidden items-center justify-center p-5 w-full">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700 min-w-0">
+            <i id="confirm-icon" class="ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block"></i>
+            <h3 id="confirm-title" class="text-lg font-bold mb-1 dark:text-white truncate w-full">Confirmar</h3>
+            <p id="confirm-message" class="text-sm text-gray-500 dark:text-gray-400 mb-5 break-words w-full">¿Seguro?</p>
+            <div class="flex gap-2 w-full min-w-0">
+                <button onclick="window.closeConfirm()" class="flex-1 min-w-0 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 rounded-xl active:bg-gray-200 truncate">Cancelar</button>
+                <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 min-w-0 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600 truncate">Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPAL Y BASE DE DATOS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBHwurtqj-wYdSMGHZL6RA2ZWtAn-oXXcg",
@@ -493,19 +512,23 @@
         const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()}) });
         
         let currentUser = null;
+        let currentUserData = null; // Datos de perfil de app_users
         let allTransactions = []; 
         let mainTransactions = [];
         let creditTransactions = [];
         let filteredTransactions = [];
         let accounts = [];
+        let adminUsersList = []; // Lista para el super admin
         let isExpense = true;
         let currentFilter = 'Todos';
         let searchQuery = '';
         let myChart = null;
         let unsubscribeDB = null;
         let unsubscribeAccountsDB = null;
+        let unsubscribeAdminDB = null;
         let confirmActionCallback = null;
         let activeCreditDeuda = null;
+        let isLoginMode = true; // Control de Login/Registro
 
         const balanceEl = document.getElementById('total-balance');
         const availableEl = document.getElementById('available-amount');
@@ -519,6 +542,7 @@
         const modalTitle = document.getElementById('modal-title');
         const categorySelect = document.getElementById('form-category');
         const editAccountModal = document.getElementById('edit-account-modal');
+        const SUPER_ADMIN_EMAIL = 'eqbstudio.co@gmail.com';
 
         const sanitizeInput = (str) => str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)).trim();
         const formatCOP = (amount) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount).replace(/\s/g, '.').replace(',', '.'); 
@@ -537,69 +561,117 @@
             const toggle = document.getElementById('theme-toggle');
             if (toggle.checked) { document.documentElement.classList.add('dark'); localStorage.setItem('color-theme', 'dark'); } 
             else { document.documentElement.classList.remove('dark'); localStorage.setItem('color-theme', 'light'); }
-            updateUI();
+            if(myChart) updateUI();
         };
 
         window.onload = () => { 
             window.initTheme(); 
             initCreditForm(); 
-            // Control visual del color de los inputs date
             ['form-date', 'credit-date'].forEach(id => {
                 const el = document.getElementById(id);
-                if(el) {
-                    el.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-gray-500'); });
-                }
+                if(el) el.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-gray-500'); });
             });
         };
 
-        onAuthStateChanged(auth, (user) => {
-            const loginView = document.getElementById('login-view');
-            const mainAppView = document.getElementById('main-app-view');
+        function switchRootView(viewId) {
+            const views = ['login-view', 'main-app-view', 'status-view', 'admin-view'];
+            views.forEach(v => {
+                const el = document.getElementById(v);
+                if (v === viewId) {
+                    el.classList.remove('hidden');
+                    setTimeout(() => { el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }, 50);
+                } else {
+                    el.style.opacity = '0';
+                    el.style.pointerEvents = 'none';
+                    setTimeout(() => el.classList.add('hidden'), 400); // 400ms después del fade
+                }
+            });
+        }
+
+        function showStatus(title, msg, iconClass) {
+            document.getElementById('status-title').innerText = title;
+            document.getElementById('status-message').innerText = msg;
+            document.getElementById('status-icon').className = `ph-fill ${iconClass} text-6xl text-blue-500 mb-4 inline-block animate-pulse`;
+            switchRootView('status-view');
+        }
+
+        onAuthStateChanged(auth, async (user) => {
             const authBtn = document.getElementById('auth-submit-btn');
 
             if (user) {
                 currentUser = user;
-                if(authBtn) { authBtn.disabled = false; authBtn.querySelector('span').innerText = 'Entrar a la bóveda'; }
+                if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = '<span>Entrar a la bóveda</span>'; }
                 
-                document.getElementById('user-name').innerText = user.email.split('@')[0];
-                document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
+                // Obtener perfil del usuario para validar permisos
+                const userDocRef = doc(db, "app_users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
                 
-                // Transición fluida hacia la app
-                loginView.style.opacity = '0';
-                loginView.style.pointerEvents = 'none';
-                
-                setTimeout(() => {
-                    loginView.classList.add('hidden');
-                    mainAppView.classList.remove('hidden');
-                    // Pequeño delay para asegurar que el navegador procese el display block antes de cambiar opacity
-                    setTimeout(() => {
-                        mainAppView.style.opacity = '1';
-                        mainAppView.style.pointerEvents = 'auto';
-                    }, 50);
-                }, 400); // 400ms después del fade-out del login
-                
-                listenToTransactions();
-                listenToAccounts();
+                if (userDocSnap.exists()) {
+                    currentUserData = userDocSnap.data();
+                } else {
+                    // Si el usuario existe en Auth pero no en Firestore (usuario antiguo legacy)
+                    // Le damos acceso de usuario normal y lo aprobamos automáticamente.
+                    currentUserData = {
+                        email: user.email,
+                        role: user.email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
+                        status: 'approved',
+                        createdAt: serverTimestamp(),
+                        trialEnd: null
+                    };
+                    await setDoc(userDocRef, currentUserData);
+                }
+
+                // Evaluar Permisos y Enrutar
+                if (currentUserData.role === 'admin') {
+                    // Es Super Admin
+                    switchRootView('admin-view');
+                    listenToAllUsersForAdmin();
+                } else {
+                    // Es Usuario Normal. Verificar estado.
+                    if (currentUserData.status === 'pending') {
+                        showStatus('Cuenta Pendiente', 'El administrador debe autorizar tu acceso a la bóveda.', 'ph-hourglass');
+                    } else if (currentUserData.status === 'expired') {
+                        showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500');
+                    } else if (currentUserData.status === 'approved') {
+                        // Verificar si tiene trialEnd configurado y ya expiró
+                        if (currentUserData.trialEnd) {
+                            const endDate = currentUserData.trialEnd.toDate();
+                            if (new Date() > endDate) {
+                                // Venció el tiempo
+                                await updateDoc(userDocRef, { status: 'expired' });
+                                showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500');
+                                return;
+                            }
+                        }
+                        
+                        // Todo en orden, cargar la app
+                        document.getElementById('user-name').innerText = user.email.split('@')[0];
+                        document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
+                        switchRootView('main-app-view');
+                        listenToTransactions();
+                        listenToAccounts();
+                    }
+                }
             } else {
-                currentUser = null; allTransactions = []; mainTransactions = []; creditTransactions = []; accounts = [];
+                // No hay sesión
+                currentUser = null; currentUserData = null; allTransactions = []; mainTransactions = []; creditTransactions = []; accounts = []; adminUsersList = [];
                 if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
                 if (unsubscribeAccountsDB) { unsubscribeAccountsDB(); unsubscribeAccountsDB = null; }
+                if (unsubscribeAdminDB) { unsubscribeAdminDB(); unsubscribeAdminDB = null; }
                 updateUI(); updateAccountsUI();
                 
-                // Transición fluida hacia el login
-                mainAppView.style.opacity = '0';
-                mainAppView.style.pointerEvents = 'none';
-                
-                setTimeout(() => {
-                    mainAppView.classList.add('hidden');
-                    loginView.classList.remove('hidden');
-                    setTimeout(() => {
-                        loginView.style.opacity = '1';
-                        loginView.style.pointerEvents = 'auto';
-                    }, 50);
-                }, 400);
+                switchRootView('login-view');
+                if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = '<span>Entrar a la bóveda</span>'; }
             }
         });
+
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? 'FinSight' : 'Crear Cuenta';
+            document.getElementById('auth-subtitle').innerText = isLoginMode ? 'Tu bóveda financiera' : 'Regístrate para solicitar acceso';
+            document.getElementById('auth-submit-btn').innerHTML = isLoginMode ? '<span>Entrar a la bóveda</span>' : '<span>Registrarse</span>';
+            document.getElementById('toggle-auth-btn').innerText = isLoginMode ? '¿No tienes cuenta? Solicita acceso' : '¿Ya tienes cuenta? Inicia Sesión';
+        };
 
         window.handleAuthSubmit = async (e) => {
             e.preventDefault();
@@ -610,26 +682,128 @@
 
             if (!email || !password) return window.showCustomAlert('Datos incompletos', 'Ingresa correo y clave.', 'ph-warning-circle text-orange-500');
 
+            // Seguridad de intentos solo aplica para login normal
             let intentos = parseInt(localStorage.getItem('boveda_intentos') || '0');
             let tiempoDesbloqueo = parseInt(localStorage.getItem('boveda_bloqueo_hasta') || '0');
             const ahora = new Date().getTime();
 
-            if (ahora < tiempoDesbloqueo) { return window.showCustomAlert('Bloqueado', `Intenta de nuevo en ${Math.ceil((tiempoDesbloqueo - ahora) / 60000)} minuto(s).`, 'ph-lock-key text-red-500'); } 
-            else if (tiempoDesbloqueo !== 0) { intentos = 0; localStorage.setItem('boveda_intentos', '0'); localStorage.setItem('boveda_bloqueo_hasta', '0'); }
+            if (isLoginMode) {
+                if (ahora < tiempoDesbloqueo) { return window.showCustomAlert('Bloqueado', `Intenta de nuevo en ${Math.ceil((tiempoDesbloqueo - ahora) / 60000)} minuto(s).`, 'ph-lock-key text-red-500'); } 
+                else if (tiempoDesbloqueo !== 0) { intentos = 0; localStorage.setItem('boveda_intentos', '0'); localStorage.setItem('boveda_bloqueo_hasta', '0'); }
+            }
             
             btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-lg"></i>';
             
-            try { await signInWithEmailAndPassword(auth, email, password); localStorage.setItem('boveda_intentos', '0'); } 
+            try { 
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password); 
+                    localStorage.setItem('boveda_intentos', '0');
+                } else {
+                    // Registro de Nuevo Usuario
+                    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                    // Crear su perfil en Firestore con estado "pending"
+                    await setDoc(doc(db, "app_users", userCred.user.uid), {
+                        email: email,
+                        role: email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
+                        status: email === SUPER_ADMIN_EMAIL ? 'approved' : 'pending',
+                        createdAt: serverTimestamp(),
+                        trialEnd: null
+                    });
+                    localStorage.setItem('boveda_intentos', '0');
+                    // Tras el registro, onAuthStateChanged tomará el control y lo enviará al status-view
+                }
+            } 
             catch(error) {
-                intentos++; localStorage.setItem('boveda_intentos', intentos);
-                if (intentos >= 3) { localStorage.setItem('boveda_bloqueo_hasta', (ahora + (5 * 60 * 1000)).toString()); window.showCustomAlert('Seguridad', 'Bóveda bloqueada temporalmente.', 'ph-shield-slash text-red-500'); } 
-                else { window.showCustomAlert('Acceso Denegado', `Credenciales incorrectas. Intentos: ${3 - intentos}`, 'ph-shield-warning text-red-500'); }
-                btn.disabled = false; btn.innerHTML = '<span>Entrar a la bóveda</span>';
+                if (isLoginMode) {
+                    intentos++; localStorage.setItem('boveda_intentos', intentos);
+                    if (intentos >= 3) { localStorage.setItem('boveda_bloqueo_hasta', (ahora + (5 * 60 * 1000)).toString()); window.showCustomAlert('Seguridad', 'Bóveda bloqueada temporalmente.', 'ph-shield-slash text-red-500'); } 
+                    else { window.showCustomAlert('Acceso Denegado', `Credenciales incorrectas. Intentos: ${3 - intentos}`, 'ph-shield-warning text-red-500'); }
+                } else {
+                    window.showCustomAlert('Error al Registrar', 'El correo ya está en uso o la contraseña es muy débil (min. 6 caracteres).', 'ph-warning-circle text-rose-500');
+                }
+                btn.disabled = false; btn.innerHTML = isLoginMode ? '<span>Entrar a la bóveda</span>' : '<span>Registrarse</span>';
             }
         };
 
         window.logout = async () => { try { await signOut(auth); } catch (error) { console.error("Error al salir", error); } };
         window.togglePassword = () => { const p = document.getElementById('auth-password'); const i = document.getElementById('eye-icon'); if (p.type === 'password') { p.type = 'text'; i.classList.replace('ph-eye', 'ph-eye-slash'); } else { p.type = 'password'; i.classList.replace('ph-eye-slash', 'ph-eye'); } };
+
+        function listenToAllUsersForAdmin() {
+            if (!currentUser || currentUserData.role !== 'admin') return;
+            const q = query(collection(db, "app_users"), orderBy("createdAt", "desc"));
+            unsubscribeAdminDB = onSnapshot(q, (snapshot) => {
+                const listEl = document.getElementById('admin-users-list');
+                listEl.innerHTML = '';
+                let hasUsers = false;
+
+                snapshot.forEach((docSnap) => {
+                    const usr = { id: docSnap.id, ...docSnap.data() };
+                    if (usr.role === 'admin') return; // No mostrarse a sí mismo
+                    hasUsers = true;
+
+                    let statusBadge = '';
+                    if (usr.status === 'pending') statusBadge = '<span class="bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Pendiente</span>';
+                    else if (usr.status === 'approved') statusBadge = '<span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Activo</span>';
+                    else statusBadge = '<span class="bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Vencido</span>';
+
+                    let trialText = 'Sin límite';
+                    if (usr.trialEnd) {
+                        const t = usr.trialEnd.toDate();
+                        trialText = `Vence: ${t.getDate()}/${t.getMonth()+1}/${t.getFullYear()}`;
+                    }
+
+                    listEl.innerHTML += `
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 w-full min-w-0 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                            <div class="min-w-0 w-full sm:w-auto flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <p class="font-bold text-gray-900 dark:text-white truncate">${usr.email}</p>
+                                    ${statusBadge}
+                                </div>
+                                <p class="text-xs text-gray-400 font-medium truncate"><i class="ph-fill ph-calendar-blank"></i> ${trialText}</p>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto shrink-0">
+                                ${usr.status === 'pending' || usr.status === 'expired' ? 
+                                    `<button onclick="window.adminSetTrial('${usr.id}', 30)" class="flex-1 sm:flex-none bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded-xl active:scale-95 transition whitespace-nowrap">Aprobar 1 Mes</button>` : 
+                                    `<button onclick="window.adminSetTrial('${usr.id}', 30)" class="flex-1 sm:flex-none bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-xl active:scale-95 transition whitespace-nowrap">+1 Mes</button>`
+                                }
+                                <button onclick="window.adminSuspend('${usr.id}')" class="w-10 h-10 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 rounded-xl flex items-center justify-center active:scale-95 transition shrink-0" title="Suspender">
+                                    <i class="ph-bold ph-prohibit"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if(!hasUsers) {
+                    listEl.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm font-medium"><i class="ph-bold ph-users text-4xl mb-2 opacity-30 block"></i>No hay usuarios registrados</div>';
+                }
+            });
+        }
+
+        window.adminSetTrial = async (uid, days) => {
+            if (!currentUser || currentUserData.role !== 'admin') return;
+            const newDate = new Date();
+            newDate.setDate(newDate.getDate() + days); // Suma días desde HOY
+            try {
+                await updateDoc(doc(db, "app_users", uid), {
+                    status: 'approved',
+                    trialEnd: newDate
+                });
+                window.showCustomAlert('Actualizado', `Acceso concedido hasta el ${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`, 'ph-check-circle text-emerald-500');
+            } catch (e) {
+                window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-circle text-rose-500');
+            }
+        };
+
+        window.adminSuspend = async (uid) => {
+            if (!currentUser || currentUserData.role !== 'admin') return;
+            window.showConfirm('Suspender Usuario', '¿Quitar acceso a este usuario inmediatamente?', async () => {
+                try {
+                    await updateDoc(doc(db, "app_users", uid), { status: 'expired' });
+                    window.closeConfirm();
+                } catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'No se pudo suspender.', 'ph-warning-circle text-rose-500'); }
+            }, false);
+        };
 
         function listenToTransactions() {
             if (!currentUser) return;
@@ -665,7 +839,7 @@
 
             if (accounts.length === 0) {
                 if(formAccount) formAccount.innerHTML = '<option value="" disabled selected>Sin cuentas</option>';
-                if(accountsList) accountsList.innerHTML = '<p class="text-center py-4 text-xs font-bold text-gray-400">Crea tu primera cuenta</p>';
+                if(accountsList) accountsList.innerHTML = '<p class="text-center py-4 text-xs font-bold text-gray-400 w-full">Crea tu primera cuenta</p>';
                 return;
             }
 
@@ -673,10 +847,10 @@
             accounts.forEach(acc => {
                 const opt = document.createElement('option'); opt.value = acc.name; opt.innerText = acc.name; formAccount.appendChild(opt);
                 htmlAccounts += `
-                    <div class="flex justify-between items-center py-3 w-full">
-                        <div class="flex items-center gap-3 min-w-0">
+                    <div class="flex justify-between items-center py-3 w-full min-w-0">
+                        <div class="flex items-center gap-3 min-w-0 flex-1">
                             <i class="ph-fill ph-wallet text-gray-400 text-xl shrink-0"></i>
-                            <span class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate">${acc.name}</span>
+                            <span class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate pr-2">${acc.name}</span>
                         </div>
                         <div class="flex gap-1 shrink-0">
                             <button onclick="window.openEditAccountModal('${acc.id}', '${acc.name.replace(/'/g, "\\'")}')" class="p-2 text-gray-400 hover:text-blue-500 transition"><i class="ph-bold ph-pencil-simple"></i></button>
@@ -720,7 +894,7 @@
             const tx = mainTransactions.find(t => t.id === id); if (!tx) return;
             isExpense = tx.type === 'expense'; window.openFormModal(tx.type, false); modalTitle.innerText = 'Editar';
             document.getElementById('edit-tx-id').value = tx.id; document.getElementById('form-amount').value = tx.amount; document.getElementById('form-desc').value = tx.desc; document.getElementById('form-date').value = tx.date;
-            document.getElementById('form-date').classList.remove('text-gray-500'); // Asegura color visible
+            document.getElementById('form-date').classList.remove('text-gray-500');
             document.getElementById('btn-delete-tx').classList.remove('hidden');
             setTimeout(() => { document.getElementById('form-category').value = tx.category; document.getElementById('form-account').value = tx.account; }, 50);
         }
@@ -767,7 +941,7 @@
             const interestStr = document.getElementById('credit-interest').value; const res = document.getElementById('credit-results');
             
             if (!desc || isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { 
-                res.innerHTML = `<div class="text-center py-10 px-4 w-full"><i class="ph-bold ph-calculator mx-auto text-gray-300 dark:text-gray-600 text-4xl mb-2"></i><p class="text-gray-400 text-xs font-medium truncate">Ingresa los datos para calcular</p></div>`; return; 
+                res.innerHTML = `<div class="text-center py-10 px-4 w-full"><i class="ph-bold ph-calculator mx-auto text-gray-300 dark:text-gray-600 text-4xl mb-2"></i><p class="text-gray-400 text-xs font-medium truncate w-full">Ingresa los datos para calcular y guardar</p></div>`; return; 
             }
 
             const { activeCutDate, firstPaymentDate, daysUntilPayment } = calculateFinancialDates(dateStr, cutDay, payDay);
@@ -786,18 +960,18 @@
                     <div class="min-w-0"><p class="font-bold text-sm mb-1 truncate">${sTit}</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-bold">${daysUntilPayment} días</strong> de gracia (si es a 1 cuota).</p></div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm p-5 mt-4 space-y-4 animate-fade w-full min-w-0" style="animation-delay: 0.1s;">
-                    <div class="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-700 w-full">
-                        <div class="min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Corte</p><p class="text-sm font-bold dark:text-white truncate">${activeCutDate.format('DD MMM')}</p></div>
-                        <div class="text-right min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Límite pago</p><p class="text-sm font-bold text-rose-500 truncate">${firstPaymentDate.format('DD MMM')}</p></div>
+                    <div class="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-700 w-full min-w-0">
+                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Corte</p><p class="text-sm font-bold dark:text-white truncate">${activeCutDate.format('DD MMM')}</p></div>
+                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Límite pago</p><p class="text-sm font-bold text-rose-500 truncate">${firstPaymentDate.format('DD MMM')}</p></div>
                     </div>
-                    <div class="flex justify-between items-center pb-4 ${cuotas > 1 && totalInterest > 0 ? 'border-b border-gray-100 dark:border-gray-700' : ''} w-full">
-                        <div class="min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Cuota mensual</p><p class="text-base font-bold dark:text-white truncate">${formatCOP(monthlyPayment)}</p></div>
-                        <div class="text-right min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Finaliza</p><p class="text-sm font-bold capitalize dark:text-white truncate">${firstPaymentDate.add(cuotas-1,'month').format('MMM YY')}</p></div>
+                    <div class="flex justify-between items-center pb-4 ${cuotas > 1 && totalInterest > 0 ? 'border-b border-gray-100 dark:border-gray-700' : ''} w-full min-w-0">
+                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Cuota mensual</p><p class="text-base font-bold dark:text-white truncate">${formatCOP(monthlyPayment)}</p></div>
+                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Finaliza</p><p class="text-sm font-bold capitalize dark:text-white truncate">${firstPaymentDate.add(cuotas-1,'month').format('MMM YY')}</p></div>
                     </div>
                     ${cuotas > 1 && totalInterest > 0 ? `
-                    <div class="flex justify-between items-center w-full">
-                        <div class="min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Total a pagar</p><p class="text-sm font-bold dark:text-white truncate">${formatCOP(amount + totalInterest)}</p></div>
-                        <div class="text-right min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Total Intereses</p><p class="text-sm font-bold text-rose-500 truncate">+${formatCOP(totalInterest)}</p></div>
+                    <div class="flex justify-between items-center w-full min-w-0">
+                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Total a pagar</p><p class="text-sm font-bold dark:text-white truncate">${formatCOP(amount + totalInterest)}</p></div>
+                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Total Intereses</p><p class="text-sm font-bold text-rose-500 truncate">+${formatCOP(totalInterest)}</p></div>
                     </div>` : ''}
                     <button onclick="window.saveCreditTx(${amount}, '${desc}', '${dateStr}', ${cutDay}, ${payDay}, ${cuotas}, ${interestRate}, ${monthlyPayment}, ${totalInterest})" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3.5 rounded-xl mt-4 active:scale-95 transition shadow-sm truncate">Guardar Compra</button>
                 </div>`;
@@ -824,7 +998,7 @@
                         if(parent) { await updateDoc(doc(db, "transactions", parent.id), { paidInstallments: Math.max(0, parent.paidInstallments - 1), pendingAmount: parent.pendingAmount + parent.monthlyPayment }); }
                         await deleteDoc(doc(db, "transactions", t.id)); window.closeConfirm();
                     } catch(e) { window.showCustomAlert('Error', 'No se borró el pago.', 'ph-warning-circle text-rose-500'); window.closeConfirm(); }
-                }, true);
+                }, false);
                 return;
             }
             
@@ -836,7 +1010,7 @@
                     <p class="text-2xl font-extrabold text-blue-900 dark:text-blue-100 truncate">${formatCOP(t.pendingAmount)}</p>
                     <p class="text-xs text-blue-600/70 dark:text-blue-400/70 font-medium mt-1 truncate">Saldo pendiente de ${formatCOP(t.amount + t.totalInterest)}</p>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3 mb-4 w-full">
+                <div class="flex flex-col sm:flex-row gap-3 mb-4 w-full min-w-0">
                     <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 border border-gray-100 dark:border-gray-700 flex-1 min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Cuotas Pagadas</p><p class="font-bold text-gray-900 dark:text-white truncate">${t.paidInstallments} / ${t.totalInstallments}</p></div>
                     <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 border border-gray-100 dark:border-gray-700 flex-1 min-w-0"><p class="text-[10px] uppercase font-bold text-gray-400 mb-1 truncate">Valor Cuota</p><p class="font-bold text-gray-900 dark:text-white truncate">${formatCOP(t.monthlyPayment)}</p></div>
                 </div>`;
@@ -854,10 +1028,9 @@
         window.payCreditInstallment = () => {
             const t = activeCreditDeuda;
             if (!t) return;
-            const txIdParaProcesar = t.id; // Guarda la referencia en memoria local antes de cerrar la ventana
+            const txIdParaProcesar = t.id; 
             
-            // NO cerramos el modal aquí, esperamos a que el usuario confirme
-            window.showConfirm('Pagar Cuota', `Registrar pago por ${formatCOP(t.monthlyPayment)}.`, async () => {
+            window.showConfirm('Pagar Cuota', `Se restará ${formatCOP(t.monthlyPayment)} a la deuda de esta tarjeta.`, async () => {
                 try {
                     await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit_payment', parentCreditId: txIdParaProcesar, amount: t.monthlyPayment, desc: `Pago Cuota: ${t.desc}`, date: new Date().toISOString().split('T')[0], createdAt: serverTimestamp() });
                     await updateDoc(doc(db, "transactions", txIdParaProcesar), { paidInstallments: t.paidInstallments + 1, pendingAmount: Math.max(0, t.pendingAmount - t.monthlyPayment) });
@@ -872,7 +1045,7 @@
         window.deleteCurrentCredit = () => {
             const t = activeCreditDeuda; if (!t) return;
             window.closeCreditDetailModal();
-            window.showConfirm('Borrar Deuda', '¿Eliminar deuda y todos sus pagos?', async () => {
+            window.showConfirm('Borrar Deuda', '¿Eliminar deuda y todos sus pagos del historial?', async () => {
                 try {
                     const batchPagos = creditTransactions.filter(x => x.type === 'credit_payment' && x.parentCreditId === t.id);
                     for (const p of batchPagos) { await deleteDoc(doc(db, "transactions", p.id)); }
@@ -909,8 +1082,8 @@
                         <div class="flex items-center gap-3 min-w-0 flex-1">
                             <div class="w-10 h-10 rounded-full bg-${color}-50 dark:bg-${color}-900/30 text-${color}-500 flex items-center justify-center shrink-0"><i class="ph-bold ${icon} text-lg"></i></div>
                             <div class="min-w-0 flex-1 pr-2">
-                                <p class="font-bold text-gray-900 dark:text-white text-sm truncate">${tx.desc}</p>
-                                <p class="text-xs text-gray-400 font-medium truncate">${tx.date} ${!isPay ? `• Cuotas: ${tx.paidInstallments}/${tx.totalInstallments}` : ''}</p>
+                                <p class="font-bold text-gray-900 dark:text-white text-sm truncate w-full">${tx.desc}</p>
+                                <p class="text-xs text-gray-400 font-medium truncate w-full">${tx.date} ${!isPay ? `• Cuotas: ${tx.paidInstallments}/${tx.totalInstallments}` : ''}</p>
                             </div>
                         </div>
                         <div class="text-right shrink-0">
@@ -928,8 +1101,8 @@
                     <div class="flex items-center gap-3 min-w-0 flex-1">
                         <div class="w-10 h-10 rounded-full bg-${color}-50 dark:bg-${color}-900/30 text-${color}-500 flex items-center justify-center shrink-0"><i class="ph-bold ${icon} text-lg"></i></div>
                         <div class="min-w-0 flex-1 pr-2">
-                            <p class="font-bold text-gray-900 dark:text-white text-sm truncate">${tx.desc}</p>
-                            <p class="text-xs text-gray-400 font-medium truncate">${tx.date} • ${tx.account || 'Sin cuenta'}</p>
+                            <p class="font-bold text-gray-900 dark:text-white text-sm truncate w-full">${tx.desc}</p>
+                            <p class="text-xs text-gray-400 font-medium truncate w-full">${tx.date} • ${tx.account || 'Sin cuenta'}</p>
                         </div>
                     </div>
                     <div class="text-right shrink-0">
@@ -945,16 +1118,16 @@
             creditTransactions.forEach((tx) => { if (tx.type === 'credit_active') { totalCreditDebt += parseFloat(tx.pendingAmount); } });
 
             // Ledger List
-            if (filteredTransactions.length === 0) { ledgerList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full"><i class="ph-bold ph-ghost text-3xl mb-2 opacity-30"></i><span class="truncate">No se encontraron movimientos</span></div>`; } 
+            if (filteredTransactions.length === 0) { ledgerList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-ghost text-3xl mb-2 opacity-30"></i><span class="truncate w-full">No se encontraron movimientos</span></div>`; } 
             else { let html = ''; [...filteredTransactions].reverse().forEach(tx => html += createListItem(tx)); ledgerList.innerHTML = html; }
 
             // Credit List
-            if (creditTransactions.length === 0) { creditList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full"><i class="ph-bold ph-credit-card text-3xl mb-2 opacity-30"></i><span class="truncate">No hay deudas activas</span></div>`; } 
+            if (creditTransactions.length === 0) { creditList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-credit-card text-3xl mb-2 opacity-30"></i><span class="truncate w-full">No hay deudas activas</span></div>`; } 
             else { let html = ''; [...creditTransactions].reverse().forEach(tx => html += createListItem(tx, false, true)); creditList.innerHTML = html; }
 
             // Recent List (Dashboard)
             const recentTx = [...mainTransactions].reverse().slice(0, 3);
-            if(recentTx.length === 0) { txList.innerHTML = `<div class="p-6 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full"><i class="ph-bold ph-ghost text-3xl mb-1 opacity-30"></i><span class="truncate">Aún no hay registros</span></div>`; } 
+            if(recentTx.length === 0) { txList.innerHTML = `<div class="p-6 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-ghost text-3xl mb-1 opacity-30"></i><span class="truncate w-full">Aún no hay registros</span></div>`; } 
             else { let html = ''; recentTx.forEach(tx => html += createListItem(tx, true)); txList.innerHTML = html; }
 
             balanceEl.innerText = formatCOP(totalBalance); availableEl.innerText = formatCOP(totalIncome); spentEl.innerText = formatCOP(totalExpense); totalCreditDebtEl.innerText = formatCOP(totalCreditDebt);
