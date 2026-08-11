@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>FinSight</title>
     
-    <!-- Ícono nativo y para iOS -->
+    <!-- YETI FAVICON Y APP ICON HD -->
     <link rel="icon" type="image/png" href="https://www.image2url.com/r2/default/images/1786462361674-9401508b-e2d7-4f13-af18-c490ab981974.png">
     <link rel="apple-touch-icon" href="https://www.image2url.com/r2/default/images/1786462361674-9401508b-e2d7-4f13-af18-c490ab981974.png">
-
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="FinSight">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#eff3f4">
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS con Colores de Marca (Yeti) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { 
@@ -24,33 +25,25 @@
                     colors: {
                         brand: {
                             50: '#f3fafd',
-                            100: '#e0f4fb',
-                            200: '#c5eaf7',
-                            300: '#9bdaf1',
-                            400: '#6bc4e8',
-                            500: '#4eb8dd', // Primary Yeti Blue
-                            600: '#389bc2',
-                            700: '#2d7c9d',
-                            800: '#217093', // Dark Yeti Blue
-                            900: '#1f5d7b',
-                            950: '#143c52',
-                        },
-                        textMain: '#353538' // Yeti Text Color
+                            100: '#e0f0f6',
+                            500: '#4eb8dd',
+                            800: '#217093',
+                            900: '#164e63',
+                        }
                     }
                 }
             }
         }
     </script>
     
+    <!-- GSAP (Motor de Animación del Yeti) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- GSAP (Motor de Animación del Yeti) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://assets.codepen.io/16327/MorphSVGPlugin3.min.js"></script>
 
     <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -61,19 +54,11 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/es.js"></script>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS Variables para Fondos Exactos */
-        :root {
-            --bg-body: #eff3f4; /* Fondo Yeti original */
-        }
-        html.dark {
-            --bg-body: #0f172a; /* Slate 900 */
-        }
-
         body { 
-            font-family: 'Inter', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
             -webkit-tap-highlight-color: transparent;
             touch-action: pan-x pan-y;
         }
@@ -87,7 +72,6 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade { animation: fadeIn 0.2s ease-out forwards; }
         
-        /* FIX iOS/Android Desborde - Estricto */
         *, *::before, *::after { box-sizing: border-box !important; }
         
         input, select, textarea { 
@@ -108,51 +92,32 @@
         
         .custom-select {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23217093'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 9l4-4 4 4m0 6l-4 4-4-4'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 9l4-4 4 4m0 6l-4 4-4-4'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 1rem center;
             background-size: 1.2em 1.2em;
         }
         .dark .custom-select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 9l4-4 4 4m0 6l-4 4-4-4'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 9l4-4 4 4m0 6l-4 4-4-4'/%3E%3C/svg%3E");
         }
 
-        /* NAVEGACIÓN FLOTANTE PÍLDORA */
+        /* NAVEGACIÓN INFERIOR NATIVA (ESTILO iOS) */
         .nav-btn {
-            position: relative;
             cursor: pointer;
             outline: none;
             -webkit-tap-highlight-color: transparent;
-        }
-        .nav-btn span {
-            position: absolute;
-            bottom: 6px;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            font-weight: 800;
-            letter-spacing: 0.5px;
+            color: #94a3b8; /* Slate 400 */
+            transition: color 0.2s ease;
         }
         .nav-btn i {
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: block;
         }
         
         /* Estado Activo Nav */
-        .nav-btn.active {
-            background-color: #f3fafd; /* brand-50 */
-            color: #4eb8dd; /* brand-500 */
-        }
-        .dark .nav-btn.active {
-            background-color: rgba(33, 112, 147, 0.4); /* brand-800/40 */
-            color: #6bc4e8; /* brand-400 */
-        }
-        .nav-btn.active i {
-            transform: translateY(-8px);
-        }
-        .nav-btn.active span {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .nav-btn.active { color: #217093; } /* brand-800 */
+        .dark .nav-btn.active { color: #4eb8dd; } /* brand-500 */
+        .nav-btn.active i { transform: translateY(-3px) scale(1.15); }
 
         /* ESTILOS EXCLUSIVOS DEL YETI LOGIN */
         .yeti-form { display: block; width: 100%; position: relative; }
@@ -160,48 +125,14 @@
         .yeti-form .svgContainer div { position: relative; width: 100%; height: 0; overflow: hidden; border-radius: 50%; padding-bottom: 100%; }
         .yeti-form .svgContainer .mySVG { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
         .yeti-form .svgContainer:after { content: ""; position: absolute; top: 0; left: 0; z-index: 10; width: inherit; height: inherit; box-sizing: border-box; border: solid 2.5px #217093; border-radius: 50%; }
-        
-        .yeti-form .inputGroup { margin: 0 0 1.2em; padding: 0; position: relative; }
-        .yeti-form label.yeti-label { margin: 0 0 6px; display: block; font-size: 1em; color: #217093; font-weight: 700; font-family: inherit; }
-        
-        .yeti-form input.yeti-input { display: block; margin: 0; padding: 0.875em 1em 0 !important; background-color: #f3fafd !important; border: solid 2px #217093 !important; border-radius: 12px !important; -webkit-appearance: none; box-sizing: border-box; width: 100%; height: 55px !important; font-size: 1.1em !important; color: #353538 !important; font-weight: 600; font-family: inherit; transition: box-shadow 0.2s linear, border-color 0.25s ease-out; }
-        .yeti-form input.yeti-input:focus { outline: none; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); border: solid 2px #4eb8dd !important; }
-        .dark .yeti-form input.yeti-input { background-color: #1e293b !important; color: #f8fafc !important; border-color: #334155 !important; }
-        .dark .yeti-form input.yeti-input:focus { border-color: #4eb8dd !important; }
-        .dark .yeti-form label.yeti-label { color: #94a3b8; }
-        
-        .yeti-form button.yeti-btn { display: block; margin: 0; padding: 0; background-color: #4eb8dd; border: none; border-radius: 12px; box-sizing: border-box; box-shadow: none; width: 100%; height: 55px; font-size: 1.2em; color: #FFF; font-weight: 700; font-family: inherit; transition: background-color 0.2s ease-out; cursor: pointer; }
-        .yeti-form button.yeti-btn:hover, .yeti-form button.yeti-btn:active { background-color: #217093; }
-        
-        .yeti-form .inputGroup1 .helper { position: absolute; z-index: 1; font-family: inherit; }
-        .yeti-form .inputGroup1 .helper1 { top: 0; left: 0; transform: translate(1em, 2.2em) scale(1); transform-origin: 0 0; color: #217093; font-size: 1em; font-weight: 400; opacity: 0.65; pointer-events: none; transition: transform 0.2s ease-out, opacity 0.2s linear; }
-        .dark .yeti-form .inputGroup1 .helper1 { color: #94a3b8; }
-        .yeti-form .inputGroup1.focusWithText .helper { transform: translate(1em, 1.55em) scale(0.6); opacity: 1; }
-        
-        .yeti-form .inputGroup2 input[type=password] { padding: 0.4em 1em 0.5em !important; }
-        .yeti-form .inputGroup2 input[type=text] { padding: 0.025em 1em 0 !important; }
-        .yeti-form .inputGroup2 #showPasswordToggle { display: block; padding: 0 0 0 1.45em; position: absolute; top: 0.25em; right: 0; font-size: 0.85em; font-weight: 700; color: #217093; cursor: pointer; }
-        .dark .yeti-form .inputGroup2 #showPasswordToggle { color: #94a3b8; }
-        .yeti-form .inputGroup2 #showPasswordToggle input { position: absolute; z-index: -1; opacity: 0; }
-        .yeti-form .inputGroup2 #showPasswordToggle .indicator { position: absolute; top: 0; left: 0; height: 0.85em; width: 0.85em; background-color: #f3fafd; border: solid 2px #217093; border-radius: 3px; }
-        .dark .yeti-form .inputGroup2 #showPasswordToggle .indicator { background-color: #1e293b; border-color: #475569; }
-        .yeti-form .inputGroup2 #showPasswordToggle .indicator:after { content: ""; position: absolute; left: 0.25em; top: 0.025em; width: 0.2em; height: 0.5em; border: solid #217093; border-width: 0 2px 2px 0; transform: rotate(45deg); visibility: hidden; }
-        .dark .yeti-form .inputGroup2 #showPasswordToggle .indicator:after { border-color: #4eb8dd; }
-        .yeti-form .inputGroup2 #showPasswordToggle input:checked~.indicator:after { visibility: visible; }
-        .yeti-form .inputGroup2 #showPasswordToggle input:focus~.indicator, .yeti-form .inputGroup2 #showPasswordToggle input:hover~.indicator { border-color: #4eb8dd; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen sm:p-4 bg-[var(--bg-body)] text-textMain dark:text-slate-100 transition-colors duration-300 selection:bg-brand-100 selection:text-brand-900 relative">
+<body class="flex items-center justify-center min-h-screen sm:p-4 bg-[#eff3f4] dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-brand-100 selection:text-brand-900 relative">
 
     <!-- LOGIN / REGISTRO YETI -->
-    <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-slate-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 absolute inset-0 sm:relative mx-auto sm:border-[8px] sm:border-brand-800 transition-all duration-500 ease-in-out opacity-100 overflow-hidden">
+    <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-slate-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-slate-900 transition-all duration-500 ease-in-out opacity-100 overflow-hidden">
         
-        <div class="text-center mb-6 z-10 relative">
-            <h1 class="text-3xl font-extrabold tracking-tight text-brand-800 dark:text-brand-400" id="auth-title">FinSight</h1>
-            <p class="text-sm text-brand-700/70 dark:text-slate-400 font-medium mt-1" id="auth-subtitle">Tu bóveda financiera</p>
-        </div>
-        
-        <form id="auth-form" class="yeti-form relative z-10" onsubmit="window.handleAuthSubmit(event)">
+        <form id="auth-form" onsubmit="window.handleAuthSubmit(event)" class="yeti-form">
             <div class="svgContainer">
                 <div>
                     <svg class="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200">
@@ -210,28 +141,16 @@
                         <circle cx="100" cy="100" r="100" fill="#a9ddf3" />
                         <g class="body">
                             <path class="bodyBGchanged" style="display: none;" fill="#FFFFFF" d="M200,122h-35h-14.9V72c0-27.6-22.4-50-50-50s-50,22.4-50,50v50H35.8H0l0,91h200L200,122z" />
-                            <path class="bodyBGnormal" stroke="#3A5E77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="#FFFFFF" d="M200,158.5c0-20.2-14.8-36.5-35-36.5h-14.9V72.8c0-27.4-21.7-50.4-49.1-50.8c-28-0.5-50.9,22.1-50.9,50v50 H35.8C16,122,0,138,0,157.8L0,213h200L200,158.5z" />
+                            <path class="bodyBGnormal" stroke="#3A5E77" stroke-width="2.5" stroke-linecap="round" stroke-linejoinn="round" fill="#FFFFFF" d="M200,158.5c0-20.2-14.8-36.5-35-36.5h-14.9V72.8c0-27.4-21.7-50.4-49.1-50.8c-28-0.5-50.9,22.1-50.9,50v50 H35.8C16,122,0,138,0,157.8L0,213h200L200,158.5z" />
                             <path fill="#DDF1FA" d="M100,156.4c-22.9,0-43,11.1-54.1,27.7c15.6,10,34.2,15.9,54.1,15.9s38.5-5.8,54.1-15.9 C143,167.5,122.9,156.4,100,156.4z" />
                         </g>
                         <g class="earL">
-                            <g class="outerEar" fill="#ddf1fa" stroke="#3a5e77" stroke-width="2.5">
-                                <circle cx="47" cy="83" r="11.5" />
-                                <path d="M46.3 78.9c-2.3 0-4.1 1.9-4.1 4.1 0 2.3 1.9 4.1 4.1 4.1" stroke-linecap="round" stroke-linejoin="round" />
-                            </g>
-                            <g class="earHair">
-                                <rect x="51" y="64" fill="#FFFFFF" width="15" height="35" />
-                                <path d="M53.4 62.8C48.5 67.4 45 72.2 42.8 77c3.4-.1 6.8-.1 10.1.1-4 3.7-6.8 7.6-8.2 11.6 2.1 0 4.2 0 6.3.2-2.6 4.1-3.8 8.3-3.7 12.5 1.2-.7 3.4-1.4 5.2-1.9" fill="#fff" stroke="#3a5e77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </g>
+                            <g class="outerEar" fill="#ddf1fa" stroke="#3a5e77" stroke-width="2.5"><circle cx="47" cy="83" r="11.5" /><path d="M46.3 78.9c-2.3 0-4.1 1.9-4.1 4.1 0 2.3 1.9 4.1 4.1 4.1" stroke-linecap="round" stroke-linejoin="round" /></g>
+                            <g class="earHair"><rect x="51" y="64" fill="#FFFFFF" width="15" height="35" /><path d="M53.4 62.8C48.5 67.4 45 72.2 42.8 77c3.4-.1 6.8-.1 10.1.1-4 3.7-6.8 7.6-8.2 11.6 2.1 0 4.2 0 6.3.2-2.6 4.1-3.8 8.3-3.7 12.5 1.2-.7 3.4-1.4 5.2-1.9" fill="#fff" stroke="#3a5e77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></g>
                         </g>
                         <g class="earR">
-                            <g class="outerEar">
-                                <circle fill="#DDF1FA" stroke="#3A5E77" stroke-width="2.5" cx="153" cy="83" r="11.5" />
-                                <path fill="#DDF1FA" stroke="#3A5E77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M153.7,78.9 c2.3,0,4.1,1.9,4.1,4.1c0,2.3-1.9,4.1-4.1,4.1" />
-                            </g>
-                            <g class="earHair">
-                                <rect x="134" y="64" fill="#FFFFFF" width="15" height="35" />
-                                <path fill="#FFFFFF" stroke="#3A5E77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M146.6,62.8 c4.9,4.6,8.4,9.4,10.6,14.2c-3.4-0.1-6.8-0.1-10.1,0.1c4,3.7,6.8,7.6,8.2,11.6c-2.1,0-4.2,0-6.3,0.2c2.6,4.1,3.8,8.3,3.7,12.5 c-1.2-0.7-3.4-1.4-5.2-1.9" />
-                            </g>
+                            <g class="outerEar"><circle fill="#DDF1FA" stroke="#3A5E77" stroke-width="2.5" cx="153" cy="83" r="11.5" /><path fill="#DDF1FA" stroke="#3A5E77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M153.7,78.9 c2.3,0,4.1,1.9,4.1,4.1c0,2.3-1.9,4.1-4.1,4.1" /></g>
+                            <g class="earHair"><rect x="134" y="64" fill="#FFFFFF" width="15" height="35" /><path fill="#FFFFFF" stroke="#3A5E77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M146.6,62.8 c4.9,4.6,8.4,9.4,10.6,14.2c-3.4-0.1-6.8-0.1-10.1,0.1c4,3.7,6.8,7.6,8.2,11.6c-2.1,0-4.2,0-6.3,0.2c2.6,4.1,3.8,8.3,3.7,12.5 c-1.2-0.7-3.4-1.4-5.2-1.9" /></g>
                         </g>
                         <path class="chin" d="M84.1 121.6c2.7 2.9 6.1 5.4 9.8 7.5l.9-4.5c2.9 2.5 6.3 4.8 10.2 6.5 0-1.9-.1-3.9-.2-5.8 3 1.2 6.2 2 9.7 2.5-.3-2.1-.7-4.1-1.2-6.1" fill="none" stroke="#3a5e77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         <path class="face" fill="#DDF1FA" d="M134.5,46v35.5c0,21.815-15.446,39.5-34.5,39.5s-34.5-17.685-34.5-39.5V46" />
@@ -247,9 +166,7 @@
                             <path style="display: none;" class="mouthSmallBG" fill="#617E92" d="M100.2,101c-0.4,0-1.4,0-1.8,0c-2.7-0.3-5.3-1.1-8-2.5c-0.7-0.3-0.9-1.2-0.6-1.8 c0.2-0.5,0.7-0.7,1.2-0.7c0.2,0,0.5,0.1,0.6,0.2c3,1.5,5.8,2.3,8.6,2.3s5.7-0.7,8.6-2.3c0.2-0.1,0.4-0.2,0.6-0.2 c0.5,0,1,0.3,1.2,0.7c0.4,0.7,0.1,1.5-0.6,1.9c-2.6,1.4-5.3,2.2-7.9,2.5C101.7,101,100.5,101,100.2,101z" />
                             <path style="display: none;" class="mouthMediumBG" d="M95,104.2c-4.5,0-8.2-3.7-8.2-8.2v-2c0-1.2,1-2.2,2.2-2.2h22c1.2,0,2.2,1,2.2,2.2v2 c0,4.5-3.7,8.2-8.2,8.2H95z" />
                             <path style="display: none;" class="mouthLargeBG" d="M100 110.2c-9 0-16.2-7.3-16.2-16.2 0-2.3 1.9-4.2 4.2-4.2h24c2.3 0 4.2 1.9 4.2 4.2 0 9-7.2 16.2-16.2 16.2z" fill="#617e92" stroke="#3a5e77" stroke-linejoin="round" stroke-width="2.5" />
-                            <defs>
-                                <path id="mouthMaskPath" d="M100.2,101c-0.4,0-1.4,0-1.8,0c-2.7-0.3-5.3-1.1-8-2.5c-0.7-0.3-0.9-1.2-0.6-1.8 c0.2-0.5,0.7-0.7,1.2-0.7c0.2,0,0.5,0.1,0.6,0.2c3,1.5,5.8,2.3,8.6,2.3s5.7-0.7,8.6-2.3c0.2-0.1,0.4-0.2,0.6-0.2 c0.5,0,1,0.3,1.2,0.7c0.4,0.7,0.1,1.5-0.6,1.9c-2.6,1.4-5.3,2.2-7.9,2.5C101.7,101,100.5,101,100.2,101z" />
-                            </defs>
+                            <defs><path id="mouthMaskPath" d="M100.2,101c-0.4,0-1.4,0-1.8,0c-2.7-0.3-5.3-1.1-8-2.5c-0.7-0.3-0.9-1.2-0.6-1.8 c0.2-0.5,0.7-0.7,1.2-0.7c0.2,0,0.5,0.1,0.6,0.2c3,1.5,5.8,2.3,8.6,2.3s5.7-0.7,8.6-2.3c0.2-0.1,0.4-0.2,0.6-0.2 c0.5,0,1,0.3,1.2,0.7c0.4,0.7,0.1,1.5-0.6,1.9c-2.6,1.4-5.3,2.2-7.9,2.5C101.7,101,100.5,101,100.2,101z" /></defs>
                             <clipPath id="mouthMask"><use xlink:href="#mouthMaskPath" overflow="visible" /></clipPath>
                             <g clip-path="url(#mouthMask)">
                                 <g class="tongue">
@@ -291,55 +208,60 @@
                 </div>
             </div>
 
-            <div class="inputGroup inputGroup1">
-                <label for="auth-email" class="yeti-label" id="loginEmailLabel">Correo electrónico</label>
-                <input type="email" id="auth-email" class="yeti-input" required maxlength="254" placeholder="" />
+            <div class="space-y-4 mb-6">
+                <div class="relative min-w-0">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="ph-bold ph-envelope-simple text-brand-800 dark:text-brand-500"></i>
+                    </div>
+                    <input type="email" id="auth-email" required placeholder="Correo electrónico" class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl pl-11 pr-4 py-3.5 text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all">
+                </div>
+                <div class="relative min-w-0">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="ph-bold ph-lock-key text-brand-800 dark:text-brand-500"></i>
+                    </div>
+                    <input type="password" id="auth-password" required placeholder="Contraseña" class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl pl-11 pr-12 py-3.5 text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all">
+                    <label id="showPasswordToggle" class="absolute inset-y-0 right-0 pr-4 flex items-center text-brand-800 dark:text-brand-500 hover:opacity-70 focus:outline-none transition-colors shrink-0 cursor-pointer">
+                        <input id="showPasswordCheck" type="checkbox" class="hidden" />
+                        <i id="eye-icon" class="ph-bold ph-eye"></i>
+                    </label>
+                </div>
             </div>
             
-            <div class="inputGroup inputGroup2">
-                <label for="auth-password" class="yeti-label" id="loginPasswordLabel">Contraseña</label>
-                <input type="password" id="auth-password" class="yeti-input" required />
-                <label id="showPasswordToggle" for="showPasswordCheck">Mostrar
-                    <input id="showPasswordCheck" type="checkbox" />
-                    <div class="indicator"></div>
-                </label>
-            </div>
+            <button type="submit" id="auth-submit-btn" class="w-full bg-brand-500 text-white font-bold py-3.5 rounded-2xl hover:bg-brand-800 transition-colors shadow-md active:scale-[0.98] mt-2 flex justify-center items-center gap-2 truncate">
+                <span>Entrar a la bóveda</span>
+            </button>
             
-            <div class="inputGroup">
-                <button type="submit" id="auth-submit-btn" class="yeti-btn"><span>Entrar a la bóveda</span></button>
+            <div class="mt-6 text-center">
+                <button type="button" onclick="window.toggleAuthMode()" id="toggle-auth-btn" class="text-sm font-semibold text-slate-500 hover:text-brand-800 dark:hover:text-brand-500 transition">¿No tienes cuenta? Solicita acceso</button>
             </div>
         </form>
-
-        <div class="mt-4 text-center z-10 relative">
-            <button type="button" onclick="window.toggleAuthMode()" id="toggle-auth-btn" class="text-sm font-semibold text-brand-700/70 hover:text-brand-800 dark:hover:text-brand-400 transition">¿No tienes cuenta? Solicita acceso</button>
-        </div>
     </div>
 
     <!-- PANTALLA DE ESPERA / SUSPENSIÓN -->
-    <div id="status-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-slate-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-40 absolute inset-0 sm:relative mx-auto sm:border-[8px] sm:border-brand-800 transition-all duration-500 ease-in-out overflow-hidden">
+    <div id="status-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-slate-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-40 absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-slate-900 transition-all duration-500 ease-in-out overflow-hidden">
         <div class="text-center mb-10">
             <i id="status-icon" class="ph-fill ph-hourglass text-6xl text-brand-500 mb-4 inline-block animate-pulse"></i>
-            <h2 id="status-title" class="text-2xl font-extrabold tracking-tight text-brand-800 dark:text-brand-400 mb-2">Cuenta Pendiente</h2>
-            <p id="status-message" class="text-sm text-brand-700/70 font-medium">El administrador debe autorizar tu acceso a la bóveda. Por favor, espera.</p>
+            <h2 id="status-title" class="text-2xl font-extrabold tracking-tight dark:text-white mb-2">Cuenta Pendiente</h2>
+            <p id="status-message" class="text-sm text-slate-500 font-medium">El administrador debe autorizar tu acceso a la bóveda. Por favor, espera.</p>
         </div>
-        <button onclick="window.logout()" class="w-full bg-brand-50 dark:bg-slate-800 text-brand-800 dark:text-brand-400 font-bold py-3.5 rounded-2xl active:scale-95 transition-all shadow-sm">
+        <button onclick="window.logout()" class="w-full bg-brand-50 dark:bg-slate-800 text-brand-800 dark:text-brand-500 font-bold py-3.5 rounded-2xl active:scale-95 transition-all shadow-sm border border-brand-100 dark:border-slate-700">
             Cerrar Sesión
         </button>
     </div>
 
     <!-- PANEL DEL SUPER ADMINISTRADOR -->
-    <div id="admin-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[var(--bg-body)] sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:relative mx-auto sm:border-[8px] sm:border-brand-800 transition-all duration-500 ease-in-out overflow-hidden">
-        <header class="px-5 pt-12 pb-3 bg-[var(--bg-body)] z-10 sticky top-0 flex justify-between items-center border-b border-brand-200 dark:border-slate-800">
+    <div id="admin-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#eff3f4] dark:bg-slate-950 sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-slate-900 transition-all duration-500 ease-in-out overflow-hidden">
+        <header class="px-5 pt-12 pb-3 bg-[#eff3f4] dark:bg-slate-950 z-10 sticky top-0 flex justify-between items-center border-b border-slate-200 dark:border-slate-800">
             <div>
                 <p class="text-xs text-brand-500 font-bold uppercase tracking-wider mb-1">Super Admin</p>
-                <h1 class="text-xl font-extrabold text-brand-800 dark:text-white leading-none">Panel de Control</h1>
+                <h1 class="text-xl font-extrabold text-slate-900 dark:text-white leading-none">Panel de Control</h1>
             </div>
             <button onclick="window.logout()" class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center shadow-sm">
                 <i class="ph-bold ph-sign-out text-lg"></i>
             </button>
         </header>
         <main class="flex-1 overflow-y-auto hide-scroll p-5">
-            <p class="text-sm text-brand-700/70 dark:text-slate-400 mb-4">Gestión de accesos y suscripciones de usuarios. No tienes acceso a sus datos financieros.</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Gestión de accesos y suscripciones de usuarios. No tienes acceso a sus datos financieros.</p>
             <div id="admin-users-list" class="space-y-4 w-full">
                 <div class="text-center py-10"><i class="ph-bold ph-spinner animate-spin text-2xl text-slate-400"></i></div>
             </div>
@@ -347,26 +269,26 @@
     </div>
 
     <!-- MAIN APP CONTAINER -->
-    <div id="main-app-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[var(--bg-body)] sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:relative mx-auto sm:border-[8px] sm:border-brand-800 transition-all duration-500 ease-in-out overflow-hidden">
+    <div id="main-app-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#eff3f4] dark:bg-slate-950 sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:relative mx-auto sm:border-[8px] sm:border-slate-900 transition-all duration-500 ease-in-out overflow-hidden">
         
-        <header class="px-5 pt-12 pb-3 bg-[var(--bg-body)] z-10 sticky top-0 flex justify-between items-center transition-colors shrink-0">
+        <header class="px-5 pt-12 pb-3 bg-[#eff3f4] dark:bg-slate-950 z-10 sticky top-0 flex justify-between items-center transition-colors">
             <div class="flex items-center gap-3">
                 <div id="user-initials" class="w-10 h-10 rounded-full bg-brand-800 dark:bg-brand-500 text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
                     --
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs text-brand-700/70 font-medium leading-none mb-1 truncate">Hola,</p>
-                    <p id="user-name" class="text-base font-bold text-brand-800 dark:text-white leading-none truncate w-full">Usuario</p>
+                    <p class="text-xs text-slate-500 font-medium leading-none mb-1 truncate">Hola,</p>
+                    <p id="user-name" class="text-base font-bold text-slate-900 dark:text-white leading-none truncate w-full">Usuario</p>
                 </div>
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto hide-scroll pb-[100px] px-5 relative z-10 w-full">
+        <main class="flex-1 overflow-y-auto hide-scroll px-5 pb-[120px] relative">
             
             <!-- VISTA 1: DASHBOARD -->
-            <div id="dashboard-view" class="block animate-fade w-full">
-                <div class="bg-gradient-to-br from-brand-800 to-brand-900 text-white rounded-[24px] p-6 mb-6 shadow-lg shadow-brand-900/20">
-                    <p class="text-xs text-brand-200 font-medium mb-1">Balance Total</p>
+            <div id="dashboard-view" class="block animate-fade">
+                <div class="bg-gradient-to-br from-brand-800 to-brand-900 dark:from-brand-900 dark:to-slate-800 text-white rounded-[24px] p-6 mb-6 shadow-lg shadow-brand-900/20">
+                    <p class="text-xs text-brand-100/80 font-medium mb-1">Balance Total</p>
                     <h2 class="text-3xl font-extrabold tracking-tight truncate w-full" id="total-balance">$ 0</h2>
                     <div class="mt-4 flex items-center justify-between">
                         <div id="status-badge" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1 shrink-0">
@@ -377,34 +299,34 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 mb-6">
-                    <button onclick="window.openFormModal('expense')" class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 active:bg-brand-50 dark:active:bg-slate-700 transition shadow-sm w-full min-w-0">
+                    <button onclick="window.openFormModal('expense')" class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 active:bg-brand-50 dark:active:bg-slate-800 transition shadow-sm w-full min-w-0">
                         <div class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center shrink-0">
                             <i class="ph-bold ph-arrow-up-right text-lg"></i>
                         </div>
-                        <span class="text-xs font-bold text-brand-800 dark:text-slate-300 truncate w-full">Gasto</span>
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate w-full">Gasto</span>
                     </button>
-                    <button onclick="window.openFormModal('income')" class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 active:bg-brand-50 dark:active:bg-slate-700 transition shadow-sm w-full min-w-0">
+                    <button onclick="window.openFormModal('income')" class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 active:bg-brand-50 dark:active:bg-slate-800 transition shadow-sm w-full min-w-0">
                         <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 flex items-center justify-center shrink-0">
                             <i class="ph-bold ph-arrow-down-left text-lg"></i>
                         </div>
-                        <span class="text-xs font-bold text-brand-800 dark:text-slate-300 truncate w-full">Ingreso</span>
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate w-full">Ingreso</span>
                     </button>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm p-5 mb-6">
-                    <h3 class="font-bold text-sm text-brand-800 mb-4 dark:text-white">Flujo de Caja</h3>
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm p-5 mb-6">
+                    <h3 class="font-bold text-sm mb-4 dark:text-white">Flujo de Caja</h3>
                     <div class="flex items-center gap-4">
                         <div class="relative w-24 h-24 shrink-0">
                             <canvas id="myChart"></canvas>
                         </div>
                         <div class="flex-1 space-y-3 min-w-0">
                             <div class="truncate">
-                                <p class="text-xs text-brand-700/70 dark:text-slate-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span> Ingresos</p>
-                                <p class="font-bold text-sm text-brand-800 dark:text-white truncate" id="available-amount">$ 0</p>
+                                <p class="text-xs text-slate-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span> Ingresos</p>
+                                <p class="font-bold text-sm dark:text-white truncate" id="available-amount">$ 0</p>
                             </div>
                             <div class="truncate">
-                                <p class="text-xs text-brand-700/70 dark:text-slate-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-400 shrink-0"></span> Gastos</p>
-                                <p class="font-bold text-sm text-brand-800 dark:text-white truncate" id="spent-amount">$ 0</p>
+                                <p class="text-xs text-slate-400 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-400 shrink-0"></span> Gastos</p>
+                                <p class="font-bold text-sm dark:text-white truncate" id="spent-amount">$ 0</p>
                             </div>
                         </div>
                     </div>
@@ -412,11 +334,11 @@
 
                 <div>
                     <div class="flex justify-between items-end mb-3">
-                        <h3 class="font-bold text-lg text-brand-800 dark:text-white">Recientes</h3>
-                        <button onclick="window.switchTab('ledger', 1)" class="text-xs font-semibold text-brand-500">Ver todo</button>
+                        <h3 class="font-bold text-lg dark:text-white">Recientes</h3>
+                        <button onclick="window.switchTab('ledger')" class="text-xs font-semibold text-brand-500">Ver todo</button>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden w-full">
-                        <div id="tx-list" class="divide-y divide-brand-50 dark:divide-slate-700 flex flex-col w-full">
+                    <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden w-full">
+                        <div id="tx-list" class="divide-y divide-slate-100 dark:divide-slate-800 flex flex-col w-full">
                             <div class="p-6 text-center text-slate-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-ghost text-3xl mb-1 opacity-30"></i><span class="truncate w-full">Cargando...</span></div>
                         </div>
                     </div>
@@ -424,38 +346,38 @@
             </div>
 
             <!-- VISTA 2: MOVIMIENTOS -->
-            <div id="ledger-view" class="hidden animate-fade w-full">
-                <h2 class="text-3xl font-extrabold text-brand-800 mb-4 dark:text-white">Movimientos</h2>
+            <div id="ledger-view" class="hidden animate-fade">
+                <h2 class="text-3xl font-extrabold mb-4 dark:text-white text-brand-800">Movimientos</h2>
                 <div class="flex gap-2 mb-4 w-full">
                     <div class="relative flex-1 min-w-0">
-                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-brand-500 shrink-0"></i>
-                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full block bg-white dark:bg-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-sm border border-transparent dark:border-slate-700 dark:text-white">
+                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 shrink-0"></i>
+                        <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Buscar..." class="w-full block bg-white dark:bg-slate-900 rounded-xl pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-900 shadow-sm border border-transparent dark:border-slate-800 dark:text-white">
                     </div>
-                    <label class="w-12 h-12 shrink-0 bg-brand-800 dark:bg-brand-500 text-white rounded-xl flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition">
+                    <label class="w-12 h-12 shrink-0 bg-brand-800 dark:bg-brand-500 text-white rounded-xl flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition hover:bg-brand-900">
                         <i class="ph-bold ph-camera text-xl"></i>
                         <input type="file" id="invoice-upload" accept="image/jpeg, image/png, image/jpg" class="hidden" onchange="window.processInvoiceWithOpenRouter(this)">
                     </label>
                 </div>
                 <div class="flex gap-2 mb-5 overflow-x-auto hide-scroll pb-1 w-full">
-                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap shadow-sm transition shrink-0 bg-brand-800 dark:bg-brand-400 text-white dark:text-slate-900">Todos</button>
-                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition shrink-0 bg-white dark:bg-slate-800 text-brand-800 dark:text-slate-400 border border-brand-200 dark:border-slate-700">Gastos</button>
-                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition shrink-0 bg-white dark:bg-slate-800 text-brand-800 dark:text-slate-400 border border-brand-200 dark:border-slate-700">Ingresos</button>
+                    <button onclick="window.filterLedger('Todos', this)" class="filter-btn active px-4 py-2 rounded-full text-xs font-bold bg-brand-800 dark:bg-brand-500 text-white whitespace-nowrap shadow-sm transition shrink-0 border border-transparent">Todos</button>
+                    <button onclick="window.filterLedger('expense', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-700 whitespace-nowrap transition shrink-0">Gastos</button>
+                    <button onclick="window.filterLedger('income', this)" class="filter-btn px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-700 whitespace-nowrap transition shrink-0">Ingresos</button>
                 </div>
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden w-full">
-                    <div id="ledger-list" class="divide-y divide-brand-50 dark:divide-slate-700 flex flex-col w-full">
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden w-full">
+                    <div id="ledger-list" class="divide-y divide-slate-100 dark:divide-slate-800 flex flex-col w-full">
                         <!-- Items JS -->
                     </div>
                 </div>
             </div>
 
             <!-- VISTA 3: T. CREDITO -->
-            <div id="credit-view" class="hidden animate-fade w-full">
-                <h2 class="text-3xl font-extrabold text-brand-800 mb-1 dark:text-white truncate">T. Crédito</h2>
-                <p class="text-sm text-brand-700/70 dark:text-slate-400 mb-6 truncate">Gestiona tus deudas y compras aisladas.</p>
+            <div id="credit-view" class="hidden animate-fade">
+                <h2 class="text-3xl font-extrabold mb-1 dark:text-white text-brand-800 truncate">T. Crédito</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-6 truncate">Gestiona tus deudas y compras aisladas.</p>
 
                 <!-- Tarjeta Deuda Total TC Aislada -->
-                <div class="bg-gradient-to-br from-brand-900 to-brand-700 text-white rounded-[24px] p-6 mb-6 shadow-lg shadow-brand-900/10 border border-transparent dark:border-brand-700/30 w-full min-w-0">
-                    <p class="text-xs text-brand-200 font-medium mb-1 truncate">Deuda Total Pendiente</p>
+                <div class="bg-gradient-to-br from-brand-800 to-brand-900 dark:from-slate-800 dark:to-slate-900 text-white rounded-[24px] p-6 mb-6 shadow-lg shadow-brand-900/10 border border-transparent dark:border-slate-700 w-full min-w-0">
+                    <p class="text-xs text-brand-100/80 font-medium mb-1 truncate">Deuda Total Pendiente</p>
                     <h2 class="text-3xl font-extrabold tracking-tight truncate w-full" id="total-credit-debt">$ 0</h2>
                     <div class="mt-4 flex items-center justify-between">
                         <div class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full flex items-center gap-1 shrink-0">
@@ -465,71 +387,72 @@
                     </div>
                 </div>
 
-                <h3 class="font-bold text-lg text-brand-800 mb-3 dark:text-white truncate">Registrar Nueva Compra</h3>
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 shadow-sm rounded-2xl p-4 sm:p-5 mb-6 w-full min-w-0">
+                <h3 class="font-bold text-lg mb-3 dark:text-white truncate">Registrar Nueva Compra</h3>
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 shadow-sm rounded-2xl p-4 sm:p-5 mb-6 w-full min-w-0">
                     
                     <div class="flex flex-col gap-3 w-full min-w-0"> 
                         <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-brand-700/70 dark:text-slate-400 ml-1 block truncate">Descripción</label>
-                            <input type="text" id="credit-desc" class="w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500" placeholder="Ej. iPhone 15, Vuelos...">
+                            <label class="text-xs font-semibold text-slate-500 ml-1 block truncate">Descripción</label>
+                            <input type="text" id="credit-desc" class="w-full block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500" placeholder="Ej. iPhone 15, Vuelos...">
+                        </div>
+                        
+                        <!-- Fechas de corte y pago apiladas para evitar desbordes -->
+                        <div class="space-y-1 w-full min-w-0">
+                            <label class="text-xs font-semibold text-slate-500 ml-1 block truncate">Día de Corte</label>
+                            <select id="credit-cut" class="custom-select w-full block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500"></select>
+                        </div>
+                        <div class="space-y-1 w-full min-w-0">
+                            <label class="text-xs font-semibold text-slate-500 ml-1 block truncate">Día de Pago Máximo</label>
+                            <select id="credit-pay" class="custom-select w-full block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500"></select>
                         </div>
                         
                         <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-brand-700/70 dark:text-slate-400 ml-1 block truncate">Día de Corte</label>
-                            <select id="credit-cut" class="custom-select w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500"></select>
+                            <label class="text-xs font-semibold text-slate-500 ml-1 block truncate">Valor de la Compra</label>
+                            <input type="number" id="credit-amount" class="w-full block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500" placeholder="0">
                         </div>
                         <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-brand-700/70 dark:text-slate-400 ml-1 block truncate">Día de Pago Máximo</label>
-                            <select id="credit-pay" class="custom-select w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500"></select>
-                        </div>
-                        
-                        <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-brand-700/70 dark:text-slate-400 ml-1 block truncate">Valor de la Compra</label>
-                            <input type="number" id="credit-amount" class="w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500" placeholder="0">
-                        </div>
-                        <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-brand-700/70 dark:text-slate-400 ml-1 block truncate">Cuotas</label>
-                            <select id="credit-installments" class="custom-select w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500">
+                            <label class="text-xs font-semibold text-slate-500 ml-1 block truncate">Cuotas</label>
+                            <select id="credit-installments" class="custom-select w-full block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500">
                                 <option value="1">1 cuota</option><option value="2">2 cuotas</option><option value="3">3 cuotas</option><option value="6">6 cuotas</option><option value="12">12 cuotas</option><option value="24">24 cuotas</option>
                             </select>
                         </div>
                         
                         <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-brand-700/70 dark:text-slate-400 ml-1 block truncate">Fecha de Compra</label>
-                            <input type="date" id="credit-date" class="w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500 text-brand-700/70">
+                            <label class="text-xs font-semibold text-slate-500 ml-1 block truncate">Fecha de Compra</label>
+                            <input type="date" id="credit-date" class="w-full block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500 text-slate-500">
                         </div>
                         <div class="space-y-1 w-full min-w-0">
-                            <label class="text-xs font-semibold text-brand-700/70 dark:text-slate-400 ml-1 block truncate">Interés (%)</label> 
-                            <input type="number" step="0.01" id="credit-interest" class="w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500" placeholder="0.00">
+                            <label class="text-xs font-semibold text-slate-500 ml-1 block truncate">Interés (%)</label> 
+                            <input type="number" step="0.01" id="credit-interest" class="w-full block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500" placeholder="0.00">
                         </div>
                     </div>
                 </div>
                 
                 <div id="credit-results" class="w-full min-w-0">
                     <div class="text-center py-10 px-4 w-full">
-                        <i class="ph-bold ph-calculator mx-auto text-brand-200 dark:text-slate-600 text-4xl mb-2"></i>
-                        <p class="text-brand-700/70 dark:text-slate-400 text-xs font-medium truncate w-full">Ingresa los datos para calcular y guardar</p>
+                        <i class="ph-bold ph-calculator mx-auto text-brand-100 dark:text-slate-700 text-4xl mb-2"></i>
+                        <p class="text-slate-400 text-xs font-medium truncate w-full">Ingresa los datos para calcular y guardar</p>
                     </div>
                 </div>
 
-                <h3 class="font-bold text-lg text-brand-800 mb-3 mt-6 dark:text-white truncate">Deudas Activas y Pagos</h3>
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden mb-6 w-full min-w-0">
-                    <div id="credit-list" class="divide-y divide-brand-50 dark:divide-slate-700 flex flex-col w-full">
+                <h3 class="font-bold text-lg mb-3 mt-6 dark:text-white truncate">Deudas Activas y Pagos</h3>
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden mb-6 w-full min-w-0">
+                    <div id="credit-list" class="divide-y divide-slate-100 dark:divide-slate-800 flex flex-col w-full">
                         <div class="p-8 text-center text-slate-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-credit-card text-3xl mb-2 opacity-30"></i><span class="truncate w-full">No hay deudas ni pagos de tarjeta</span></div>
                     </div>
                 </div>
             </div>
 
             <!-- VISTA 4: AJUSTES -->
-            <div id="settings-view" class="hidden animate-fade w-full">
-                <h2 class="text-3xl font-extrabold text-brand-800 mb-6 dark:text-white">Ajustes</h2>
+            <div id="settings-view" class="hidden animate-fade">
+                <h2 class="text-3xl font-extrabold mb-6 dark:text-white text-brand-800">Ajustes</h2>
 
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm p-5 mb-5 flex justify-between items-center w-full min-w-0">
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm p-5 mb-5 flex justify-between items-center w-full min-w-0">
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-8 h-8 shrink-0 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-500 flex items-center justify-center">
+                        <div class="w-8 h-8 shrink-0 rounded-full bg-brand-50 dark:bg-slate-800 text-brand-500 flex items-center justify-center">
                             <i class="ph-bold ph-moon text-lg"></i>
                         </div>
-                        <span class="font-bold text-sm text-brand-800 dark:text-white truncate">Modo Oscuro</span>
+                        <span class="font-bold text-sm dark:text-white truncate">Modo Oscuro</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer shrink-0">
                         <input type="checkbox" id="theme-toggle" class="sr-only peer" onchange="window.toggleTheme()">
@@ -537,87 +460,86 @@
                     </label>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm p-5 mb-5 w-full min-w-0">
-                    <h3 class="font-bold text-sm text-brand-800 mb-3 flex items-center gap-2 dark:text-white truncate"><div class="w-8 h-8 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-file-pdf"></i></div> Exportar Reporte</h3>
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm p-5 mb-5 w-full min-w-0">
+                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white truncate"><div class="w-8 h-8 rounded-full bg-brand-50 dark:bg-slate-800 text-brand-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-file-pdf"></i></div> Exportar Reporte</h3>
                     <div class="flex gap-2 w-full min-w-0">
-                        <input type="month" id="export-month" class="flex-1 min-w-0 block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500">
+                        <input type="month" id="export-month" class="flex-1 min-w-0 block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-200">
                         <button onclick="window.exportToPDF()" class="shrink-0 bg-brand-800 dark:bg-brand-500 text-white font-bold px-4 rounded-xl active:scale-95 transition">PDF</button>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm p-5 mb-5 w-full min-w-0">
-                    <h3 class="font-bold text-sm text-brand-800 mb-3 flex items-center gap-2 dark:text-white truncate"><div class="w-8 h-8 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-bank"></i></div> Mis Cuentas</h3>
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm p-5 mb-5 w-full min-w-0">
+                    <h3 class="font-bold text-sm mb-3 flex items-center gap-2 dark:text-white truncate"><div class="w-8 h-8 rounded-full bg-brand-50 dark:bg-slate-800 text-brand-500 flex items-center justify-center shrink-0"><i class="ph-bold ph-bank"></i></div> Mis Cuentas</h3>
                     <form onsubmit="window.handleAddAccount(event)" class="flex gap-2 mb-4 w-full min-w-0">
-                        <input type="text" id="new-account-name" placeholder="Ej. Efectivo..." required class="flex-1 min-w-0 block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500">
+                        <input type="text" id="new-account-name" placeholder="Ej. Efectivo..." required class="flex-1 min-w-0 block bg-brand-50 dark:bg-slate-950 border border-brand-100 dark:border-slate-800 rounded-xl px-3 py-3 text-sm font-medium dark:text-white focus:ring-2 focus:ring-brand-500">
                         <button type="submit" id="btn-add-account" class="shrink-0 bg-brand-500 hover:bg-brand-800 text-white font-bold px-4 rounded-xl active:scale-95 transition">+</button>
                     </form>
-                    <div id="accounts-list" class="flex flex-col divide-y divide-brand-50 dark:divide-slate-700 max-h-[300px] overflow-y-auto hide-scroll w-full"></div>
+                    <div id="accounts-list" class="flex flex-col divide-y divide-slate-100 dark:divide-slate-800 max-h-[300px] overflow-y-auto hide-scroll w-full"></div>
                 </div>
                 
-                <button onclick="window.logout()" class="w-full bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl p-4 text-center text-rose-500 font-bold active:bg-brand-50 dark:active:bg-slate-700 transition shadow-sm mb-8 truncate">
+                <button onclick="window.logout()" class="w-full bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl p-4 text-center text-rose-500 font-bold active:bg-brand-50 dark:active:bg-slate-800 transition shadow-sm mb-8 truncate">
                     Cerrar Sesión
                 </button>
             </div>
         </main>
 
-        <!-- Fade Gradient at the bottom -->
-        <div class="absolute bottom-0 w-full h-[100px] z-10 pointer-events-none" style="background: linear-gradient(to top, var(--bg-body) 10%, transparent 100%);"></div>
+        <!-- Fade Gradient at the bottom para que el scroll se pierda elegante -->
+        <div class="absolute bottom-0 w-full h-[120px] z-10 pointer-events-none bg-gradient-to-t from-[#eff3f4] dark:from-slate-950 to-transparent"></div>
 
-        <!-- FLOATING BOTTOM NAV (PILL) -->
-        <div class="absolute bottom-6 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none w-full">
-            <nav class="pointer-events-auto flex justify-between items-center w-full max-w-[340px] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-brand-50 dark:border-slate-700/50 rounded-full px-2 py-2 shadow-2xl shadow-brand-200/50 dark:shadow-black/50 transition-colors">
-                <button id="nav-dashboard" onclick="window.switchTab('dashboard', 0)" class="nav-btn active flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-slate-400 hover:text-brand-800 dark:hover:text-slate-300">
-                    <i class="ph-fill ph-house text-2xl"></i>
-                    <span class="text-[9px]">INICIO</span>
-                </button>
-                <button id="nav-ledger" onclick="window.switchTab('ledger', 1)" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-slate-400 hover:text-brand-800 dark:hover:text-slate-300">
-                    <i class="ph-fill ph-list-bullets text-2xl"></i>
-                    <span class="text-[9px]">HISTORIAL</span>
-                </button>
-                <button id="nav-credit" onclick="window.switchTab('credit', 2)" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-slate-400 hover:text-brand-800 dark:hover:text-slate-300">
-                    <i class="ph-fill ph-credit-card text-2xl"></i>
-                    <span class="text-[9px]">TARJETAS</span>
-                </button>
-                <button id="nav-settings" onclick="window.switchTab('settings', 3)" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-slate-400 hover:text-brand-800 dark:hover:text-slate-300">
-                    <i class="ph-fill ph-gear text-2xl"></i>
-                    <span class="text-[9px]">AJUSTES</span>
-                </button>
-            </nav>
-        </div>
+        <!-- NAVEGACIÓN INFERIOR NATIVA -->
+        <nav class="absolute bottom-0 w-full bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border-t border-brand-100/50 dark:border-slate-800/80 flex justify-around items-center pt-2.5 z-20 transition-colors shadow-[0_-4px_25px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_25px_rgba(0,0,0,0.2)]" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
+            <button id="nav-dashboard" onclick="window.switchTab('dashboard')" class="nav-btn active flex flex-col items-center justify-center w-[70px] h-12">
+                <i class="ph-fill ph-house text-[26px] mb-1"></i>
+                <span class="text-[9px] font-bold tracking-widest">INICIO</span>
+            </button>
+            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
+                <i class="ph-fill ph-list-bullets text-[26px] mb-1"></i>
+                <span class="text-[9px] font-bold tracking-widest">HISTORIAL</span>
+            </button>
+            <button id="nav-credit" onclick="window.switchTab('credit')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
+                <i class="ph-fill ph-credit-card text-[26px] mb-1"></i>
+                <span class="text-[9px] font-bold tracking-widest">TARJETAS</span>
+            </button>
+            <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
+                <i class="ph-fill ph-gear text-[26px] mb-1"></i>
+                <span class="text-[9px] font-bold tracking-widest">AJUSTES</span>
+            </button>
+        </nav>
 
-        <!-- Modal Ingreso/Gasto -->
+        <!-- Modal Ingreso/Gasto (Apilado para CERO desborde móvil) -->
         <div id="form-modal" class="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
-            <div class="bg-white dark:bg-slate-900 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
-                <div class="w-10 h-1.5 bg-brand-100 dark:bg-slate-700 rounded-full mx-auto mb-4"></div>
+            <div class="bg-white dark:bg-slate-900 w-full rounded-t-[32px] p-6 animate-sheet transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
+                <div class="w-10 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-4"></div>
                 <div class="flex justify-between items-center mb-5">
-                    <h3 id="modal-title" class="text-xl font-bold text-brand-800 dark:text-white truncate">Añadir</h3>
-                    <button onclick="window.closeFormModal()" class="w-8 h-8 bg-brand-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-brand-700/70 font-bold active:bg-brand-100 shrink-0"><i class="ph-bold ph-x"></i></button>
+                    <h3 id="modal-title" class="text-xl font-bold dark:text-white text-brand-800 truncate">Añadir</h3>
+                    <button onclick="window.closeFormModal()" class="w-8 h-8 bg-brand-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500 font-bold active:bg-slate-200 shrink-0"><i class="ph-bold ph-x"></i></button>
                 </div>
 
                 <form id="transaction-form" onsubmit="window.handleFormSubmit(event)" class="space-y-4 w-full">
                     <input type="hidden" id="edit-tx-id" value="">
                     
                     <div class="flex items-center bg-brand-50 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-brand-100 dark:border-slate-700 w-full min-w-0">
-                        <span class="text-brand-400 font-bold text-lg mr-2 shrink-0">$</span>
-                        <input type="number" step="1" id="form-amount" required class="flex-1 min-w-0 bg-transparent text-2xl font-bold text-brand-800 dark:text-white focus:outline-none py-2" placeholder="0">
+                        <span class="text-slate-400 font-bold text-lg mr-2 shrink-0">$</span>
+                        <input type="number" step="1" id="form-amount" required class="flex-1 min-w-0 bg-transparent text-2xl font-bold text-slate-900 dark:text-white focus:outline-none py-2" placeholder="0">
                     </div>
                     
                     <div class="relative w-full min-w-0">
-                        <i class="ph-bold ph-text-aa absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-400 shrink-0"></i>
-                        <input type="text" id="form-desc" required class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium text-brand-800 dark:text-white focus:ring-2 focus:ring-brand-500" placeholder="Descripción">
+                        <i class="ph-bold ph-text-aa absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 shrink-0"></i>
+                        <input type="text" id="form-desc" required class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl pl-11 pr-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-brand-200" placeholder="Descripción">
                     </div>
                     
+                    <!-- APILADOS VERTICALMENTE -->
                     <div class="space-y-3 w-full min-w-0">
-                        <select id="form-category" class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl px-3 py-3.5 font-medium text-brand-800 dark:text-white focus:ring-2 focus:ring-brand-500 custom-select"></select>
-                        <select id="form-account" class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl px-3 py-3.5 font-medium text-brand-800 dark:text-white focus:ring-2 focus:ring-brand-500 custom-select"></select>
-                        <input type="date" id="form-date" required class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl px-4 py-3.5 font-medium text-brand-800 dark:text-white focus:ring-2 focus:ring-brand-500 text-brand-700/70">
+                        <select id="form-category" class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-brand-200 custom-select"></select>
+                        <select id="form-account" class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl px-3 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-brand-200 custom-select"></select>
+                        <input type="date" id="form-date" required class="w-full block bg-brand-50 dark:bg-slate-800 border border-brand-100 dark:border-slate-700 rounded-2xl px-4 py-3.5 font-medium dark:text-white focus:ring-2 focus:ring-brand-200 text-slate-500">
                     </div>
 
                     <div class="flex gap-3 pt-2 w-full min-w-0">
                         <button type="button" id="btn-delete-tx" onclick="window.deleteCurrentTx()" class="hidden w-14 h-[52px] bg-rose-50 dark:bg-rose-900/30 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 transition shrink-0">
                             <i class="ph-bold ph-trash text-xl"></i>
                         </button>
-                        <button type="submit" id="submit-btn" class="flex-1 min-w-0 bg-brand-500 active:bg-brand-800 dark:bg-brand-500 text-white font-bold py-3.5 rounded-2xl transition shadow-sm truncate">
+                        <button type="submit" id="submit-btn" class="flex-1 min-w-0 bg-brand-800 dark:bg-brand-500 text-white font-bold py-3.5 rounded-2xl active:scale-[0.98] transition shadow-sm truncate">
                             Guardar
                         </button>
                     </div>
@@ -627,11 +549,11 @@
 
         <!-- Modal Detalle Pago TC -->
         <div id="credit-detail-modal" class="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-[55] hidden flex-col justify-end transition-opacity">
-            <div class="bg-white dark:bg-slate-900 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
-                <div class="w-10 h-1.5 bg-brand-100 dark:bg-slate-700 rounded-full mx-auto mb-4"></div>
+            <div class="bg-white dark:bg-slate-900 w-full rounded-t-[32px] p-6 animate-sheet transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
+                <div class="w-10 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-4"></div>
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold text-brand-800 dark:text-white truncate">Detalle Deuda</h3>
-                    <button onclick="window.closeCreditDetailModal()" class="w-8 h-8 bg-brand-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-brand-700/70 font-bold active:bg-brand-100 shrink-0"><i class="ph-bold ph-x"></i></button>
+                    <h3 class="text-xl font-bold dark:text-white text-brand-800 truncate">Detalle Deuda</h3>
+                    <button onclick="window.closeCreditDetailModal()" class="w-8 h-8 bg-brand-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500 font-bold active:bg-slate-200 shrink-0"><i class="ph-bold ph-x"></i></button>
                 </div>
                 
                 <div id="credit-detail-content" class="mb-5 space-y-3 w-full"></div>
@@ -640,7 +562,7 @@
                     <button type="button" id="btn-delete-credit" onclick="window.deleteCurrentCredit()" class="w-14 h-[52px] bg-rose-50 dark:bg-rose-900/30 text-rose-500 rounded-2xl flex items-center justify-center active:bg-rose-100 transition shrink-0">
                         <i class="ph-bold ph-trash text-xl"></i>
                     </button>
-                    <button type="button" id="btn-pay-credit" onclick="window.payCreditInstallment()" class="flex-1 min-w-0 bg-brand-500 text-white font-bold py-3.5 rounded-2xl active:bg-brand-800 transition shadow-sm truncate">
+                    <button type="button" id="btn-pay-credit" onclick="window.payCreditInstallment()" class="flex-1 min-w-0 bg-brand-500 hover:bg-brand-800 text-white font-bold py-3.5 rounded-2xl transition shadow-sm truncate">
                         Pagar Cuota
                     </button>
                 </div>
@@ -648,16 +570,16 @@
         </div>
     </div>
 
-    <!-- Modales Globales -->
+    <!-- Modales Globales (Alertas y Cargas) -->
     <div id="edit-account-modal" class="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-[60] hidden items-center justify-center p-5 w-full">
         <div class="bg-white dark:bg-slate-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-slate-700 min-w-0">
-            <h3 class="text-lg font-bold text-brand-800 mb-4 dark:text-white truncate">Renombrar Cuenta</h3>
+            <h3 class="text-lg font-bold mb-4 dark:text-white text-brand-800 truncate">Renombrar Cuenta</h3>
             <form id="edit-account-form" onsubmit="window.handleEditAccount(event)" class="w-full">
                 <input type="hidden" id="edit-account-id">
-                <input type="text" id="edit-account-name" required class="w-full block bg-brand-50 dark:bg-slate-900 border border-brand-200 dark:border-slate-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-brand-500 min-w-0">
+                <input type="text" id="edit-account-name" required class="w-full block bg-brand-50 dark:bg-slate-900 border border-brand-100 dark:border-slate-700 rounded-xl px-4 py-3 font-medium text-center mb-5 dark:text-white focus:ring-2 focus:ring-brand-500 min-w-0">
                 <div class="flex gap-2 w-full min-w-0">
-                    <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 min-w-0 bg-brand-50 dark:bg-slate-700 text-brand-700/70 dark:text-slate-300 font-bold py-3 rounded-xl active:bg-brand-100 truncate">Cancelar</button>
-                    <button type="submit" id="btn-save-account" class="flex-1 min-w-0 bg-brand-500 text-white font-bold py-3 rounded-xl active:bg-brand-800 truncate">Guardar</button>
+                    <button type="button" onclick="window.closeEditAccountModal()" class="flex-1 min-w-0 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 font-bold py-3 rounded-xl active:bg-slate-200 truncate">Cancelar</button>
+                    <button type="submit" id="btn-save-account" class="flex-1 min-w-0 bg-brand-500 hover:bg-brand-800 text-white font-bold py-3 rounded-xl truncate">Guardar</button>
                 </div>
             </form>
         </div>
@@ -665,14 +587,14 @@
 
     <div id="scan-loader" class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 z-[60] hidden flex-col items-center justify-center backdrop-blur-md">
         <i class="ph-bold ph-spinner animate-spin text-4xl text-brand-500 mb-3"></i>
-        <h3 class="text-brand-800 dark:text-white font-bold truncate">Procesando...</h3>
+        <h3 class="text-slate-900 dark:text-white font-bold truncate">Procesando...</h3>
     </div>
 
     <div id="custom-alert" class="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-[70] hidden items-center justify-center p-5 w-full">
         <div class="bg-white dark:bg-slate-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-slate-700 min-w-0">
             <i id="alert-icon" class="text-4xl mb-3 inline-block"></i>
-            <h3 id="alert-title" class="text-lg font-bold text-brand-800 mb-1 dark:text-white truncate w-full">Título</h3>
-            <p id="alert-message" class="text-sm text-brand-700/70 dark:text-slate-400 mb-5 break-words w-full">Mensaje</p>
+            <h3 id="alert-title" class="text-lg font-bold mb-1 dark:text-white truncate w-full">Título</h3>
+            <p id="alert-message" class="text-sm text-slate-500 dark:text-slate-400 mb-5 break-words w-full">Mensaje</p>
             <button onclick="window.closeAlert()" class="w-full bg-brand-800 dark:bg-brand-500 text-white font-bold py-3 rounded-xl active:scale-95 transition truncate">Entendido</button>
         </div>
     </div>
@@ -680,10 +602,10 @@
     <div id="confirm-modal" class="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-[80] hidden items-center justify-center p-5 w-full">
         <div class="bg-white dark:bg-slate-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-slate-700 min-w-0">
             <i id="confirm-icon" class="ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block"></i>
-            <h3 id="confirm-title" class="text-lg font-bold text-brand-800 mb-1 dark:text-white truncate w-full">Confirmar</h3>
-            <p id="confirm-message" class="text-sm text-brand-700/70 dark:text-slate-400 mb-5 break-words w-full">¿Seguro?</p>
+            <h3 id="confirm-title" class="text-lg font-bold mb-1 dark:text-white truncate w-full">Confirmar</h3>
+            <p id="confirm-message" class="text-sm text-slate-500 dark:text-slate-400 mb-5 break-words w-full">¿Seguro?</p>
             <div class="flex gap-2 w-full min-w-0">
-                <button onclick="window.closeConfirm()" class="flex-1 min-w-0 bg-brand-50 dark:bg-slate-700 text-brand-700/70 dark:text-slate-300 font-bold py-3 rounded-xl active:bg-brand-100 truncate">Cancelar</button>
+                <button onclick="window.closeConfirm()" class="flex-1 min-w-0 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold py-3 rounded-xl active:bg-slate-200 truncate">Cancelar</button>
                 <button id="btn-confirm-action" onclick="window.executeConfirm()" class="flex-1 min-w-0 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600 truncate">Confirmar</button>
             </div>
         </div>
@@ -709,13 +631,13 @@
         const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()}) });
         
         let currentUser = null;
-        let currentUserData = null;
+        let currentUserData = null; // Datos de perfil de app_users
         let allTransactions = []; 
         let mainTransactions = [];
         let creditTransactions = [];
         let filteredTransactions = [];
         let accounts = [];
-        let adminUsersList = [];
+        let adminUsersList = []; // Lista para el super admin
         let isExpense = true;
         let currentFilter = 'Todos';
         let searchQuery = '';
@@ -725,7 +647,7 @@
         let unsubscribeAdminDB = null;
         let confirmActionCallback = null;
         let activeCreditDeuda = null;
-        let isLoginMode = true; 
+        let isLoginMode = true; // Control de Login/Registro
 
         const balanceEl = document.getElementById('total-balance');
         const availableEl = document.getElementById('available-amount');
@@ -766,7 +688,7 @@
             initCreditForm(); 
             ['form-date', 'credit-date'].forEach(id => {
                 const el = document.getElementById(id);
-                if(el) el.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-brand-700/70'); });
+                if(el) el.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-slate-500'); });
             });
         };
 
@@ -780,7 +702,7 @@
                 } else {
                     el.style.opacity = '0';
                     el.style.pointerEvents = 'none';
-                    setTimeout(() => el.classList.add('hidden'), 400);
+                    setTimeout(() => el.classList.add('hidden'), 400); // 400ms después del fade
                 }
             });
         }
@@ -799,34 +721,49 @@
                 currentUser = user;
                 if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = '<span>Entrar a la bóveda</span>'; }
                 
+                // Obtener perfil del usuario para validar permisos
                 const userDocRef = doc(db, "app_users", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 
                 if (userDocSnap.exists()) {
                     currentUserData = userDocSnap.data();
                 } else {
-                    currentUserData = { email: user.email, role: user.email === SUPER_ADMIN_EMAIL ? 'admin' : 'user', status: 'approved', createdAt: serverTimestamp(), trialEnd: null };
+                    // Si el usuario existe en Auth pero no en Firestore (usuario antiguo legacy)
+                    // Le damos acceso de usuario normal y lo aprobamos automáticamente.
+                    currentUserData = {
+                        email: user.email,
+                        role: user.email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
+                        status: 'approved',
+                        createdAt: serverTimestamp(),
+                        trialEnd: null
+                    };
                     await setDoc(userDocRef, currentUserData);
                 }
 
+                // Evaluar Permisos y Enrutar
                 if (currentUserData.role === 'admin') {
+                    // Es Super Admin
                     switchRootView('admin-view');
                     listenToAllUsersForAdmin();
                 } else {
+                    // Es Usuario Normal. Verificar estado.
                     if (currentUserData.status === 'pending') {
                         showStatus('Cuenta Pendiente', 'El administrador debe autorizar tu acceso a la bóveda.', 'ph-hourglass');
                     } else if (currentUserData.status === 'expired') {
                         showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500');
                     } else if (currentUserData.status === 'approved') {
+                        // Verificar si tiene trialEnd configurado y ya expiró
                         if (currentUserData.trialEnd) {
                             const endDate = currentUserData.trialEnd.toDate();
                             if (new Date() > endDate) {
+                                // Venció el tiempo
                                 await updateDoc(userDocRef, { status: 'expired' });
                                 showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500');
                                 return;
                             }
                         }
                         
+                        // Todo en orden, cargar la app
                         document.getElementById('user-name').innerText = user.email.split('@')[0];
                         document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
                         switchRootView('main-app-view');
@@ -835,6 +772,7 @@
                     }
                 }
             } else {
+                // No hay sesión
                 currentUser = null; currentUserData = null; allTransactions = []; mainTransactions = []; creditTransactions = []; accounts = []; adminUsersList = [];
                 if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
                 if (unsubscribeAccountsDB) { unsubscribeAccountsDB(); unsubscribeAccountsDB = null; }
@@ -848,8 +786,6 @@
 
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? 'FinSight' : 'Crear Cuenta';
-            document.getElementById('auth-subtitle').innerText = isLoginMode ? 'Tu bóveda financiera' : 'Regístrate para solicitar acceso';
             document.getElementById('auth-submit-btn').innerHTML = isLoginMode ? '<span>Entrar a la bóveda</span>' : '<span>Registrarse</span>';
             document.getElementById('toggle-auth-btn').innerText = isLoginMode ? '¿No tienes cuenta? Solicita acceso' : '¿Ya tienes cuenta? Inicia Sesión';
         };
@@ -863,6 +799,7 @@
 
             if (!email || !password) return window.showCustomAlert('Datos incompletos', 'Ingresa correo y clave.', 'ph-warning-circle text-orange-500');
 
+            // Seguridad de intentos solo aplica para login normal
             let intentos = parseInt(localStorage.getItem('boveda_intentos') || '0');
             let tiempoDesbloqueo = parseInt(localStorage.getItem('boveda_bloqueo_hasta') || '0');
             const ahora = new Date().getTime();
@@ -879,9 +816,18 @@
                     await signInWithEmailAndPassword(auth, email, password); 
                     localStorage.setItem('boveda_intentos', '0');
                 } else {
+                    // Registro de Nuevo Usuario
                     const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                    await setDoc(doc(db, "app_users", userCred.user.uid), { email: email, role: email === SUPER_ADMIN_EMAIL ? 'admin' : 'user', status: email === SUPER_ADMIN_EMAIL ? 'approved' : 'pending', createdAt: serverTimestamp(), trialEnd: null });
+                    // Crear su perfil en Firestore con estado "pending"
+                    await setDoc(doc(db, "app_users", userCred.user.uid), {
+                        email: email,
+                        role: email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
+                        status: email === SUPER_ADMIN_EMAIL ? 'approved' : 'pending',
+                        createdAt: serverTimestamp(),
+                        trialEnd: null
+                    });
                     localStorage.setItem('boveda_intentos', '0');
+                    // Tras el registro, onAuthStateChanged tomará el control y lo enviará al status-view
                 }
             } 
             catch(error) {
@@ -908,7 +854,7 @@
 
                 snapshot.forEach((docSnap) => {
                     const usr = { id: docSnap.id, ...docSnap.data() };
-                    if (usr.role === 'admin') return; 
+                    if (usr.role === 'admin') return; // No mostrarse a sí mismo
                     hasUsers = true;
 
                     let statusBadge = '';
@@ -923,20 +869,20 @@
                     }
 
                     listEl.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-brand-100 dark:border-slate-700 w-full min-w-0 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 w-full min-w-0 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                             <div class="min-w-0 w-full sm:w-auto flex-1">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <p class="font-bold text-brand-800 dark:text-white truncate">${usr.email}</p>
+                                    <p class="font-bold text-slate-900 dark:text-white truncate">${usr.email}</p>
                                     ${statusBadge}
                                 </div>
-                                <p class="text-xs text-brand-700/70 dark:text-slate-400 font-medium truncate"><i class="ph-fill ph-calendar-blank"></i> ${trialText}</p>
+                                <p class="text-xs text-slate-400 font-medium truncate"><i class="ph-fill ph-calendar-blank"></i> ${trialText}</p>
                             </div>
                             <div class="flex gap-2 w-full sm:w-auto shrink-0">
                                 ${usr.status === 'pending' || usr.status === 'expired' ? 
                                     `<button onclick="window.adminSetTrial('${usr.id}', 30)" class="flex-1 sm:flex-none bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded-xl active:scale-95 transition whitespace-nowrap">Aprobar 1 Mes</button>` : 
                                     `<button onclick="window.adminSetTrial('${usr.id}', 30)" class="flex-1 sm:flex-none bg-brand-500 text-white text-xs font-bold py-2 px-3 rounded-xl active:scale-95 transition whitespace-nowrap">+1 Mes</button>`
                                 }
-                                <button onclick="window.adminSuspend('${usr.id}')" class="w-10 h-10 bg-brand-50 dark:bg-slate-700 text-brand-800 dark:text-slate-300 rounded-xl flex items-center justify-center active:scale-95 transition shrink-0" title="Suspender">
+                                <button onclick="window.adminSuspend('${usr.id}')" class="w-10 h-10 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 rounded-xl flex items-center justify-center active:scale-95 transition shrink-0" title="Suspender">
                                     <i class="ph-bold ph-prohibit"></i>
                                 </button>
                             </div>
@@ -944,22 +890,34 @@
                     `;
                 });
 
-                if(!hasUsers) { listEl.innerHTML = '<div class="text-center py-10 text-slate-400 text-sm font-medium"><i class="ph-bold ph-users text-4xl mb-2 opacity-30 block"></i>No hay usuarios registrados</div>'; }
+                if(!hasUsers) {
+                    listEl.innerHTML = '<div class="text-center py-10 text-slate-400 text-sm font-medium"><i class="ph-bold ph-users text-4xl mb-2 opacity-30 block"></i>No hay usuarios registrados</div>';
+                }
             });
         }
 
         window.adminSetTrial = async (uid, days) => {
             if (!currentUser || currentUserData.role !== 'admin') return;
-            const newDate = new Date(); newDate.setDate(newDate.getDate() + days);
-            try { await updateDoc(doc(db, "app_users", uid), { status: 'approved', trialEnd: newDate }); window.showCustomAlert('Actualizado', `Acceso concedido hasta el ${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`, 'ph-check-circle text-emerald-500'); } 
-            catch (e) { window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-circle text-rose-500'); }
+            const newDate = new Date();
+            newDate.setDate(newDate.getDate() + days); // Suma días desde HOY
+            try {
+                await updateDoc(doc(db, "app_users", uid), {
+                    status: 'approved',
+                    trialEnd: newDate
+                });
+                window.showCustomAlert('Actualizado', `Acceso concedido hasta el ${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`, 'ph-check-circle text-emerald-500');
+            } catch (e) {
+                window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-circle text-rose-500');
+            }
         };
 
         window.adminSuspend = async (uid) => {
             if (!currentUser || currentUserData.role !== 'admin') return;
             window.showConfirm('Suspender Usuario', '¿Quitar acceso a este usuario inmediatamente?', async () => {
-                try { await updateDoc(doc(db, "app_users", uid), { status: 'expired' }); window.closeConfirm(); } 
-                catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'No se pudo suspender.', 'ph-warning-circle text-rose-500'); }
+                try {
+                    await updateDoc(doc(db, "app_users", uid), { status: 'expired' });
+                    window.closeConfirm();
+                } catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'No se pudo suspender.', 'ph-warning-circle text-rose-500'); }
             }, false);
         };
 
@@ -1007,11 +965,11 @@
                 htmlAccounts += `
                     <div class="flex justify-between items-center py-3 w-full min-w-0">
                         <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <i class="ph-fill ph-wallet text-brand-400 text-xl shrink-0"></i>
-                            <span class="font-bold text-sm text-brand-800 dark:text-slate-200 truncate pr-2">${acc.name}</span>
+                            <i class="ph-fill ph-wallet text-brand-500 text-xl shrink-0"></i>
+                            <span class="font-bold text-sm text-slate-800 dark:text-slate-200 truncate pr-2">${acc.name}</span>
                         </div>
                         <div class="flex gap-1 shrink-0">
-                            <button onclick="window.openEditAccountModal('${acc.id}', '${acc.name.replace(/'/g, "\\'")}')" class="p-2 text-brand-400 hover:text-brand-800 transition"><i class="ph-bold ph-pencil-simple"></i></button>
+                            <button onclick="window.openEditAccountModal('${acc.id}', '${acc.name.replace(/'/g, "\\'")}')" class="p-2 text-slate-400 hover:text-brand-500 transition"><i class="ph-bold ph-pencil-simple"></i></button>
                             <button onclick="window.deleteAccount('${acc.id}')" class="p-2 text-slate-400 hover:text-rose-500 transition"><i class="ph-bold ph-trash"></i></button>
                         </div>
                     </div>`;
@@ -1052,7 +1010,7 @@
             const tx = mainTransactions.find(t => t.id === id); if (!tx) return;
             isExpense = tx.type === 'expense'; window.openFormModal(tx.type, false); modalTitle.innerText = 'Editar';
             document.getElementById('edit-tx-id').value = tx.id; document.getElementById('form-amount').value = tx.amount; document.getElementById('form-desc').value = tx.desc; document.getElementById('form-date').value = tx.date;
-            document.getElementById('form-date').classList.remove('text-brand-700/70');
+            document.getElementById('form-date').classList.remove('text-slate-500');
             document.getElementById('btn-delete-tx').classList.remove('hidden');
             setTimeout(() => { document.getElementById('form-category').value = tx.category; document.getElementById('form-account').value = tx.account; }, 50);
         }
@@ -1099,7 +1057,7 @@
             const interestStr = document.getElementById('credit-interest').value; const res = document.getElementById('credit-results');
             
             if (!desc || isNaN(cutDay) || isNaN(payDay) || isNaN(amount) || amount <= 0 || !dateStr) { 
-                res.innerHTML = `<div class="text-center py-10 px-4 w-full"><i class="ph-bold ph-calculator mx-auto text-brand-200 dark:text-slate-600 text-4xl mb-2"></i><p class="text-brand-700/70 dark:text-slate-400 text-xs font-medium truncate w-full">Ingresa los datos para calcular y guardar</p></div>`; return; 
+                res.innerHTML = `<div class="text-center py-10 px-4 w-full"><i class="ph-bold ph-calculator mx-auto text-brand-100 dark:text-slate-700 text-4xl mb-2"></i><p class="text-slate-400 text-xs font-medium truncate w-full">Ingresa los datos para calcular y guardar</p></div>`; return; 
             }
 
             const { activeCutDate, firstPaymentDate, daysUntilPayment } = calculateFinancialDates(dateStr, cutDay, payDay);
@@ -1117,19 +1075,19 @@
                     <i class="ph-fill ${sIcon} text-xl mt-0.5 shrink-0"></i>
                     <div class="min-w-0"><p class="font-bold text-sm mb-1 truncate">${sTit}</p><p class="text-xs font-medium opacity-90 leading-relaxed">Tendrás <strong class="font-bold">${daysUntilPayment} días</strong> de gracia (si es a 1 cuota).</p></div>
                 </div>
-                <div class="bg-white dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-2xl shadow-sm p-5 mt-4 space-y-4 animate-fade w-full min-w-0" style="animation-delay: 0.1s;">
-                    <div class="flex justify-between items-center pb-4 border-b border-brand-50 dark:border-slate-700 w-full min-w-0">
-                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Corte</p><p class="text-sm font-bold text-brand-800 dark:text-white truncate">${activeCutDate.format('DD MMM')}</p></div>
-                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Límite pago</p><p class="text-sm font-bold text-rose-500 truncate">${firstPaymentDate.format('DD MMM')}</p></div>
+                <div class="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-2xl shadow-sm p-5 mt-4 space-y-4 animate-fade w-full min-w-0" style="animation-delay: 0.1s;">
+                    <div class="flex justify-between items-center pb-4 border-b border-brand-100 dark:border-slate-800 w-full min-w-0">
+                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Corte</p><p class="text-sm font-bold dark:text-white truncate">${activeCutDate.format('DD MMM')}</p></div>
+                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Límite pago</p><p class="text-sm font-bold text-rose-500 truncate">${firstPaymentDate.format('DD MMM')}</p></div>
                     </div>
-                    <div class="flex justify-between items-center pb-4 ${cuotas > 1 && totalInterest > 0 ? 'border-b border-brand-50 dark:border-slate-700' : ''} w-full min-w-0">
-                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Cuota mensual</p><p class="text-base font-bold text-brand-800 dark:text-white truncate">${formatCOP(monthlyPayment)}</p></div>
-                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Finaliza</p><p class="text-sm font-bold capitalize text-brand-800 dark:text-white truncate">${firstPaymentDate.add(cuotas-1,'month').format('MMM YY')}</p></div>
+                    <div class="flex justify-between items-center pb-4 ${cuotas > 1 && totalInterest > 0 ? 'border-b border-brand-100 dark:border-slate-800' : ''} w-full min-w-0">
+                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Cuota mensual</p><p class="text-base font-bold dark:text-white truncate">${formatCOP(monthlyPayment)}</p></div>
+                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Finaliza</p><p class="text-sm font-bold capitalize dark:text-white truncate">${firstPaymentDate.add(cuotas-1,'month').format('MMM YY')}</p></div>
                     </div>
                     ${cuotas > 1 && totalInterest > 0 ? `
                     <div class="flex justify-between items-center w-full min-w-0">
-                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Total a pagar</p><p class="text-sm font-bold text-brand-800 dark:text-white truncate">${formatCOP(amount + totalInterest)}</p></div>
-                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Total Intereses</p><p class="text-sm font-bold text-rose-500 truncate">+${formatCOP(totalInterest)}</p></div>
+                        <div class="min-w-0 flex-1 pr-2"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Total a pagar</p><p class="text-sm font-bold dark:text-white truncate">${formatCOP(amount + totalInterest)}</p></div>
+                        <div class="text-right min-w-0 flex-1 pl-2"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Total Intereses</p><p class="text-sm font-bold text-rose-500 truncate">+${formatCOP(totalInterest)}</p></div>
                     </div>` : ''}
                     <button onclick="window.saveCreditTx(${amount}, '${desc}', '${dateStr}', ${cutDay}, ${payDay}, ${cuotas}, ${interestRate}, ${monthlyPayment}, ${totalInterest})" class="w-full bg-brand-800 dark:bg-brand-500 text-white font-bold py-3.5 rounded-xl mt-4 active:scale-95 transition shadow-sm truncate">Guardar Compra</button>
                 </div>`;
@@ -1141,7 +1099,7 @@
                 await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit_active', amount: amount, desc: desc, date: date, cutDay, payDay, totalInstallments: cuotas, paidInstallments: 0, interestRate, monthlyPayment, totalInterest, pendingAmount: (amount + totalInterest), createdAt: serverTimestamp() });
                 
                 document.getElementById('credit-desc').value = ''; document.getElementById('credit-amount').value = ''; document.getElementById('credit-date').value = ''; document.getElementById('credit-interest').value = ''; document.getElementById('credit-installments').value = '1';
-                document.getElementById('credit-date').classList.add('text-brand-700/70');
+                document.getElementById('credit-date').classList.add('text-slate-500');
                 calculateCreditPreview(); window.showCustomAlert('Guardado', 'Compra registrada en T. Crédito.', 'ph-check-circle text-emerald-500');
             } catch(e) { window.showCustomAlert('Error', 'Fallo al guardar deuda.', 'ph-warning-circle text-rose-500'); }
         }
@@ -1164,13 +1122,13 @@
             
             let html = `
                 <div class="bg-brand-50 dark:bg-brand-900/20 p-4 rounded-2xl mb-4 border border-brand-100 dark:border-brand-800/50 w-full min-w-0">
-                    <p class="text-xs text-brand-500 dark:text-brand-400 font-bold mb-1 uppercase tracking-wider truncate">${t.desc}</p>
+                    <p class="text-xs text-brand-800 dark:text-brand-400 font-bold mb-1 uppercase tracking-wider truncate">${t.desc}</p>
                     <p class="text-2xl font-extrabold text-brand-900 dark:text-brand-100 truncate">${formatCOP(t.pendingAmount)}</p>
-                    <p class="text-xs text-brand-600/70 dark:text-brand-400/70 font-medium mt-1 truncate">Saldo pendiente de ${formatCOP(t.amount + t.totalInterest)}</p>
+                    <p class="text-xs text-brand-800/70 dark:text-brand-400/70 font-medium mt-1 truncate">Saldo pendiente de ${formatCOP(t.amount + t.totalInterest)}</p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 mb-4 w-full min-w-0">
-                    <div class="bg-brand-50 dark:bg-slate-800 rounded-xl p-3 border border-brand-100 dark:border-slate-700 flex-1 min-w-0"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Cuotas Pagadas</p><p class="font-bold text-brand-800 dark:text-white truncate">${t.paidInstallments} / ${t.totalInstallments}</p></div>
-                    <div class="bg-brand-50 dark:bg-slate-800 rounded-xl p-3 border border-brand-100 dark:border-slate-700 flex-1 min-w-0"><p class="text-[10px] uppercase font-bold text-brand-700/70 dark:text-slate-400 mb-1 truncate">Valor Cuota</p><p class="font-bold text-brand-800 dark:text-white truncate">${formatCOP(t.monthlyPayment)}</p></div>
+                    <div class="bg-brand-50 dark:bg-slate-800 rounded-xl p-3 border border-brand-100 dark:border-slate-700 flex-1 min-w-0"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Cuotas Pagadas</p><p class="font-bold text-slate-900 dark:text-white truncate">${t.paidInstallments} / ${t.totalInstallments}</p></div>
+                    <div class="bg-brand-50 dark:bg-slate-800 rounded-xl p-3 border border-brand-100 dark:border-slate-700 flex-1 min-w-0"><p class="text-[10px] uppercase font-bold text-slate-400 mb-1 truncate">Valor Cuota</p><p class="font-bold text-slate-900 dark:text-white truncate">${formatCOP(t.monthlyPayment)}</p></div>
                 </div>`;
             
             if (t.paidInstallments >= t.totalInstallments || t.pendingAmount <= 0) {
@@ -1217,9 +1175,17 @@
         window.filterLedger = (type, btnElement) => {
             currentFilter = type;
             document.querySelectorAll('.filter-btn').forEach(btn => { 
-                btn.className = 'filter-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition shrink-0 bg-white dark:bg-slate-800 text-brand-800 dark:text-slate-400 border border-brand-200 dark:border-slate-700';
+                btn.classList.replace('bg-brand-800', 'bg-white'); 
+                btn.classList.replace('dark:bg-brand-500', 'dark:bg-slate-900'); 
+                btn.classList.replace('text-white', 'text-slate-500'); 
+                btn.classList.add('border-slate-200'); 
+                btn.classList.add('dark:border-slate-700'); 
             });
-            btnElement.className = 'filter-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap shadow-sm transition shrink-0 bg-brand-800 dark:bg-brand-400 text-white dark:text-slate-900';
+            btnElement.classList.replace('bg-white', 'bg-brand-800'); 
+            btnElement.classList.replace('dark:bg-slate-900', 'dark:bg-brand-500'); 
+            btnElement.classList.replace('text-slate-500', 'text-white'); 
+            btnElement.classList.remove('border-slate-200'); 
+            btnElement.classList.remove('dark:border-slate-700');
             applyFiltersAndSearch();
         }
 
@@ -1237,17 +1203,18 @@
                 const isPay = tx.type === 'credit_payment';
                 const icon = isPay ? 'ph-check-circle' : 'ph-credit-card';
                 const color = isPay ? 'emerald' : 'brand';
+                const colorTone = isPay ? '500' : '800';
                 return `
-                    <div class="flex justify-between items-center p-4 active:bg-brand-50 dark:active:bg-slate-700 transition cursor-pointer w-full min-w-0" onclick="window.openCreditDetail('${tx.id}')">
+                    <div class="flex justify-between items-center p-4 active:bg-brand-50 dark:active:bg-slate-800 transition cursor-pointer w-full min-w-0" onclick="window.openCreditDetail('${tx.id}')">
                         <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-${color}-50 dark:bg-${color}-900/30 text-${color}-500 flex items-center justify-center shrink-0"><i class="ph-bold ${icon} text-lg"></i></div>
+                            <div class="w-10 h-10 rounded-full bg-${color}-50 dark:bg-${color}-900/30 text-${color}-${colorTone} dark:text-${color}-500 flex items-center justify-center shrink-0"><i class="ph-bold ${icon} text-lg"></i></div>
                             <div class="min-w-0 flex-1 pr-2">
-                                <p class="font-bold text-brand-800 dark:text-white text-sm truncate w-full">${tx.desc}</p>
-                                <p class="text-xs text-brand-700/70 dark:text-slate-400 font-medium truncate w-full">${tx.date} ${!isPay ? `• Cuotas: ${tx.paidInstallments}/${tx.totalInstallments}` : ''}</p>
+                                <p class="font-bold text-slate-900 dark:text-white text-sm truncate w-full">${tx.desc}</p>
+                                <p class="text-xs text-slate-400 font-medium truncate w-full">${tx.date} ${!isPay ? `• Cuotas: ${tx.paidInstallments}/${tx.totalInstallments}` : ''}</p>
                             </div>
                         </div>
                         <div class="text-right shrink-0">
-                            <p class="font-bold text-${color}-500 text-sm whitespace-nowrap">${isPay ? '-' : ''} ${formatCOP(isPay ? tx.amount : tx.pendingAmount)}</p>
+                            <p class="font-bold text-${color}-${colorTone} dark:text-${color}-500 text-sm whitespace-nowrap">${isPay ? '-' : ''} ${formatCOP(isPay ? tx.amount : tx.pendingAmount)}</p>
                         </div>
                     </div>`;
             }
@@ -1257,12 +1224,12 @@
             const icon = icons[tx.category] || 'ph-receipt';
 
             return `
-                <div class="flex justify-between items-center p-4 active:bg-brand-50 dark:active:bg-slate-700 transition cursor-pointer w-full min-w-0" onclick="window.editTransaction('${tx.id}')">
+                <div class="flex justify-between items-center p-4 active:bg-brand-50 dark:active:bg-slate-800 transition cursor-pointer w-full min-w-0" onclick="window.editTransaction('${tx.id}')">
                     <div class="flex items-center gap-3 min-w-0 flex-1">
                         <div class="w-10 h-10 rounded-full bg-${color}-50 dark:bg-${color}-900/30 text-${color}-500 flex items-center justify-center shrink-0"><i class="ph-bold ${icon} text-lg"></i></div>
                         <div class="min-w-0 flex-1 pr-2">
-                            <p class="font-bold text-brand-800 dark:text-white text-sm truncate w-full">${tx.desc}</p>
-                            <p class="text-xs text-brand-700/70 dark:text-slate-400 font-medium truncate w-full">${tx.date} • ${tx.account || 'Sin cuenta'}</p>
+                            <p class="font-bold text-slate-900 dark:text-white text-sm truncate w-full">${tx.desc}</p>
+                            <p class="text-xs text-slate-400 font-medium truncate w-full">${tx.date} • ${tx.account || 'Sin cuenta'}</p>
                         </div>
                     </div>
                     <div class="text-right shrink-0">
@@ -1300,7 +1267,7 @@
             }
             
             const isDark = document.documentElement.classList.contains('dark');
-            const colorBgEmpty = isDark ? '#334155' : '#eff3f4';
+            const colorBgEmpty = isDark ? '#334155' : '#e2e8f0'; // Slate
             const colorInc = isDark ? '#10b981' : '#34d399';
             const colorExp = isDark ? '#f43f5e' : '#fb7185';
 
@@ -1316,9 +1283,7 @@
         window.switchTab = (tab) => {
             ['dashboard-view', 'ledger-view', 'credit-view', 'settings-view'].forEach(t => { document.getElementById(t)?.classList.add('hidden'); });
             document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-            document.getElementById(`${tab}-view`)?.classList.remove('hidden'); 
-            const activeBtn = document.getElementById(`nav-${tab}`);
-            if(activeBtn) { activeBtn.classList.add('active'); }
+            document.getElementById(`${tab}-view`)?.classList.remove('hidden'); document.getElementById(`nav-${tab}`)?.classList.add('active');
         }
 
         window.openFormModal = (type, fromScanner = false) => {
@@ -1379,9 +1344,9 @@
 
         window.exportToPDF = () => {
             const monthInput = document.getElementById('export-month').value;
-            if (!monthInput) return window.showCustomAlert('Mes Requerido', 'Selecciona el mes a exportar.', 'ph-calendar text-brand-500');
+            if (!monthInput) return window.showCustomAlert('Mes Requerido', 'Selecciona el mes a exportar.', 'ph-calendar text-slate-500');
             const [year, month] = monthInput.split('-'); const txExport = mainTransactions.filter(tx => tx.date.startsWith(`${year}-${month}`));
-            if (txExport.length === 0) return window.showCustomAlert('Vacío', 'No hay registros en este mes.', 'ph-warning-circle text-brand-500');
+            if (txExport.length === 0) return window.showCustomAlert('Vacío', 'No hay registros en este mes.', 'ph-warning-circle text-slate-500');
 
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.setFontSize(20); doc.setFont("helvetica", "bold"); doc.text("FinSight Reporte", 14, 20);
@@ -1390,144 +1355,137 @@
             let totalIn = 0, totalOut = 0; txExport.forEach(t => { if(t.type === 'income') totalIn += t.amount; else totalOut += t.amount; });
             doc.text(`Ingresos: ${formatCOP(totalIn)} | Gastos: ${formatCOP(totalOut)}`, 14, 38);
             
-            doc.autoTable({ startY: 45, head: [['Fecha', 'Detalle', 'Categoría', 'Cuenta', 'Ingreso', 'Gasto']], body: txExport.map(tx => [tx.date, tx.desc, tx.category, tx.account || '-', tx.type === 'income' ? formatCOP(tx.amount) : '', tx.type === 'expense' ? formatCOP(tx.amount) : '' ]), theme: 'plain', headStyles: { fillColor: [242, 242, 247], textColor: 0, fontStyle: 'bold' }, styles: { fontSize: 8, cellPadding: 3, borderBottomWidth: 0.1, lineColor: [200,200,200] } });
+            doc.autoTable({ startY: 45, head: [['Fecha', 'Detalle', 'Categoría', 'Cuenta', 'Ingreso', 'Gasto']], body: txExport.map(tx => [tx.date, tx.desc, tx.category, tx.account || '-', tx.type === 'income' ? formatCOP(tx.amount) : '', tx.type === 'expense' ? formatCOP(tx.amount) : '' ]), theme: 'plain', headStyles: { fillColor: [243, 250, 253], textColor: 0, fontStyle: 'bold' }, styles: { fontSize: 8, cellPadding: 3, borderBottomWidth: 0.1, lineColor: [200,200,200] } });
             doc.save(`FinSight_${year}_${month}.pdf`);
         }
 
         window.showCustomAlert = (t, m, i) => { const a = document.getElementById('custom-alert'); document.getElementById('alert-icon').className = `ph-fill ${i}`; document.getElementById('alert-title').innerText = t; document.getElementById('alert-message').innerText = m; a.classList.remove('hidden'); a.classList.add('flex'); }
         window.closeAlert = () => { document.getElementById('custom-alert').classList.add('hidden'); document.getElementById('custom-alert').classList.remove('flex'); }
 
-        window.showConfirm = (title, message, callback, isBlue = false) => { confirmActionCallback = callback; document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message; const btn = document.getElementById('btn-confirm-action'); const icon = document.getElementById('confirm-icon'); if(isBlue){ btn.className = 'flex-1 min-w-0 bg-brand-500 text-white font-bold py-3 rounded-xl active:bg-brand-800 truncate'; btn.innerText = 'Confirmar'; icon.className = 'ph-fill ph-info text-brand-500 text-4xl mb-3 inline-block'; } else { btn.className = 'flex-1 min-w-0 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600 truncate'; btn.innerText = 'Borrar'; icon.className = 'ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block'; } document.getElementById('confirm-modal').classList.remove('hidden'); document.getElementById('confirm-modal').classList.add('flex'); }
+        window.showConfirm = (title, message, callback, isBlue = false) => { confirmActionCallback = callback; document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message; const btn = document.getElementById('btn-confirm-action'); const icon = document.getElementById('confirm-icon'); if(isBlue){ btn.className = 'flex-1 min-w-0 bg-brand-500 hover:bg-brand-800 text-white font-bold py-3 rounded-xl truncate transition-colors'; btn.innerText = 'Confirmar'; icon.className = 'ph-fill ph-info text-brand-500 text-4xl mb-3 inline-block'; } else { btn.className = 'flex-1 min-w-0 bg-rose-500 text-white font-bold py-3 rounded-xl active:bg-rose-600 truncate'; btn.innerText = 'Borrar'; icon.className = 'ph-fill ph-warning-circle text-rose-500 text-4xl mb-3 inline-block'; } document.getElementById('confirm-modal').classList.remove('hidden'); document.getElementById('confirm-modal').classList.add('flex'); }
         window.closeConfirm = () => { document.getElementById('confirm-modal').classList.add('hidden'); document.getElementById('confirm-modal').classList.remove('flex'); confirmActionCallback = null; }
         window.executeConfirm = () => { if (confirmActionCallback) confirmActionCallback(); }
+    </script>
+    
+    <script>
+        gsap.registerPlugin();
+        var email = document.querySelector('#auth-email'),
+            password = document.querySelector('#auth-password'),
+            showPasswordCheck = document.querySelector('#showPasswordCheck'),
+            showPasswordToggle = document.querySelector('#showPasswordToggle'),
+            mySVG = document.querySelector('.svgContainer'),
+            armL = document.querySelector('.armL'),
+            armR = document.querySelector('.armR'),
+            eyeL = document.querySelector('.eyeL'),
+            eyeR = document.querySelector('.eyeR'),
+            nose = document.querySelector('.nose'),
+            mouth = document.querySelector('.mouth'),
+            face = document.querySelector('.face'),
+            eyebrow = document.querySelector('.eyebrow'),
+            outerEarL = document.querySelector('.earL .outerEar'),
+            outerEarR = document.querySelector('.earR .outerEar'),
+            earHairL = document.querySelector('.earL .earHair'),
+            earHairR = document.querySelector('.earR .earHair'),
+            hair = document.querySelector('.hair'),
+            bodyBG = document.querySelector('.bodyBGnormal'),
+            bodyBGchanged = document.querySelector('.bodyBGchanged');
 
-        /* YETI ANIMATION LOGIC */
-        function initLoginForm() {
-            if (typeof gsap === 'undefined' || typeof MorphSVGPlugin === 'undefined') return;
-            gsap.registerPlugin(MorphSVGPlugin);
+        var activeElement, screenCenter, svgCoords, emailCoords, emailScrollMax, dFromC, blinking, eyeScale = 1, eyesCovered = false;
+        var eyeLCoords, eyeRCoords, noseCoords, mouthCoords, eyeLAngle, eyeLX, eyeLY, eyeRAngle, eyeRX, eyeRY, noseAngle, noseX, noseY, mouthAngle, mouthX, mouthY, mouthR, chinX, chinY, chinS, faceX, faceY, faceSkew, eyebrowSkew, outerEarX, outerEarY, hairX, hairS;
 
-            var emailLabel = document.querySelector('#loginEmailLabel'),
-                email = document.querySelector('#auth-email'),
-                passwordLabel = document.querySelector('#loginPasswordLabel'),
-                password = document.querySelector('#auth-password'),
-                showPasswordCheck = document.querySelector('#showPasswordCheck'),
-                showPasswordToggle = document.querySelector('#showPasswordToggle'),
-                mySVG = document.querySelector('.svgContainer'),
-                twoFingers = document.querySelector('.twoFingers'),
-                armL = document.querySelector('.armL'),
-                armR = document.querySelector('.armR'),
-                eyeL = document.querySelector('.eyeL'),
-                eyeR = document.querySelector('.eyeR'),
-                nose = document.querySelector('.nose'),
-                mouth = document.querySelector('.mouth'),
-                mouthBG = document.querySelector('.mouthBG'),
-                mouthSmallBG = document.querySelector('.mouthSmallBG'),
-                mouthMediumBG = document.querySelector('.mouthMediumBG'),
-                mouthLargeBG = document.querySelector('.mouthLargeBG'),
-                mouthMaskPath = document.querySelector('#mouthMaskPath'),
-                mouthOutline = document.querySelector('.mouthOutline'),
-                tooth = document.querySelector('.tooth'),
-                tongue = document.querySelector('.tongue'),
-                chin = document.querySelector('.chin'),
-                face = document.querySelector('.face'),
-                eyebrow = document.querySelector('.eyebrow'),
-                outerEarL = document.querySelector('.earL .outerEar'),
-                outerEarR = document.querySelector('.earR .outerEar'),
-                earHairL = document.querySelector('.earL .earHair'),
-                earHairR = document.querySelector('.earR .earHair'),
-                hair = document.querySelector('.hair'),
-                bodyBG = document.querySelector('.bodyBGnormal'),
-                bodyBGchanged = document.querySelector('.bodyBGchanged');
+        function calculateFaceMove(e) {
+            var carPos = email.selectionEnd;
+            if (carPos == null || carPos == 0) carPos = email.value.length;
+            
+            dFromC = screenCenter - (emailCoords.x + (carPos * 10));
+            eyeLAngle = getAngle(eyeLCoords.x, eyeLCoords.y, emailCoords.x + (carPos * 10), emailCoords.y + 25);
+            eyeRAngle = getAngle(eyeRCoords.x, eyeRCoords.y, emailCoords.x + (carPos * 10), emailCoords.y + 25);
+            noseAngle = getAngle(noseCoords.x, noseCoords.y, emailCoords.x + (carPos * 10), emailCoords.y + 25);
+            mouthAngle = getAngle(mouthCoords.x, mouthCoords.y, emailCoords.x + (carPos * 10), emailCoords.y + 25);
+            
+            eyeLX = Math.cos(eyeLAngle) * 20; eyeLY = Math.sin(eyeLAngle) * 10;
+            eyeRX = Math.cos(eyeRAngle) * 20; eyeRY = Math.sin(eyeRAngle) * 10;
+            noseX = Math.cos(noseAngle) * 23; noseY = Math.sin(noseAngle) * 10;
+            mouthX = Math.cos(mouthAngle) * 23; mouthY = Math.sin(mouthAngle) * 10;
+            mouthR = Math.cos(mouthAngle) * 6;
+            faceX = mouthX * .3; faceY = mouthY * .4; faceSkew = Math.cos(mouthAngle) * 5;
+            eyebrowSkew = Math.cos(mouthAngle) * 25; outerEarX = Math.cos(mouthAngle) * 4;
+            outerEarY = Math.cos(mouthAngle) * 5; hairX = Math.cos(mouthAngle) * 6; hairS = 1.2;
 
-            var activeElement, curEmailIndex, screenCenter, svgCoords, emailCoords, emailScrollMax, chinMin = .5, dFromC, mouthStatus = "small", blinking, eyeScale = 1, eyesCovered = false, showPasswordClicked = false;
-            var eyeLCoords, eyeRCoords, noseCoords, mouthCoords, eyeLAngle, eyeLX, eyeLY, eyeRAngle, eyeRX, eyeRY, noseAngle, noseX, noseY, mouthAngle, mouthX, mouthY, mouthR, chinX, chinY, chinS, faceX, faceY, faceSkew, eyebrowSkew, outerEarX, outerEarY, hairX, hairS;
+            gsap.to(eyeL, 1, { x: -eyeLX, y: -eyeLY, ease: "expo.out" });
+            gsap.to(eyeR, 1, { x: -eyeRX, y: -eyeRY, ease: "expo.out" });
+            gsap.to(nose, 1, { x: -noseX, y: -noseY, rotation: mouthR, transformOrigin: "center center", ease: "expo.out" });
+            gsap.to(mouth, 1, { x: -mouthX, y: -mouthY, rotation: mouthR, transformOrigin: "center center", ease: "expo.out" });
+            gsap.to(face, 1, { x: -faceX, y: -faceY, skewX: -faceSkew, transformOrigin: "center top", ease: "expo.out" });
+            gsap.to(eyebrow, 1, { x: -faceX, y: -faceY, skewX: -eyebrowSkew, transformOrigin: "center top", ease: "expo.out" });
+            gsap.to(outerEarL, 1, { x: outerEarX, y: -outerEarY, ease: "expo.out" });
+            gsap.to(outerEarR, 1, { x: outerEarX, y: outerEarY, ease: "expo.out" });
+            gsap.to(earHairL, 1, { x: -outerEarX, y: -outerEarY, ease: "expo.out" });
+            gsap.to(earHairR, 1, { x: -outerEarX, y: outerEarY, ease: "expo.out" });
+            gsap.to(hair, 1, { x: hairX, scaleY: hairS, transformOrigin: "center bottom", ease: "expo.out" });
+        }
 
-            function calculateFaceMove(e) {
-                var carPos = email.selectionEnd,
-                    div = document.createElement('div'),
-                    span = document.createElement('span'),
-                    copyStyle = getComputedStyle(email),
-                    caretCoords = {};
+        function onEmailFocus(e) { activeElement = "email"; calculateFaceMove(e); }
+        function onEmailInput(e) { calculateFaceMove(e); }
+        function onEmailBlur(e) { activeElement = null; setTimeout(() => { if (activeElement !== "email") resetFace(); }, 100); }
+        
+        function onPasswordFocus(e) { activeElement = "password"; if (!eyesCovered && password.type === "password") coverEyes(); }
+        function onPasswordBlur(e) { activeElement = null; setTimeout(() => { if (activeElement !== "toggle" && activeElement !== "password") uncoverEyes(); }, 100); }
 
-                if (carPos == null || carPos == 0) carPos = email.value.length;
-                [].forEach.call(copyStyle, function (prop) { div.style[prop] = copyStyle[prop]; });
-                div.style.position = 'absolute'; document.body.appendChild(div);
-                div.textContent = email.value.substr(0, carPos); span.textContent = email.value.substr(carPos) || '.'; div.appendChild(span);
+        function onPasswordToggleChange(e) {
+            setTimeout(() => {
+                if (e.target.checked) { password.type = "text"; uncoverEyes(); document.getElementById('eye-icon').classList.replace('ph-eye', 'ph-eye-slash'); } 
+                else { password.type = "password"; coverEyes(); document.getElementById('eye-icon').classList.replace('ph-eye-slash', 'ph-eye'); }
+            }, 100);
+        }
 
-                if (email.scrollWidth <= emailScrollMax) {
-                    caretCoords = getPosition(span); dFromC = screenCenter - (caretCoords.x + emailCoords.x);
-                    eyeLAngle = getAngle(eyeLCoords.x, eyeLCoords.y, emailCoords.x + caretCoords.x, emailCoords.y + 25);
-                    eyeRAngle = getAngle(eyeRCoords.x, eyeRCoords.y, emailCoords.x + caretCoords.x, emailCoords.y + 25);
-                    noseAngle = getAngle(noseCoords.x, noseCoords.y, emailCoords.x + caretCoords.x, emailCoords.y + 25);
-                    mouthAngle = getAngle(mouthCoords.x, mouthCoords.y, emailCoords.x + caretCoords.x, emailCoords.y + 25);
-                } else {
-                    eyeLAngle = getAngle(eyeLCoords.x, eyeLCoords.y, emailCoords.x + emailScrollMax, emailCoords.y + 25);
-                    eyeRAngle = getAngle(eyeRCoords.x, eyeRCoords.y, emailCoords.x + emailScrollMax, emailCoords.y + 25);
-                    noseAngle = getAngle(noseCoords.x, noseCoords.y, emailCoords.x + emailScrollMax, emailCoords.y + 25);
-                    mouthAngle = getAngle(mouthCoords.x, mouthCoords.y, emailCoords.x + emailScrollMax, emailCoords.y + 25);
-                }
+        function coverEyes() {
+            gsap.killTweensOf([armL, armR]); gsap.set([armL, armR], { visibility: "visible" });
+            gsap.to(armL, .45, { x: -93, y: 10, rotation: 0, ease: "quad.out" });
+            gsap.to(armR, .45, { x: -93, y: 10, rotation: 0, ease: "quad.out", delay: .1 });
+            eyesCovered = true;
+        }
 
-                eyeLX = Math.cos(eyeLAngle) * 20; eyeLY = Math.sin(eyeLAngle) * 10; eyeRX = Math.cos(eyeRAngle) * 20; eyeRY = Math.sin(eyeRAngle) * 10;
-                noseX = Math.cos(noseAngle) * 23; noseY = Math.sin(noseAngle) * 10; mouthX = Math.cos(mouthAngle) * 23; mouthY = Math.sin(mouthAngle) * 10; mouthR = Math.cos(mouthAngle) * 6;
-                chinX = mouthX * .8; chinY = mouthY * .5; chinS = 1 - ((dFromC * .15) / 100); if (chinS > 1) { chinS = 1 - (chinS - 1); if (chinS < chinMin) { chinS = chinMin; } }
-                faceX = mouthX * .3; faceY = mouthY * .4; faceSkew = Math.cos(mouthAngle) * 5; eyebrowSkew = Math.cos(mouthAngle) * 25;
-                outerEarX = Math.cos(mouthAngle) * 4; outerEarY = Math.cos(mouthAngle) * 5; hairX = Math.cos(mouthAngle) * 6; hairS = 1.2;
+        function uncoverEyes() {
+            gsap.killTweensOf([armL, armR]);
+            gsap.to(armL, 1.35, { y: 220, ease: "quad.out" }); gsap.to(armL, 1.35, { rotation: 105, ease: "quad.out", delay: .1 });
+            gsap.to(armR, 1.35, { y: 220, ease: "quad.out" }); gsap.to(armR, 1.35, { rotation: -105, ease: "quad.out", delay: .1, onComplete: () => gsap.set([armL, armR], { visibility: "hidden" }) });
+            eyesCovered = false;
+        }
 
-                gsap.to(eyeL, 1, { x: -eyeLX, y: -eyeLY, ease: "expo.out" }); gsap.to(eyeR, 1, { x: -eyeRX, y: -eyeRY, ease: "expo.out" });
-                gsap.to(nose, 1, { x: -noseX, y: -noseY, rotation: mouthR, transformOrigin: "center center", ease: "expo.out" }); gsap.to(mouth, 1, { x: -mouthX, y: -mouthY, rotation: mouthR, transformOrigin: "center center", ease: "expo.out" });
-                gsap.to(chin, 1, { x: -chinX, y: -chinY, scaleY: chinS, ease: "expo.out" }); gsap.to(face, 1, { x: -faceX, y: -faceY, skewX: -faceSkew, transformOrigin: "center top", ease: "expo.out" });
-                gsap.to(eyebrow, 1, { x: -faceX, y: -faceY, skewX: -eyebrowSkew, transformOrigin: "center top", ease: "expo.out" }); gsap.to(outerEarL, 1, { x: outerEarX, y: -outerEarY, ease: "expo.out" });
-                gsap.to(outerEarR, 1, { x: outerEarX, y: outerEarY, ease: "expo.out" }); gsap.to(earHairL, 1, { x: -outerEarX, y: -outerEarY, ease: "expo.out" });
-                gsap.to(earHairR, 1, { x: -outerEarX, y: outerEarY, ease: "expo.out" }); gsap.to(hair, 1, { x: hairX, scaleY: hairS, transformOrigin: "center bottom", ease: "expo.out" });
-                document.body.removeChild(div);
-            };
+        function resetFace() {
+            gsap.to([eyeL, eyeR], 1, { x: 0, y: 0, ease: "expo.out" });
+            gsap.to(nose, 1, { x: 0, y: 0, scaleX: 1, scaleY: 1, ease: "expo.out" });
+            gsap.to(mouth, 1, { x: 0, y: 0, rotation: 0, ease: "expo.out" });
+            gsap.to([face, eyebrow], 1, { x: 0, y: 0, skewX: 0, ease: "expo.out" });
+            gsap.to([outerEarL, outerEarR, earHairL, earHairR, hair], 1, { x: 0, y: 0, scaleY: 1, ease: "expo.out" });
+        }
 
-            function onEmailInput(e) {
-                calculateFaceMove(e); var value = email.value; curEmailIndex = value.length;
-                if (curEmailIndex > 0) {
-                    if (mouthStatus == "small") { mouthStatus = "medium"; gsap.to([mouthBG, mouthOutline, mouthMaskPath], 1, { morphSVG: mouthMediumBG, shapeIndex: 8, ease: "expo.out" }); gsap.to(tooth, 1, { x: 0, y: 0, ease: "expo.out" }); gsap.to(tongue, 1, { x: 0, y: 1, ease: "expo.out" }); gsap.to([eyeL, eyeR], 1, { scaleX: .85, scaleY: .85, ease: "expo.out" }); eyeScale = .85; }
-                    if (value.includes("@")) { mouthStatus = "large"; gsap.to([mouthBG, mouthOutline, mouthMaskPath], 1, { morphSVG: mouthLargeBG, ease: "expo.out" }); gsap.to(tooth, 1, { x: 3, y: -2, ease: "expo.out" }); gsap.to(tongue, 1, { y: 2, ease: "expo.out" }); gsap.to([eyeL, eyeR], 1, { scaleX: .65, scaleY: .65, ease: "expo.out", transformOrigin: "center center" }); eyeScale = .65; } else { mouthStatus = "medium"; gsap.to([mouthBG, mouthOutline, mouthMaskPath], 1, { morphSVG: mouthMediumBG, ease: "expo.out" }); gsap.to(tooth, 1, { x: 0, y: 0, ease: "expo.out" }); gsap.to(tongue, 1, { x: 0, y: 1, ease: "expo.out" }); gsap.to([eyeL, eyeR], 1, { scaleX: .85, scaleY: .85, ease: "expo.out" }); eyeScale = .85; }
-                } else { mouthStatus = "small"; gsap.to([mouthBG, mouthOutline, mouthMaskPath], 1, { morphSVG: mouthSmallBG, shapeIndex: 9, ease: "expo.out" }); gsap.to(tooth, 1, { x: 0, y: 0, ease: "expo.out" }); gsap.to(tongue, 1, { y: 0, ease: "expo.out" }); gsap.to([eyeL, eyeR], 1, { scaleX: 1, scaleY: 1, ease: "expo.out" }); eyeScale = 1; }
-            }
+        function startBlinking() {
+            blinking = gsap.to([eyeL, eyeR], .1, { delay: Math.floor(Math.random() * 5) + 1, scaleY: 0, yoyo: true, repeat: 1, transformOrigin: "center center", onComplete: startBlinking });
+        }
 
-            function onEmailFocus(e) { activeElement = "email"; e.target.parentElement.classList.add("focusWithText"); onEmailInput(); }
-            function onEmailBlur(e) { activeElement = null; setTimeout(function () { if (activeElement == "email") { } else { if (e.target.value == "") { e.target.parentElement.classList.remove("focusWithText"); } resetFace(); } }, 100); }
-            function onEmailLabelClick(e) { activeElement = "email"; }
-            function onPasswordFocus(e) { activeElement = "password"; if (!eyesCovered) { coverEyes(); } }
-            function onPasswordBlur(e) { activeElement = null; setTimeout(function () { if (activeElement == "toggle" || activeElement == "password") { } else { uncoverEyes(); } }, 100); }
-            function onPasswordToggleFocus(e) { activeElement = "toggle"; if (!eyesCovered) { coverEyes(); } }
-            function onPasswordToggleBlur(e) { activeElement = null; if (!showPasswordClicked) { setTimeout(function () { if (activeElement == "password" || activeElement == "toggle") { } else { uncoverEyes(); } }, 100); } }
-            function onPasswordToggleMouseDown(e) { showPasswordClicked = true; }
-            function onPasswordToggleMouseUp(e) { showPasswordClicked = false; }
-            function onPasswordToggleChange(e) { setTimeout(function () { if (e.target.checked) { password.type = "text"; spreadFingers(); } else { password.type = "password"; closeFingers(); } }, 100); }
-            function onPasswordToggleClick(e) { e.target.focus(); }
-            function spreadFingers() { gsap.to(twoFingers, .35, { transformOrigin: "bottom left", rotation: 30, x: -9, y: -2, ease: "power2.inOut" }); }
-            function closeFingers() { gsap.to(twoFingers, .35, { transformOrigin: "bottom left", rotation: 0, x: 0, y: 0, ease: "power2.inOut" }); }
-            function coverEyes() { gsap.killTweensOf([armL, armR]); gsap.set([armL, armR], { visibility: "visible" }); gsap.to(armL, .45, { x: -93, y: 10, rotation: 0, ease: "quad.out" }); gsap.to(armR, .45, { x: -93, y: 10, rotation: 0, ease: "quad.out", delay: .1 }); gsap.to(bodyBG, .45, { morphSVG: bodyBGchanged, ease: "quad.out" }); eyesCovered = true; }
-            function uncoverEyes() { gsap.killTweensOf([armL, armR]); gsap.to(armL, 1.35, { y: 220, ease: "quad.out" }); gsap.to(armL, 1.35, { rotation: 105, ease: "quad.out", delay: .1 }); gsap.to(armR, 1.35, { y: 220, ease: "quad.out" }); gsap.to(armR, 1.35, { rotation: -105, ease: "quad.out", delay: .1, onComplete: function () { gsap.set([armL, armR], { visibility: "hidden" }); } }); gsap.to(bodyBG, .45, { morphSVG: bodyBG, ease: "quad.out" }); eyesCovered = false; }
-            function resetFace() { gsap.to([eyeL, eyeR], 1, { x: 0, y: 0, ease: "expo.out" }); gsap.to(nose, 1, { x: 0, y: 0, scaleX: 1, scaleY: 1, ease: "expo.out" }); gsap.to(mouth, 1, { x: 0, y: 0, rotation: 0, ease: "expo.out" }); gsap.to(chin, 1, { x: 0, y: 0, scaleY: 1, ease: "expo.out" }); gsap.to([face, eyebrow], 1, { x: 0, y: 0, skewX: 0, ease: "expo.out" }); gsap.to([outerEarL, outerEarR, earHairL, earHairR, hair], 1, { x: 0, y: 0, scaleY: 1, ease: "expo.out" }); }
-            function startBlinking(delay) { if (delay) { delay = Math.floor(Math.random() * Math.floor(delay)); } else { delay = 1; } blinking = gsap.to([eyeL, eyeR], .1, { delay: delay, scaleY: 0, yoyo: true, repeat: 1, transformOrigin: "center center", onComplete: function () { startBlinking(12); } }); }
-            function getAngle(x1, y1, x2, y2) { return Math.atan2(y1 - y2, x1 - x2); }
-            function getPosition(el) { var xPos = 0; var yPos = 0; while (el) { if (el.tagName == "BODY") { var xScroll = el.scrollLeft || document.documentElement.scrollLeft; var yScroll = el.scrollTop || document.documentElement.scrollTop; xPos += (el.offsetLeft - xScroll + el.clientLeft); yPos += (el.offsetTop - yScroll + el.clientTop); } else { xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft); yPos += (el.offsetTop - el.scrollTop + el.clientTop); } el = el.offsetParent; } return { x: xPos, y: yPos }; }
-            function isMobileDevice() { var check = false; (function (a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true; })(navigator.userAgent || navigator.vendor || window.opera); return check; };
+        function getAngle(x1, y1, x2, y2) { return Math.atan2(y1 - y2, x1 - x2); }
+        function getPosition(el) {
+            let xPos = 0, yPos = 0;
+            while (el) { xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft); yPos += (el.offsetTop - el.scrollTop + el.clientTop); el = el.offsetParent; }
+            return { x: xPos, y: yPos };
+        }
 
+        setTimeout(() => {
             svgCoords = getPosition(mySVG); emailCoords = getPosition(email); screenCenter = svgCoords.x + (mySVG.offsetWidth / 2);
             eyeLCoords = { x: svgCoords.x + 84, y: svgCoords.y + 76 }; eyeRCoords = { x: svgCoords.x + 113, y: svgCoords.y + 76 };
             noseCoords = { x: svgCoords.x + 97, y: svgCoords.y + 81 }; mouthCoords = { x: svgCoords.x + 100, y: svgCoords.y + 100 };
-
-            email.addEventListener('focus', onEmailFocus); email.addEventListener('blur', onEmailBlur); email.addEventListener('input', onEmailInput); emailLabel.addEventListener('click', onEmailLabelClick);
+            
+            email.addEventListener('focus', onEmailFocus); email.addEventListener('blur', onEmailBlur); email.addEventListener('input', onEmailInput);
             password.addEventListener('focus', onPasswordFocus); password.addEventListener('blur', onPasswordBlur);
-            showPasswordCheck.addEventListener('change', onPasswordToggleChange); showPasswordCheck.addEventListener('focus', onPasswordToggleFocus); showPasswordCheck.addEventListener('blur', onPasswordToggleBlur);
-            showPasswordCheck.addEventListener('click', onPasswordToggleClick); showPasswordToggle.addEventListener('mouseup', onPasswordToggleMouseUp); showPasswordToggle.addEventListener('mousedown', onPasswordToggleMouseDown);
+            showPasswordCheck.addEventListener('change', onPasswordToggleChange);
 
-            gsap.set(armL, { x: -93, y: 220, rotation: 105, transformOrigin: "top left" }); gsap.set(armR, { x: -93, y: 220, rotation: -105, transformOrigin: "top right" }); gsap.set(mouth, { transformOrigin: "center center" });
-            startBlinking(5); emailScrollMax = email.scrollWidth;
-
-            if (isMobileDevice()) { password.type = "text"; showPasswordCheck.checked = true; gsap.set(twoFingers, { transformOrigin: "bottom left", rotation: 30, x: -9, y: -2, ease: "power2.inOut" }); }
-        }
-        
-        // Ejecutar init de la animación cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', initLoginForm);
+            gsap.set(armL, { x: -93, y: 220, rotation: 105, transformOrigin: "top left" });
+            gsap.set(armR, { x: -93, y: 220, rotation: -105, transformOrigin: "top right" });
+            gsap.set(mouth, { transformOrigin: "center center" });
+            startBlinking();
+        }, 500);
     </script>
 </body>
 </html>
