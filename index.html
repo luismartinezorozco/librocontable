@@ -113,6 +113,7 @@
             padding: 0;
             margin: 0;
             position: relative;
+            --active-index: 0;
         }
         .magic-nav ul li {
             position: relative;
@@ -181,7 +182,9 @@
             border: 6px solid var(--bg-body);
             border-bottom-left-radius: 35px;
             border-bottom-right-radius: 35px;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s, border-color 0.3s;
+            left: calc((var(--active-index, 0) * 25%) + 12.5%);
+            transform: translateX(-50%);
+            transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s, border-color 0.3s;
         }
         /* Hombros del recorte perfectos */
         .indicator::before {
@@ -717,21 +720,7 @@
                 const el = document.getElementById(id);
                 if(el) el.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-gray-500'); });
             });
-            setTimeout(window.recalcIndicator, 100);
         };
-
-        window.recalcIndicator = () => {
-            const activeLi = document.querySelector('.magic-nav .list.active');
-            if (activeLi && activeLi.offsetWidth > 0) {
-                const indicator = activeLi.parentElement.querySelector('.indicator');
-                if (indicator) {
-                    const liCenter = activeLi.offsetLeft + (activeLi.offsetWidth / 2);
-                    indicator.style.transform = `translateX(${liCenter - 35}px)`;
-                }
-            }
-        };
-
-        window.addEventListener('resize', window.recalcIndicator);
 
         function switchRootView(viewId) {
             const views = ['login-view', 'main-app-view', 'status-view', 'admin-view'];
@@ -1282,9 +1271,13 @@
             document.getElementById(`${tab}-view`)?.classList.remove('hidden'); 
             
             const activeLi = document.getElementById(`nav-${tab}`);
-            if(activeLi) activeLi.classList.add('active');
-            
-            setTimeout(window.recalcIndicator, 10);
+            if(activeLi) {
+                activeLi.classList.add('active');
+                
+                // Actualiza dinámicamente la posición usando CSS y el índice del Tab
+                const tabs = ['dashboard', 'ledger', 'credit', 'settings'];
+                document.querySelector('.magic-nav ul').style.setProperty('--active-index', tabs.indexOf(tab));
+            }
         }
 
         window.openFormModal = (type, fromScanner = false) => {
