@@ -94,6 +94,7 @@
             background-size: 1.2em 1.2em;
         }
 
+        /* MAGIC NAV MENU - Optimizacion Total para iOS/Android */
         .magic-nav {
             position: relative;
             width: 100%;
@@ -102,28 +103,31 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 20px 20px 0 0;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
             transition: background-color 0.3s;
-            /* Se eliminó la sombra superior para evitar sangrado en el recorte */
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.03);
         }
+
         .magic-nav ul {
             display: flex;
-            width: 100%;
-            max-width: 350px;
+            width: 100%; /* El 100% es crucial para el calculo en Flexbox */
+            height: 70px;
             padding: 0;
             margin: 0;
             position: relative;
             --active-index: 0;
         }
+
         .magic-nav ul li {
-            position: relative;
             list-style: none;
-            flex: 1;
+            flex: 1; /* Distribuye el espacio 100% simetrico */
             height: 70px;
-            z-index: 2; /* Iconos sobre el indicador */
-        }
-        .magic-nav ul li a {
             position: relative;
+            z-index: 2;
+        }
+
+        .magic-nav ul li a {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -132,102 +136,106 @@
             height: 100%;
             text-decoration: none;
         }
+
         .magic-nav ul li a .icon {
             position: relative;
             display: block;
             font-size: 1.6em;
-            text-align: center;
             color: var(--nav-text);
             transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .magic-nav ul li a .text {
-            position: absolute;
-            bottom: 12px; /* Anclado firmemente abajo */
-            color: var(--nav-text);
-            font-size: 0.65em;
-            letter-spacing: 0.02em;
-            font-weight: 600;
-            transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .magic-nav ul li.active a .icon {
-            transform: translateY(-32px); /* Centra perfecto en la burbuja azul */
-            color: var(--nav-text-active);
-        }
-        .magic-nav ul li.active a .text {
-            opacity: 1;
-            transform: translateY(0);
-            color: var(--nav-text-active);
-        }
-        html:not(.dark) .magic-nav ul li.active a .text {
-            color: #111827; /* Texto negro en modo claro */
+            transform: translateY(0px); /* Centro default */
         }
 
-        .indicator-container {
-            position: absolute;
-            top: -35px;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            pointer-events: none;
-            z-index: 1;
+        .magic-nav ul li.active a .icon {
+            transform: translateY(-33px); /* Sube a la burbuja azul */
+            color: #ffffff;
+            z-index: 10;
         }
+
+        .magic-nav ul li a .text {
+            position: absolute;
+            bottom: 12px;
+            color: var(--nav-text);
+            font-weight: 600;
+            font-size: 0.65em;
+            letter-spacing: 0.02em;
+            transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateY(20px);
+            opacity: 0;
+            white-space: nowrap; /* Evita quiebres de linea */
+        }
+
+        .magic-nav ul li.active a .text {
+            transform: translateY(0);
+            opacity: 1;
+            color: var(--nav-text-active);
+        }
+        
+        html:not(.dark) .magic-nav ul li.active a .text {
+            color: #111827;
+        }
+
+        /* La perforación optica (Hole) */
         .indicator {
             position: absolute;
-            top: 0;
+            top: -35px;
             width: 70px;
             height: 70px;
             background: var(--bg-body);
-            border: 6px solid var(--bg-body);
-            border-bottom-left-radius: 35px;
-            border-bottom-right-radius: 35px;
-            left: calc((var(--active-index, 0) * 25%) + 12.5%);
+            border-radius: 50%;
+            /* Calculo matematico: Indice(0 a 3) * AnchoDelBoton(25%) + MitadDelBoton(12.5%) */
+            left: calc((var(--active-index) * 25%) + 12.5%);
             transform: translateX(-50%);
-            transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s, border-color 0.3s;
+            transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s;
+            z-index: 1;
         }
-        /* Hombros del recorte perfectos */
+
+        /* "Cuernos" del recorte: Ajuste milimetrico Anti-Pixel iOS */
         .indicator::before {
-            content: "";
+            content: '';
             position: absolute;
-            top: 4px;
-            left: -26px; /* - (20 width + 6 border) */
-            width: 20px;
-            height: 20px;
+            top: 34.5px; /* Solape de medio pixel para tapar la fisura */
+            left: -21px; /* Solape horizontal */
+            width: 22px;
+            height: 22px;
             background: transparent;
-            border-top-right-radius: 20px;
-            box-shadow: 4px -6px 0 2px var(--bg-body);
+            border-top-right-radius: 22px;
+            box-shadow: 1px -10px 0 0 var(--bg-body);
             transition: box-shadow 0.3s;
         }
+
         .indicator::after {
-            content: "";
+            content: '';
             position: absolute;
-            top: 4px;
-            right: -26px;
-            width: 20px;
-            height: 20px;
+            top: 34.5px; 
+            right: -21px;
+            width: 22px;
+            height: 22px;
             background: transparent;
-            border-top-left-radius: 20px;
-            box-shadow: -4px -6px 0 2px var(--bg-body);
+            border-top-left-radius: 22px;
+            box-shadow: -1px -10px 0 0 var(--bg-body);
             transition: box-shadow 0.3s;
         }
+
+        /* La burbuja azul flotante */
         .indicator span {
             position: absolute;
-            bottom: 3px;
+            top: 6px;
             left: 50%;
             transform: translateX(-50%);
             width: 52px;
             height: 52px;
             background: var(--nav-indicator);
-            border: 4px solid var(--nav-bg);
             border-radius: 50%;
-            transition: background-color 0.3s, border-color 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border: 4px solid var(--nav-bg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: border-color 0.3s, background-color 0.3s;
         }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen sm:p-4 bg-[#F2F2F7] dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 selection:bg-indigo-100 selection:text-indigo-900 relative">
 
+    <!-- LOGIN / REGISTRO -->
     <div id="login-view" class="w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-white dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col justify-center px-8 z-50 absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-gray-900 transition-all duration-500 ease-in-out opacity-100">
         <div class="text-center mb-10">
             <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden shadow-lg shadow-gray-200 dark:shadow-none transition-transform duration-300 hover:scale-105">
@@ -275,6 +283,7 @@
         </button>
     </div>
 
+    <!-- PANEL DEL SUPER ADMINISTRADOR -->
     <div id="admin-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#F2F2F7] dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:static mx-auto sm:border-[8px] sm:border-gray-900 transition-all duration-500 ease-in-out">
         <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] dark:bg-gray-900 z-10 sticky top-0 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
             <div>
@@ -502,7 +511,8 @@
             </div>
         </main>
 
-        <div class="absolute bottom-0 w-full z-20 flex flex-col">
+        <!-- MAGIC NAVIGATION MENU -->
+        <div class="absolute bottom-0 w-full z-20">
             <div class="magic-nav">
                 <ul>
                     <li class="list active" id="nav-dashboard" onclick="window.switchTab('dashboard')">
@@ -529,16 +539,15 @@
                             <span class="text">Ajustes</span>
                         </a>
                     </li>
-                    <!-- El indicador mágico -->
-                    <div class="indicator-container">
-                        <div class="indicator"><span></span></div>
-                    </div>
+                    <!-- Elemento Flotante -->
+                    <div class="indicator"><span></span></div>
                 </ul>
             </div>
-            <!-- Compensador Safe Area para iPhone -->
+            <!-- Padding anti-colisión iOS Home Indicator -->
             <div class="w-full bg-[var(--nav-bg)] transition-colors" style="height: env(safe-area-inset-bottom);"></div>
         </div>
 
+        <!-- Modal Ingreso/Gasto -->
         <div id="form-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
             <div class="bg-white dark:bg-gray-900 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
@@ -601,6 +610,7 @@
         </div>
     </div>
 
+    <!-- Modales Adicionales Globales -->
     <div id="edit-account-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-[60] hidden items-center justify-center p-5 w-full">
         <div class="bg-white dark:bg-gray-800 w-full max-w-[300px] rounded-[24px] p-6 text-center animate-fade shadow-xl border border-transparent dark:border-gray-700 min-w-0">
             <h3 class="text-lg font-bold mb-4 dark:text-white truncate">Renombrar Cuenta</h3>
@@ -661,13 +671,13 @@
         const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()}) });
         
         let currentUser = null;
-        let currentUserData = null;
+        let currentUserData = null; 
         let allTransactions = []; 
         let mainTransactions = [];
         let creditTransactions = [];
         let filteredTransactions = [];
         let accounts = [];
-        let adminUsersList = [];
+        let adminUsersList = []; 
         let isExpense = true;
         let currentFilter = 'Todos';
         let searchQuery = '';
@@ -735,11 +745,22 @@
                     setTimeout(() => el.classList.add('hidden'), 400); 
                 }
             });
+        }
 
-            if (viewId === 'main-app-view') {
-                setTimeout(() => { 
-                    window.switchTab('dashboard'); 
-                }, 50);
+        window.switchTab = (tab) => {
+            ['dashboard-view', 'ledger-view', 'credit-view', 'settings-view'].forEach(t => { document.getElementById(t)?.classList.add('hidden'); });
+            
+            // Lógica del Menu Mágico de Navegación
+            document.querySelectorAll('.magic-nav .list').forEach(n => n.classList.remove('active'));
+            document.getElementById(`${tab}-view`)?.classList.remove('hidden'); 
+            
+            const activeLi = document.getElementById(`nav-${tab}`);
+            if(activeLi) {
+                activeLi.classList.add('active');
+                
+                // Actualiza índice para animacion nativa en CSS
+                const tabs = ['dashboard', 'ledger', 'credit', 'settings'];
+                document.querySelector('.magic-nav ul').style.setProperty('--active-index', tabs.indexOf(tab));
             }
         }
 
@@ -763,12 +784,19 @@
                 if (userDocSnap.exists()) {
                     currentUserData = userDocSnap.data();
                 } else {
-                    currentUserData = { email: user.email, role: user.email === SUPER_ADMIN_EMAIL ? 'admin' : 'user', status: 'approved', createdAt: serverTimestamp(), trialEnd: null };
+                    currentUserData = {
+                        email: user.email,
+                        role: user.email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
+                        status: 'approved',
+                        createdAt: serverTimestamp(),
+                        trialEnd: null
+                    };
                     await setDoc(userDocRef, currentUserData);
                 }
 
                 if (currentUserData.role === 'admin') {
-                    switchRootView('admin-view'); listenToAllUsersForAdmin();
+                    switchRootView('admin-view');
+                    listenToAllUsersForAdmin();
                 } else {
                     if (currentUserData.status === 'pending') {
                         showStatus('Cuenta Pendiente', 'El administrador debe autorizar tu acceso a la bóveda.', 'ph-hourglass');
@@ -779,13 +807,18 @@
                             const endDate = currentUserData.trialEnd.toDate();
                             if (new Date() > endDate) {
                                 await updateDoc(userDocRef, { status: 'expired' });
-                                showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500'); return;
+                                showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500');
+                                return;
                             }
                         }
                         
                         document.getElementById('user-name').innerText = user.email.split('@')[0];
                         document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
-                        switchRootView('main-app-view'); listenToTransactions(); listenToAccounts();
+                        switchRootView('main-app-view');
+                        // Forzar click en el primer tab para setear posicion 0 en menu
+                        window.switchTab('dashboard');
+                        listenToTransactions();
+                        listenToAccounts();
                     }
                 }
             } else {
@@ -834,7 +867,13 @@
                     localStorage.setItem('boveda_intentos', '0');
                 } else {
                     const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                    await setDoc(doc(db, "app_users", userCred.user.uid), { email: email, role: email === SUPER_ADMIN_EMAIL ? 'admin' : 'user', status: email === SUPER_ADMIN_EMAIL ? 'approved' : 'pending', createdAt: serverTimestamp(), trialEnd: null });
+                    await setDoc(doc(db, "app_users", userCred.user.uid), {
+                        email: email,
+                        role: email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
+                        status: email === SUPER_ADMIN_EMAIL ? 'approved' : 'pending',
+                        createdAt: serverTimestamp(),
+                        trialEnd: null
+                    });
                     localStorage.setItem('boveda_intentos', '0');
                 }
             } 
@@ -843,7 +882,9 @@
                     intentos++; localStorage.setItem('boveda_intentos', intentos);
                     if (intentos >= 3) { localStorage.setItem('boveda_bloqueo_hasta', (ahora + (5 * 60 * 1000)).toString()); window.showCustomAlert('Seguridad', 'Bóveda bloqueada temporalmente.', 'ph-shield-slash text-red-500'); } 
                     else { window.showCustomAlert('Acceso Denegado', `Credenciales incorrectas. Intentos: ${3 - intentos}`, 'ph-shield-warning text-red-500'); }
-                } else { window.showCustomAlert('Error al Registrar', 'El correo ya está en uso o la contraseña es muy débil (min. 6 caracteres).', 'ph-warning-circle text-rose-500'); }
+                } else {
+                    window.showCustomAlert('Error al Registrar', 'El correo ya está en uso o la contraseña es muy débil (min. 6 caracteres).', 'ph-warning-circle text-rose-500');
+                }
                 btn.disabled = false; btn.innerHTML = isLoginMode ? '<span>Entrar a la bóveda</span>' : '<span>Registrarse</span>';
             }
         };
@@ -871,7 +912,8 @@
 
                     let trialText = 'Sin límite';
                     if (usr.trialEnd) {
-                        const t = usr.trialEnd.toDate(); trialText = `Vence: ${t.getDate()}/${t.getMonth()+1}/${t.getFullYear()}`;
+                        const t = usr.trialEnd.toDate();
+                        trialText = `Vence: ${t.getDate()}/${t.getMonth()+1}/${t.getFullYear()}`;
                     }
 
                     listEl.innerHTML += `
@@ -904,18 +946,26 @@
 
         window.adminSetTrial = async (uid, days) => {
             if (!currentUser || currentUserData.role !== 'admin') return;
-            const newDate = new Date(); newDate.setDate(newDate.getDate() + days);
+            const newDate = new Date();
+            newDate.setDate(newDate.getDate() + days); 
             try {
-                await updateDoc(doc(db, "app_users", uid), { status: 'approved', trialEnd: newDate });
+                await updateDoc(doc(db, "app_users", uid), {
+                    status: 'approved',
+                    trialEnd: newDate
+                });
                 window.showCustomAlert('Actualizado', `Acceso concedido hasta el ${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`, 'ph-check-circle text-emerald-500');
-            } catch (e) { window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-circle text-rose-500'); }
+            } catch (e) {
+                window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-circle text-rose-500');
+            }
         };
 
         window.adminSuspend = async (uid) => {
             if (!currentUser || currentUserData.role !== 'admin') return;
             window.showConfirm('Suspender Usuario', '¿Quitar acceso a este usuario inmediatamente?', async () => {
-                try { await updateDoc(doc(db, "app_users", uid), { status: 'expired' }); window.closeConfirm(); } 
-                catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'No se pudo suspender.', 'ph-warning-circle text-rose-500'); }
+                try {
+                    await updateDoc(doc(db, "app_users", uid), { status: 'expired' });
+                    window.closeConfirm();
+                } catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'No se pudo suspender.', 'ph-warning-circle text-rose-500'); }
             }, false);
         };
 
@@ -1262,22 +1312,6 @@
             if (totalIncome === 0 && totalExpense === 0) { myChart.data.datasets[0].data = [0.01, 0.01]; myChart.data.datasets[0].backgroundColor = [colorBgEmpty, colorBgEmpty]; } 
             else { myChart.data.datasets[0].data = [totalIncome, totalExpense]; myChart.data.datasets[0].backgroundColor = [colorInc, colorExp]; }
             myChart.update();
-        }
-
-        window.switchTab = (tab) => {
-            ['dashboard-view', 'ledger-view', 'credit-view', 'settings-view'].forEach(t => { document.getElementById(t)?.classList.add('hidden'); });
-            
-            document.querySelectorAll('.magic-nav .list').forEach(n => n.classList.remove('active'));
-            document.getElementById(`${tab}-view`)?.classList.remove('hidden'); 
-            
-            const activeLi = document.getElementById(`nav-${tab}`);
-            if(activeLi) {
-                activeLi.classList.add('active');
-                
-                // Actualiza dinámicamente la posición usando CSS y el índice del Tab
-                const tabs = ['dashboard', 'ledger', 'credit', 'settings'];
-                document.querySelector('.magic-nav ul').style.setProperty('--active-index', tabs.indexOf(tab));
-            }
         }
 
         window.openFormModal = (type, fromScanner = false) => {
