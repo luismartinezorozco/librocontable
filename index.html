@@ -41,14 +41,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS Variables para el Magic Nav y Modo Oscuro */
+        /* CSS Variables para el Fade y Fondo */
         :root {
             --bg-body: #F2F2F7;
-            --nav-bg: #ffffff;
         }
         html.dark {
             --bg-body: #111827; 
-            --nav-bg: #1f2937;
         }
 
         body { 
@@ -93,143 +91,41 @@
             background-size: 1.2em 1.2em;
         }
 
-        /* MAGIC NAV CSS - Optimizacion Total Estructural */
-        .magic-nav {
+        /* NAVEGACIÓN FLOTANTE PÍLDORA */
+        .nav-btn {
             position: relative;
-            width: 100%;
-            height: 70px;
-            background: var(--nav-bg);
-            z-index: 20;
-            transition: background-color 0.3s;
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.05);
-        }
-        .dark .magic-nav { box-shadow: 0 -5px 25px rgba(0,0,0,0.4); }
-
-        .magic-nav ul {
-            display: flex;
-            width: 100%;
-            height: 70px;
-            position: relative;
-            margin: 0; padding: 0;
-            --active-index: 0;
-        }
-
-        .magic-nav ul li {
-            position: relative;
-            list-style: none;
-            width: 25%;
-            height: 70px;
-            z-index: 2;
-        }
-
-        .magic-nav ul li button {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            border: none;
             cursor: pointer;
             outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        .magic-nav ul li button .icon {
-            position: relative;
-            display: block;
-            font-size: 1.8em;
-            color: #9ca3af;
-            transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            transform: translateY(0px);
-        }
-
-        .magic-nav ul li.active button .icon {
-            transform: translateY(-33px);
-            color: #ffffff;
-            z-index: 10;
-        }
-
-        .magic-nav ul li button .text {
+        .nav-btn span {
             position: absolute;
-            bottom: 12px;
-            color: #9ca3af;
-            font-weight: 700;
-            font-size: 0.6em;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            transform: translateY(20px);
+            bottom: 6px;
             opacity: 0;
-            white-space: nowrap;
+            transform: translateY(8px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
-
-        .magic-nav ul li.active button .text {
-            transform: translateY(0);
+        .nav-btn i {
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        /* Estado Activo */
+        .nav-btn.active {
+            background-color: #eff6ff; /* Tailwind blue-50 */
+            color: #3b82f6; /* Tailwind blue-500 */
+        }
+        .dark .nav-btn.active {
+            background-color: rgba(30, 58, 138, 0.4); /* Tailwind blue-900/40 */
+            color: #60a5fa; /* Tailwind blue-400 */
+        }
+        .nav-btn.active i {
+            transform: translateY(-8px);
+        }
+        .nav-btn.active span {
             opacity: 1;
-            color: #3b82f6;
-        }
-
-        .indicator {
-            position: absolute;
-            top: -34.5px;
-            width: 25%;
-            height: 70px;
-            display: flex;
-            justify-content: center;
-            transform: translateX(calc(100% * var(--active-index)));
-            transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .indicator-circle {
-            position: relative;
-            width: 66px;
-            height: 66px;
-            background: var(--bg-body);
-            border-bottom-left-radius: 35px;
-            border-bottom-right-radius: 35px;
-            transition: background-color 0.3s;
-        }
-
-        .indicator-circle::before {
-            content: '';
-            position: absolute;
-            top: 34.5px;
-            left: -21px;
-            width: 22px;
-            height: 22px;
-            background: transparent;
-            border-top-right-radius: 22px;
-            box-shadow: 1px -10px 0 0 var(--bg-body);
-            transition: box-shadow 0.3s;
-        }
-
-        .indicator-circle::after {
-            content: '';
-            position: absolute;
-            top: 34.5px;
-            right: -21px;
-            width: 22px;
-            height: 22px;
-            background: transparent;
-            border-top-left-radius: 22px;
-            box-shadow: -1px -10px 0 0 var(--bg-body);
-            transition: box-shadow 0.3s;
-        }
-
-        .indicator span {
-            position: absolute;
-            top: 5px;
-            width: 52px;
-            height: 52px;
-            background: #3b82f6;
-            border-radius: 50%;
-            border: 5px solid var(--nav-bg);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-            transition: border-color 0.3s;
+            transform: translateY(0);
         }
 
         /* ESTILOS EXCLUSIVOS DEL YETI LOGIN */
@@ -433,8 +329,8 @@
             </div>
         </header>
 
-        <!-- MAIN SCROLLABLE AREA - Con padding inferior gigante (pb-[140px]) para desvanecimiento -->
-        <main class="flex-1 overflow-y-auto hide-scroll pb-[140px] px-5 relative z-10 w-full">
+        <!-- MAIN SCROLLABLE AREA - Con fade y margen inferior amplio para el nuevo menú -->
+        <main class="flex-1 overflow-y-auto hide-scroll pb-[100px] px-5 relative z-10 w-full">
             
             <!-- VISTA 1: DASHBOARD -->
             <div id="dashboard-view" class="block animate-fade w-full">
@@ -633,47 +529,29 @@
             </div>
         </main>
 
-        <!-- MAGIC NAVIGATION MENU CON DIFUMINADO (FADE-OUT) -->
-        <div class="absolute bottom-0 w-full z-20 pointer-events-none flex flex-col justify-end">
-            <!-- Fade Gradient -->
-            <div class="w-full h-[60px]" style="background: linear-gradient(to top, var(--bg-body) 10px, transparent 100%);"></div>
-            
-            <div class="w-full pointer-events-auto bg-[var(--bg-body)]">
-                <div class="magic-nav">
-                    <ul>
-                        <li class="active" id="nav-dashboard">
-                            <button type="button" onclick="window.switchTab('dashboard', 0)">
-                                <span class="icon"><i class="ph-fill ph-house"></i></span>
-                                <span class="text">INICIO</span>
-                            </button>
-                        </li>
-                        <li id="nav-ledger">
-                            <button type="button" onclick="window.switchTab('ledger', 1)">
-                                <span class="icon"><i class="ph-fill ph-list-bullets"></i></span>
-                                <span class="text">MOVIMIENTOS</span>
-                            </button>
-                        </li>
-                        <li id="nav-credit">
-                            <button type="button" onclick="window.switchTab('credit', 2)">
-                                <span class="icon"><i class="ph-fill ph-credit-card"></i></span>
-                                <span class="text">T. CRÉDITO</span>
-                            </button>
-                        </li>
-                        <li id="nav-settings">
-                            <button type="button" onclick="window.switchTab('settings', 3)">
-                                <span class="icon"><i class="ph-fill ph-gear"></i></span>
-                                <span class="text">AJUSTES</span>
-                            </button>
-                        </li>
-                        <div class="indicator">
-                            <div class="indicator-circle">
-                                <span></span>
-                            </div>
-                        </div>
-                    </ul>
-                </div>
-                <div class="w-full bg-[var(--nav-bg)] transition-colors" style="height: env(safe-area-inset-bottom);"></div>
-            </div>
+        <!-- Fade Gradient at the bottom -->
+        <div class="absolute bottom-0 w-full h-[100px] z-10 pointer-events-none" style="background: linear-gradient(to top, var(--bg-body) 10%, transparent 100%);"></div>
+
+        <!-- FLOATING BOTTOM NAV (PILL) -->
+        <div class="absolute bottom-6 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none w-full">
+            <nav class="pointer-events-auto flex justify-between items-center w-full max-w-[340px] bg-white/80 dark:bg-gray-800/90 backdrop-blur-xl border border-gray-100 dark:border-gray-700/50 rounded-full px-2 py-2 shadow-2xl shadow-gray-300/50 dark:shadow-black/50 transition-colors">
+                <button id="nav-dashboard" onclick="window.switchTab('dashboard', 0)" class="nav-btn active flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class="ph-fill ph-house text-2xl"></i>
+                    <span class="text-[9px]">INICIO</span>
+                </button>
+                <button id="nav-ledger" onclick="window.switchTab('ledger', 1)" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class="ph-fill ph-list-bullets text-2xl"></i>
+                    <span class="text-[9px]">HISTORIAL</span>
+                </button>
+                <button id="nav-credit" onclick="window.switchTab('credit', 2)" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class="ph-fill ph-credit-card text-2xl"></i>
+                    <span class="text-[9px]">TARJETAS</span>
+                </button>
+                <button id="nav-settings" onclick="window.switchTab('settings', 3)" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class="ph-fill ph-gear text-2xl"></i>
+                    <span class="text-[9px]">AJUSTES</span>
+                </button>
+            </nav>
         </div>
 
         <!-- Modal Ingreso/Gasto -->
@@ -855,7 +733,7 @@
         window.onload = () => { 
             window.initTheme(); 
             initCreditForm(); 
-            initYeti(); // Disparar la lógica visual del Yeti
+            initYeti();
             ['form-date', 'credit-date'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.addEventListener('change', (e) => { if(e.target.value) e.target.classList.remove('text-gray-500'); });
@@ -1400,15 +1278,18 @@
             myChart.update();
         }
 
-        window.switchTab = (tab, index) => {
+        // LÓGICA DE PESTAÑAS (MANTIENE FUNCIONALIDAD DEL NUEVO MENÚ)
+        window.switchTab = (tab) => {
             ['dashboard-view', 'ledger-view', 'credit-view', 'settings-view'].forEach(t => { document.getElementById(t)?.classList.add('hidden'); });
-            document.querySelectorAll('.magic-nav li').forEach(n => n.classList.remove('active'));
             
+            // Remueve la clase active de todos los botones del nuevo menú
+            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+            
+            // Activa la vista seleccionada y le da el estilo "Píldora" al botón tocado
             document.getElementById(`${tab}-view`)?.classList.remove('hidden'); 
-            const activeLi = document.getElementById(`nav-${tab}`);
-            if(activeLi) {
-                activeLi.classList.add('active');
-                document.querySelector('.magic-nav ul').style.setProperty('--active-index', index);
+            const activeBtn = document.getElementById(`nav-${tab}`);
+            if(activeBtn) {
+                activeBtn.classList.add('active');
             }
         }
 
@@ -1492,6 +1373,7 @@
         window.closeConfirm = () => { document.getElementById('confirm-modal').classList.add('hidden'); document.getElementById('confirm-modal').classList.remove('flex'); confirmActionCallback = null; }
         window.executeConfirm = () => { if (confirmActionCallback) confirmActionCallback(); }
 
+        /* SCRIPT YETI */
         function initYeti() {
             if (typeof gsap === 'undefined' || typeof MorphSVGPlugin === 'undefined') return;
             gsap.registerPlugin(MorphSVGPlugin);
