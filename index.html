@@ -37,6 +37,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* CSS Variables for Magic Nav to handle Dark Mode perfectly */
         :root {
             --bg-body: #F2F2F7;
             --nav-bg: #ffffff;
@@ -65,7 +66,7 @@
         .animate-sheet { animation: slideUpSheet 0.3s cubic-bezier(0.175, 0.885, 0.32, 1) forwards; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate-fade { animation: fadeIn 0.2s ease-out forwards; }
+        .animate-fade { animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         
         /* FIX iOS/Android Desborde - Estricto */
         *, *::before, *::after { box-sizing: border-box !important; }
@@ -94,7 +95,7 @@
             background-size: 1.2em 1.2em;
         }
 
-        /* MAGIC NAV MENU - Estructura Sólida */
+        /* MAGIC NAV CSS - Totalmente Optimizado */
         .magic-nav {
             position: relative;
             width: 100%;
@@ -115,7 +116,7 @@
             padding: 0;
             margin: 0;
             position: relative;
-            --active-index: 0;
+            --active-index: 0; /* Variable CSS controlada por JS */
         }
 
         .magic-nav ul li {
@@ -126,17 +127,20 @@
             z-index: 2;
         }
 
-        .magic-nav ul li a {
+        .magic-nav ul li button {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             width: 100%;
             height: 100%;
-            text-decoration: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            outline: none;
         }
 
-        .magic-nav ul li a .icon {
+        .magic-nav ul li button .icon {
             position: relative;
             display: block;
             font-size: 1.6em;
@@ -145,53 +149,54 @@
             transform: translateY(0px);
         }
 
-        .magic-nav ul li.active a .icon {
+        .magic-nav ul li.active button .icon {
             transform: translateY(-33px);
-            color: #ffffff;
+            color: var(--nav-text-active);
             z-index: 10;
         }
 
-        .magic-nav ul li a .text {
+        .magic-nav ul li button .text {
             position: absolute;
             bottom: 12px;
             color: var(--nav-text);
-            font-weight: 600;
-            font-size: 0.65em;
-            letter-spacing: 0.02em;
+            font-weight: 700;
+            font-size: 0.55em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             transform: translateY(20px);
             opacity: 0;
             white-space: nowrap;
         }
 
-        .magic-nav ul li.active a .text {
+        .magic-nav ul li.active button .text {
             transform: translateY(0);
             opacity: 1;
             color: var(--nav-text-active);
         }
         
-        html:not(.dark) .magic-nav ul li.active a .text {
+        html:not(.dark) .magic-nav ul li.active button .text {
             color: #111827;
         }
 
         .indicator {
             position: absolute;
-            top: -35px;
+            top: -34.5px; /* Solapamiento de sub-pixel para pantallas retina */
             width: 70px;
             height: 70px;
-            background: var(--bg-body);
+            background: transparent;
             border-radius: 50%;
             left: calc((var(--active-index) * 25%) + 12.5%);
             transform: translateX(-50%);
-            transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s;
+            transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 1;
         }
 
         .indicator::before {
             content: '';
             position: absolute;
-            top: 34.5px;
-            left: -21px; 
+            top: 34.5px; 
+            left: -21px; /* Sello hermético */
             width: 22px;
             height: 22px;
             background: transparent;
@@ -203,8 +208,8 @@
         .indicator::after {
             content: '';
             position: absolute;
-            top: 34.5px; 
-            right: -21px;
+            top: 34.5px;
+            right: -21px; /* Sello hermético */
             width: 22px;
             height: 22px;
             background: transparent;
@@ -215,15 +220,15 @@
 
         .indicator span {
             position: absolute;
-            top: 6px;
+            top: 5px;
             left: 50%;
             transform: translateX(-50%);
             width: 52px;
             height: 52px;
             background: var(--nav-indicator);
             border-radius: 50%;
-            border: 4px solid var(--nav-bg);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 5px solid var(--nav-bg);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4); /* Glow premium */
             transition: border-color 0.3s, background-color 0.3s;
         }
     </style>
@@ -300,7 +305,7 @@
     <!-- MAIN APP CONTAINER (La App normal) -->
     <div id="main-app-view" class="hidden opacity-0 w-full h-[100dvh] sm:h-[850px] max-w-[400px] bg-[#F2F2F7] dark:bg-gray-900 sm:rounded-[3rem] sm:shadow-2xl flex flex-col absolute inset-0 sm:relative mx-auto sm:border-[8px] sm:border-gray-900 transition-all duration-500 ease-in-out overflow-hidden">
         
-        <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] dark:bg-gray-900 z-10 sticky top-0 flex justify-between items-center transition-colors">
+        <header class="px-5 pt-12 pb-3 bg-[#F2F2F7] dark:bg-gray-900 z-10 sticky top-0 flex justify-between items-center transition-colors shrink-0">
             <div class="flex items-center gap-3">
                 <div id="user-initials" class="w-10 h-10 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
                     --
@@ -312,11 +317,11 @@
             </div>
         </header>
 
-        <!-- MAIN SCROLLABLE AREA - Termina antes del menú -->
-        <main class="flex-1 overflow-y-auto hide-scroll pb-6 px-5">
+        <!-- MAIN SCROLLABLE AREA - Con padding inferior gigante (pb-[140px]) para limpiar el menú -->
+        <main class="flex-1 overflow-y-auto hide-scroll pb-[140px] px-5 relative z-10 w-full">
             
             <!-- VISTA 1: DASHBOARD -->
-            <div id="dashboard-view" class="block animate-fade">
+            <div id="dashboard-view" class="block animate-fade w-full">
                 <div class="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-700 text-white rounded-[24px] p-6 mb-6 shadow-lg shadow-gray-900/10">
                     <p class="text-xs text-gray-300 font-medium mb-1">Balance Total</p>
                     <h2 class="text-3xl font-extrabold tracking-tight truncate w-full" id="total-balance">$ 0</h2>
@@ -376,7 +381,7 @@
             </div>
 
             <!-- VISTA 2: MOVIMIENTOS -->
-            <div id="ledger-view" class="hidden animate-fade">
+            <div id="ledger-view" class="hidden animate-fade w-full">
                 <h2 class="text-3xl font-extrabold mb-4 dark:text-white">Movimientos</h2>
                 <div class="flex gap-2 mb-4 w-full">
                     <div class="relative flex-1 min-w-0">
@@ -401,7 +406,7 @@
             </div>
 
             <!-- VISTA 3: T. CREDITO -->
-            <div id="credit-view" class="hidden animate-fade">
+            <div id="credit-view" class="hidden animate-fade w-full">
                 <h2 class="text-3xl font-extrabold mb-1 dark:text-white truncate">T. Crédito</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 truncate">Gestiona tus deudas y compras aisladas.</p>
 
@@ -474,7 +479,7 @@
             </div>
 
             <!-- VISTA 4: AJUSTES -->
-            <div id="settings-view" class="hidden animate-fade">
+            <div id="settings-view" class="hidden animate-fade w-full">
                 <h2 class="text-3xl font-extrabold mb-6 dark:text-white">Ajustes</h2>
 
                 <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-sm p-5 mb-5 flex justify-between items-center w-full min-w-0">
@@ -513,46 +518,47 @@
             </div>
         </main>
 
-        <!-- WRAPPER SÓLIDO DEL MAGIC MENU (Impide que el scroll pase por debajo de la burbuja) -->
-        <div class="w-full shrink-0 bg-[var(--bg-body)] relative z-20 transition-colors sm:rounded-b-[2.5rem]">
-            <!-- Espaciador de 35px: Se encarga de tapar el scroll y acunar la burbuja gris -->
-            <div class="w-full h-[35px]"></div>
+        <!-- NAVEGACIÓN MÁGICA CON FADE-OUT PREMIUM -->
+        <div class="absolute bottom-0 w-full z-20 pointer-events-none flex flex-col justify-end">
+            <!-- Gradiente de Difuminado: Oculta los hombros y desvanece las tarjetas -->
+            <div class="w-full h-[80px]" style="background: linear-gradient(to top, var(--bg-body) 38px, transparent 100%);"></div>
             
-            <div class="magic-nav">
-                <ul style="--active-index: 0;">
-                    <li class="list active" id="nav-dashboard" onclick="window.switchTab('dashboard')">
-                        <a href="javascript:void(0)">
-                            <span class="icon"><i class="ph-fill ph-house"></i></span>
-                            <span class="text">Inicio</span>
-                        </a>
-                    </li>
-                    <li class="list" id="nav-ledger" onclick="window.switchTab('ledger')">
-                        <a href="javascript:void(0)">
-                            <span class="icon"><i class="ph-fill ph-list-bullets"></i></span>
-                            <span class="text">Movimientos</span>
-                        </a>
-                    </li>
-                    <li class="list" id="nav-credit" onclick="window.switchTab('credit')">
-                        <a href="javascript:void(0)">
-                            <span class="icon"><i class="ph-fill ph-credit-card"></i></span>
-                            <span class="text">T. Crédito</span>
-                        </a>
-                    </li>
-                    <li class="list" id="nav-settings" onclick="window.switchTab('settings')">
-                        <a href="javascript:void(0)">
-                            <span class="icon"><i class="ph-fill ph-gear"></i></span>
-                            <span class="text">Ajustes</span>
-                        </a>
-                    </li>
-                    <!-- Burbuja Indicadora -->
-                    <div class="indicator"><span></span></div>
-                </ul>
+            <div class="w-full bg-[var(--bg-body)] pointer-events-auto">
+                <div class="magic-nav">
+                    <ul>
+                        <li class="active" id="nav-dashboard">
+                            <button type="button" onclick="window.switchTab('dashboard', 0)">
+                                <span class="icon"><i class="ph-fill ph-house"></i></span>
+                                <span class="text">Inicio</span>
+                            </button>
+                        </li>
+                        <li id="nav-ledger">
+                            <button type="button" onclick="window.switchTab('ledger', 1)">
+                                <span class="icon"><i class="ph-fill ph-list-bullets"></i></span>
+                                <span class="text">Movimientos</span>
+                            </button>
+                        </li>
+                        <li id="nav-credit">
+                            <button type="button" onclick="window.switchTab('credit', 2)">
+                                <span class="icon"><i class="ph-fill ph-credit-card"></i></span>
+                                <span class="text">T. Crédito</span>
+                            </button>
+                        </li>
+                        <li id="nav-settings">
+                            <button type="button" onclick="window.switchTab('settings', 3)">
+                                <span class="icon"><i class="ph-fill ph-gear"></i></span>
+                                <span class="text">Ajustes</span>
+                            </button>
+                        </li>
+                        <div class="indicator"><span></span></div>
+                    </ul>
+                </div>
+                <!-- Relleno de seguridad para iOS Home Indicator -->
+                <div class="w-full bg-[var(--nav-bg)] transition-colors" style="height: env(safe-area-inset-bottom);"></div>
             </div>
-            <!-- Relleno de seguridad para iOS Home Indicator -->
-            <div class="w-full bg-[var(--nav-bg)] transition-colors" style="height: env(safe-area-inset-bottom);"></div>
         </div>
 
-        <!-- Modal Ingreso/Gasto (Apilado para CERO desborde móvil) -->
+        <!-- Modal Ingreso/Gasto -->
         <div id="form-modal" class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
             <div class="bg-white dark:bg-gray-900 w-full rounded-t-[32px] p-6 animate-sheet pb-safe transition-colors" style="padding-bottom: max(24px, env(safe-area-inset-bottom));">
                 <div class="w-10 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
@@ -676,13 +682,13 @@
         const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()}) });
         
         let currentUser = null;
-        let currentUserData = null; // Datos de perfil de app_users
+        let currentUserData = null;
         let allTransactions = []; 
         let mainTransactions = [];
         let creditTransactions = [];
         let filteredTransactions = [];
         let accounts = [];
-        let adminUsersList = []; // Lista para el super admin
+        let adminUsersList = [];
         let isExpense = true;
         let currentFilter = 'Todos';
         let searchQuery = '';
@@ -692,7 +698,7 @@
         let unsubscribeAdminDB = null;
         let confirmActionCallback = null;
         let activeCreditDeuda = null;
-        let isLoginMode = true; // Control de Login/Registro
+        let isLoginMode = true; 
 
         const balanceEl = document.getElementById('total-balance');
         const availableEl = document.getElementById('available-amount');
@@ -747,7 +753,7 @@
                 } else {
                     el.style.opacity = '0';
                     el.style.pointerEvents = 'none';
-                    setTimeout(() => el.classList.add('hidden'), 400); // 400ms después del fade
+                    setTimeout(() => el.classList.add('hidden'), 400);
                 }
             });
         }
@@ -766,59 +772,42 @@
                 currentUser = user;
                 if(authBtn) { authBtn.disabled = false; authBtn.innerHTML = '<span>Entrar a la bóveda</span>'; }
                 
-                // Obtener perfil del usuario para validar permisos
                 const userDocRef = doc(db, "app_users", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 
                 if (userDocSnap.exists()) {
                     currentUserData = userDocSnap.data();
                 } else {
-                    // Si el usuario existe en Auth pero no en Firestore (usuario antiguo legacy)
-                    // Le damos acceso de usuario normal y lo aprobamos automáticamente.
-                    currentUserData = {
-                        email: user.email,
-                        role: user.email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
-                        status: 'approved',
-                        createdAt: serverTimestamp(),
-                        trialEnd: null
-                    };
+                    currentUserData = { email: user.email, role: user.email === SUPER_ADMIN_EMAIL ? 'admin' : 'user', status: 'approved', createdAt: serverTimestamp(), trialEnd: null };
                     await setDoc(userDocRef, currentUserData);
                 }
 
-                // Evaluar Permisos y Enrutar
                 if (currentUserData.role === 'admin') {
-                    // Es Super Admin
                     switchRootView('admin-view');
                     listenToAllUsersForAdmin();
                 } else {
-                    // Es Usuario Normal. Verificar estado.
                     if (currentUserData.status === 'pending') {
                         showStatus('Cuenta Pendiente', 'El administrador debe autorizar tu acceso a la bóveda.', 'ph-hourglass');
                     } else if (currentUserData.status === 'expired') {
                         showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500');
                     } else if (currentUserData.status === 'approved') {
-                        // Verificar si tiene trialEnd configurado y ya expiró
                         if (currentUserData.trialEnd) {
                             const endDate = currentUserData.trialEnd.toDate();
                             if (new Date() > endDate) {
-                                // Venció el tiempo
                                 await updateDoc(userDocRef, { status: 'expired' });
                                 showStatus('Suscripción Vencida', 'Tu tiempo de acceso ha terminado. Contacta al administrador para renovar.', 'ph-warning-octagon text-rose-500');
                                 return;
                             }
                         }
                         
-                        // Todo en orden, cargar la app
                         document.getElementById('user-name').innerText = user.email.split('@')[0];
                         document.getElementById('user-initials').innerText = user.email.substring(0, 2).toUpperCase();
                         switchRootView('main-app-view');
-                        window.switchTab('dashboard'); // Forzar estado inicial activo
                         listenToTransactions();
                         listenToAccounts();
                     }
                 }
             } else {
-                // No hay sesión
                 currentUser = null; currentUserData = null; allTransactions = []; mainTransactions = []; creditTransactions = []; accounts = []; adminUsersList = [];
                 if (unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
                 if (unsubscribeAccountsDB) { unsubscribeAccountsDB(); unsubscribeAccountsDB = null; }
@@ -847,7 +836,6 @@
 
             if (!email || !password) return window.showCustomAlert('Datos incompletos', 'Ingresa correo y clave.', 'ph-warning-circle text-orange-500');
 
-            // Seguridad de intentos solo aplica para login normal
             let intentos = parseInt(localStorage.getItem('boveda_intentos') || '0');
             let tiempoDesbloqueo = parseInt(localStorage.getItem('boveda_bloqueo_hasta') || '0');
             const ahora = new Date().getTime();
@@ -864,18 +852,9 @@
                     await signInWithEmailAndPassword(auth, email, password); 
                     localStorage.setItem('boveda_intentos', '0');
                 } else {
-                    // Registro de Nuevo Usuario
                     const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                    // Crear su perfil en Firestore con estado "pending"
-                    await setDoc(doc(db, "app_users", userCred.user.uid), {
-                        email: email,
-                        role: email === SUPER_ADMIN_EMAIL ? 'admin' : 'user',
-                        status: email === SUPER_ADMIN_EMAIL ? 'approved' : 'pending',
-                        createdAt: serverTimestamp(),
-                        trialEnd: null
-                    });
+                    await setDoc(doc(db, "app_users", userCred.user.uid), { email: email, role: email === SUPER_ADMIN_EMAIL ? 'admin' : 'user', status: email === SUPER_ADMIN_EMAIL ? 'approved' : 'pending', createdAt: serverTimestamp(), trialEnd: null });
                     localStorage.setItem('boveda_intentos', '0');
-                    // Tras el registro, onAuthStateChanged tomará el control y lo enviará al status-view
                 }
             } 
             catch(error) {
@@ -884,7 +863,7 @@
                     if (intentos >= 3) { localStorage.setItem('boveda_bloqueo_hasta', (ahora + (5 * 60 * 1000)).toString()); window.showCustomAlert('Seguridad', 'Bóveda bloqueada temporalmente.', 'ph-shield-slash text-red-500'); } 
                     else { window.showCustomAlert('Acceso Denegado', `Credenciales incorrectas. Intentos: ${3 - intentos}`, 'ph-shield-warning text-red-500'); }
                 } else {
-                    window.showCustomAlert('Error al Registrar', 'El correo ya está en uso o la contraseña es muy débil (min. 6 caracteres).', 'ph-warning-circle text-rose-500');
+                    window.showCustomAlert('Error al Registrar', 'El correo ya está en uso o la contraseña es débil (min. 6 caracteres).', 'ph-warning-circle text-rose-500');
                 }
                 btn.disabled = false; btn.innerHTML = isLoginMode ? '<span>Entrar a la bóveda</span>' : '<span>Registrarse</span>';
             }
@@ -903,7 +882,7 @@
 
                 snapshot.forEach((docSnap) => {
                     const usr = { id: docSnap.id, ...docSnap.data() };
-                    if (usr.role === 'admin') return; // No mostrarse a sí mismo
+                    if (usr.role === 'admin') return; 
                     hasUsers = true;
 
                     let statusBadge = '';
@@ -939,34 +918,22 @@
                     `;
                 });
 
-                if(!hasUsers) {
-                    listEl.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm font-medium"><i class="ph-bold ph-users text-4xl mb-2 opacity-30 block"></i>No hay usuarios registrados</div>';
-                }
+                if(!hasUsers) { listEl.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm font-medium"><i class="ph-bold ph-users text-4xl mb-2 opacity-30 block"></i>No hay usuarios registrados</div>'; }
             });
         }
 
         window.adminSetTrial = async (uid, days) => {
             if (!currentUser || currentUserData.role !== 'admin') return;
-            const newDate = new Date();
-            newDate.setDate(newDate.getDate() + days); // Suma días desde HOY
-            try {
-                await updateDoc(doc(db, "app_users", uid), {
-                    status: 'approved',
-                    trialEnd: newDate
-                });
-                window.showCustomAlert('Actualizado', `Acceso concedido hasta el ${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`, 'ph-check-circle text-emerald-500');
-            } catch (e) {
-                window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-circle text-rose-500');
-            }
+            const newDate = new Date(); newDate.setDate(newDate.getDate() + days);
+            try { await updateDoc(doc(db, "app_users", uid), { status: 'approved', trialEnd: newDate }); window.showCustomAlert('Actualizado', `Acceso concedido hasta el ${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`, 'ph-check-circle text-emerald-500'); } 
+            catch (e) { window.showCustomAlert('Error', 'No se pudo actualizar.', 'ph-warning-circle text-rose-500'); }
         };
 
         window.adminSuspend = async (uid) => {
             if (!currentUser || currentUserData.role !== 'admin') return;
             window.showConfirm('Suspender Usuario', '¿Quitar acceso a este usuario inmediatamente?', async () => {
-                try {
-                    await updateDoc(doc(db, "app_users", uid), { status: 'expired' });
-                    window.closeConfirm();
-                } catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'No se pudo suspender.', 'ph-warning-circle text-rose-500'); }
+                try { await updateDoc(doc(db, "app_users", uid), { status: 'expired' }); window.closeConfirm(); } 
+                catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'No se pudo suspender.', 'ph-warning-circle text-rose-500'); }
             }, false);
         };
 
@@ -1207,18 +1174,6 @@
             }, true);
         }
 
-        window.deleteCurrentCredit = () => {
-            const t = activeCreditDeuda; if (!t) return;
-            window.closeCreditDetailModal();
-            window.showConfirm('Borrar Deuda', '¿Eliminar deuda y todos sus pagos del historial?', async () => {
-                try {
-                    const batchPagos = creditTransactions.filter(x => x.type === 'credit_payment' && x.parentCreditId === t.id);
-                    for (const p of batchPagos) { await deleteDoc(doc(db, "transactions", p.id)); }
-                    await deleteDoc(doc(db, "transactions", t.id)); window.closeConfirm();
-                } catch(e) { window.showCustomAlert('Error', 'Fallo al borrar.', 'ph-warning-circle text-rose-500'); window.closeConfirm(); }
-            }, false);
-        }
-
         window.handleSearch = () => { searchQuery = document.getElementById('search-input').value.toLowerCase(); applyFiltersAndSearch(); }
 
         window.filterLedger = (type, btnElement) => {
@@ -1282,15 +1237,12 @@
             mainTransactions.forEach((tx) => { const amount = parseFloat(tx.amount); if (tx.type === 'income') { totalBalance += amount; totalIncome += amount; } else { totalBalance -= amount; totalExpense += amount; } });
             creditTransactions.forEach((tx) => { if (tx.type === 'credit_active') { totalCreditDebt += parseFloat(tx.pendingAmount); } });
 
-            // Ledger List
             if (filteredTransactions.length === 0) { ledgerList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-ghost text-3xl mb-2 opacity-30"></i><span class="truncate w-full">No se encontraron movimientos</span></div>`; } 
             else { let html = ''; [...filteredTransactions].reverse().forEach(tx => html += createListItem(tx)); ledgerList.innerHTML = html; }
 
-            // Credit List
             if (creditTransactions.length === 0) { creditList.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-credit-card text-3xl mb-2 opacity-30"></i><span class="truncate w-full">No hay deudas activas</span></div>`; } 
             else { let html = ''; [...creditTransactions].reverse().forEach(tx => html += createListItem(tx, false, true)); creditList.innerHTML = html; }
 
-            // Recent List (Dashboard)
             const recentTx = [...mainTransactions].reverse().slice(0, 3);
             if(recentTx.length === 0) { txList.innerHTML = `<div class="p-6 text-center text-gray-400 text-sm font-medium flex flex-col items-center w-full min-w-0"><i class="ph-bold ph-ghost text-3xl mb-1 opacity-30"></i><span class="truncate w-full">Aún no hay registros</span></div>`; } 
             else { let html = ''; recentTx.forEach(tx => html += createListItem(tx, true)); txList.innerHTML = html; }
@@ -1318,22 +1270,14 @@
             myChart.update();
         }
 
-        window.switchTab = (tab) => {
-            // Ocultar vistas
+        window.switchTab = (tab, index) => {
             ['dashboard-view', 'ledger-view', 'credit-view', 'settings-view'].forEach(t => { document.getElementById(t)?.classList.add('hidden'); });
+            document.querySelectorAll('.magic-nav li').forEach(n => n.classList.remove('active'));
             
-            // Quitar clase active
-            document.querySelectorAll('.magic-nav .list').forEach(n => n.classList.remove('active'));
-            
-            // Mostrar vista
             document.getElementById(`${tab}-view`)?.classList.remove('hidden'); 
-            
-            // Asignar active y mover indicador usando CSS nativo
             const activeLi = document.getElementById(`nav-${tab}`);
             if(activeLi) {
                 activeLi.classList.add('active');
-                const tabs = ['dashboard', 'ledger', 'credit', 'settings'];
-                const index = tabs.indexOf(tab);
                 document.querySelector('.magic-nav ul').style.setProperty('--active-index', index);
             }
         }
