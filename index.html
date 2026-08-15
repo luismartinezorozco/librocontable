@@ -57,6 +57,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* PREVIENE EL REBOTE DE LA APP ENTERA EN IOS/ANDROID */
+        html, body {
+            overscroll-behavior-y: none;
+        }
+
         body { 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
             -webkit-tap-highlight-color: transparent;
@@ -283,8 +288,8 @@
             </div>
         </header>
 
-        <!-- AQUI QUEDÓ EL PADDING ARREGLADO (pb-6 en vez de pb-[120px]) -->
-        <main class="flex-1 overflow-y-auto hide-scroll px-5 pb-6 relative">
+        <!-- AQUI QUEDÓ EL PADDING ARREGLADO (pb-[110px] en vez de pb-6) -->
+        <main class="flex-1 overflow-y-auto hide-scroll px-5 pb-[110px] relative">
             
             <!-- VISTA 1: DASHBOARD -->
             <div id="dashboard-view" class="block animate-fade">
@@ -484,13 +489,13 @@
             </div>
         </main>
 
-        <!-- AQUÍ QUEDÓ EL MENÚ ARREGLADO (sólido y al fondo sin bug) -->
-        <div class="w-full mt-auto relative z-20 shrink-0">
+        <!-- MENÚ FIJADO ABSOLUTAMENTE PARA EVITAR DESPRENDIMIENTO EN OVERSCROLL -->
+        <div class="absolute bottom-0 left-0 w-full z-20 pointer-events-none shrink-0">
             <!-- Fade Gradient at the bottom para que el scroll se pierda elegante -->
-            <div class="absolute bottom-full w-full h-[60px] pointer-events-none bg-gradient-to-t from-[#eff3f4] dark:from-slate-950 to-transparent"></div>
+            <div class="w-full h-[60px] bg-gradient-to-t from-[#eff3f4] dark:from-slate-950 to-transparent"></div>
 
             <!-- NAVEGACIÓN INFERIOR NATIVA -->
-            <nav class="w-full bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border-t border-brand-100/50 dark:border-slate-800/80 flex justify-around items-center pt-2.5 transition-colors shadow-[0_-4px_25px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_25px_rgba(0,0,0,0.2)]" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
+            <nav class="pointer-events-auto w-full bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border-t border-brand-100/50 dark:border-slate-800/80 flex justify-around items-center pt-2.5 transition-colors shadow-[0_-4px_25px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_25px_rgba(0,0,0,0.2)]" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
                 <button id="nav-dashboard" onclick="window.switchTab('dashboard')" class="nav-btn active flex flex-col items-center justify-center w-[70px] h-12">
                     <i class="ph-fill ph-house text-[26px] mb-1"></i>
                     <span class="text-[9px] font-bold tracking-widest">INICIO</span>
