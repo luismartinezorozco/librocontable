@@ -283,7 +283,8 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto hide-scroll px-5 pb-[120px] relative">
+        <!-- AQUI QUEDÓ EL PADDING ARREGLADO (pb-6 en vez de pb-[120px]) -->
+        <main class="flex-1 overflow-y-auto hide-scroll px-5 pb-6 relative">
             
             <!-- VISTA 1: DASHBOARD -->
             <div id="dashboard-view" class="block animate-fade">
@@ -483,28 +484,31 @@
             </div>
         </main>
 
-        <!-- Fade Gradient at the bottom para que el scroll se pierda elegante -->
-        <div class="absolute bottom-0 w-full h-[120px] z-10 pointer-events-none bg-gradient-to-t from-[#eff3f4] dark:from-slate-950 to-transparent"></div>
+        <!-- AQUÍ QUEDÓ EL MENÚ ARREGLADO (sólido y al fondo sin bug) -->
+        <div class="w-full mt-auto relative z-20 shrink-0">
+            <!-- Fade Gradient at the bottom para que el scroll se pierda elegante -->
+            <div class="absolute bottom-full w-full h-[60px] pointer-events-none bg-gradient-to-t from-[#eff3f4] dark:from-slate-950 to-transparent"></div>
 
-        <!-- NAVEGACIÓN INFERIOR NATIVA -->
-        <nav class="absolute bottom-0 w-full bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border-t border-brand-100/50 dark:border-slate-800/80 flex justify-around items-center pt-2.5 z-20 transition-colors shadow-[0_-4px_25px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_25px_rgba(0,0,0,0.2)]" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
-            <button id="nav-dashboard" onclick="window.switchTab('dashboard')" class="nav-btn active flex flex-col items-center justify-center w-[70px] h-12">
-                <i class="ph-fill ph-house text-[26px] mb-1"></i>
-                <span class="text-[9px] font-bold tracking-widest">INICIO</span>
-            </button>
-            <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
-                <i class="ph-fill ph-list-bullets text-[26px] mb-1"></i>
-                <span class="text-[9px] font-bold tracking-widest">HISTORIAL</span>
-            </button>
-            <button id="nav-credit" onclick="window.switchTab('credit')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
-                <i class="ph-fill ph-credit-card text-[26px] mb-1"></i>
-                <span class="text-[9px] font-bold tracking-widest">TARJETAS</span>
-            </button>
-            <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
-                <i class="ph-fill ph-gear text-[26px] mb-1"></i>
-                <span class="text-[9px] font-bold tracking-widest">AJUSTES</span>
-            </button>
-        </nav>
+            <!-- NAVEGACIÓN INFERIOR NATIVA -->
+            <nav class="w-full bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border-t border-brand-100/50 dark:border-slate-800/80 flex justify-around items-center pt-2.5 transition-colors shadow-[0_-4px_25px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_25px_rgba(0,0,0,0.2)]" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
+                <button id="nav-dashboard" onclick="window.switchTab('dashboard')" class="nav-btn active flex flex-col items-center justify-center w-[70px] h-12">
+                    <i class="ph-fill ph-house text-[26px] mb-1"></i>
+                    <span class="text-[9px] font-bold tracking-widest">INICIO</span>
+                </button>
+                <button id="nav-ledger" onclick="window.switchTab('ledger')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
+                    <i class="ph-fill ph-list-bullets text-[26px] mb-1"></i>
+                    <span class="text-[9px] font-bold tracking-widest">HISTORIAL</span>
+                </button>
+                <button id="nav-credit" onclick="window.switchTab('credit')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
+                    <i class="ph-fill ph-credit-card text-[26px] mb-1"></i>
+                    <span class="text-[9px] font-bold tracking-widest">TARJETAS</span>
+                </button>
+                <button id="nav-settings" onclick="window.switchTab('settings')" class="nav-btn flex flex-col items-center justify-center w-[70px] h-12">
+                    <i class="ph-fill ph-gear text-[26px] mb-1"></i>
+                    <span class="text-[9px] font-bold tracking-widest">AJUSTES</span>
+                </button>
+            </nav>
+        </div>
 
         <!-- Modal Ingreso/Gasto (Apilado para CERO desborde móvil) -->
         <div id="form-modal" class="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
@@ -563,7 +567,7 @@
                         <i class="ph-bold ph-trash text-xl"></i>
                     </button>
                     <button type="button" id="btn-pay-credit" onclick="window.payCreditInstallment()" class="flex-1 min-w-0 bg-brand-500 hover:bg-brand-800 text-white font-bold py-3.5 rounded-2xl transition shadow-sm truncate">
-                        Pagar Cuota
+                        Abonar
                     </button>
                 </div>
             </div>
@@ -1134,27 +1138,56 @@
             if (t.paidInstallments >= t.totalInstallments || t.pendingAmount <= 0) {
                 html += `<div class="bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-xl text-center text-emerald-600 dark:text-emerald-400 font-bold text-sm border border-emerald-100 dark:border-emerald-800/50 truncate w-full"><i class="ph-bold ph-check-circle mr-1"></i> Deuda Cancelada</div>`;
                 btnPay.classList.add('hidden');
-            } else { btnPay.classList.remove('hidden'); }
+            } else {
+                // AQUI AGREGAMOS LA OPCION DE ABONAR UN MONTO PERSONALIZADO
+                html += `
+                <div class="bg-brand-50 dark:bg-slate-800 rounded-xl p-3 border border-brand-100 dark:border-slate-700 w-full min-w-0 mb-2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400 mb-1 block truncate">Monto a abonar</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400 font-bold text-lg">$</span>
+                        <input type="number" id="custom-pay-amount" value="${t.monthlyPayment}" max="${t.pendingAmount}" class="w-full bg-transparent font-bold text-slate-900 dark:text-white focus:outline-none text-xl" placeholder="0">
+                    </div>
+                </div>`;
+                btnPay.classList.remove('hidden');
+                btnPay.innerText = 'Abonar'; // Cambiamos el texto del botón
+            }
             
             c.innerHTML = html; m.classList.remove('hidden'); m.classList.add('flex');
         }
 
         window.closeCreditDetailModal = () => { document.getElementById('credit-detail-modal').classList.add('hidden'); document.getElementById('credit-detail-modal').classList.remove('flex'); activeCreditDeuda = null; }
 
+        // AQUI ACTUALIZAMOS LA FUNCION DE PAGO PARA CAPTURAR EL VALOR EXACTO
         window.payCreditInstallment = () => {
             const t = activeCreditDeuda;
             if (!t) return;
             const txIdParaProcesar = t.id; 
             
-            window.showConfirm('Pagar Cuota', `Se restará ${formatCOP(t.monthlyPayment)} a la deuda de esta tarjeta.`, async () => {
+            const payInput = document.getElementById('custom-pay-amount');
+            let amountToPay = t.monthlyPayment;
+            if (payInput && payInput.value) amountToPay = parseFloat(payInput.value);
+
+            if (isNaN(amountToPay) || amountToPay <= 0) {
+                return window.showCustomAlert('Monto Inválido', 'Ingresa un valor mayor a cero.', 'ph-warning-circle text-orange-500');
+            }
+            if (amountToPay > t.pendingAmount) {
+                amountToPay = t.pendingAmount; // No pagar más de lo que debe
+            }
+            
+            window.showConfirm('Abonar a Deuda', `Se abonará ${formatCOP(amountToPay)} a esta tarjeta.`, async () => {
                 try {
-                    await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit_payment', parentCreditId: txIdParaProcesar, amount: t.monthlyPayment, desc: `Pago Cuota: ${t.desc}`, date: new Date().toISOString().split('T')[0], createdAt: serverTimestamp() });
-                    await updateDoc(doc(db, "transactions", txIdParaProcesar), { paidInstallments: t.paidInstallments + 1, pendingAmount: Math.max(0, t.pendingAmount - t.monthlyPayment) });
+                    let descText = amountToPay >= t.pendingAmount ? `Pago Total: ${t.desc}` : `Abono: ${t.desc}`;
+                    await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type: 'credit_payment', parentCreditId: txIdParaProcesar, amount: amountToPay, desc: descText, date: new Date().toISOString().split('T')[0], createdAt: serverTimestamp() });
+                    
+                    // Aproximación lógica: si paga menos de la cuota no suma, si paga la cuota o más suma 1.
+                    let cuotasASumar = amountToPay >= t.monthlyPayment ? 1 : 0;
+                    
+                    await updateDoc(doc(db, "transactions", txIdParaProcesar), { paidInstallments: t.paidInstallments + cuotasASumar, pendingAmount: Math.max(0, t.pendingAmount - amountToPay) });
                     
                     window.closeConfirm(); 
                     window.closeCreditDetailModal();
-                    window.showCustomAlert('Pago Exitoso', 'Cuota descontada de la tarjeta.', 'ph-check-circle text-emerald-500');
-                } catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'Fallo al pagar.', 'ph-warning-circle text-rose-500'); }
+                    window.showCustomAlert('Pago Exitoso', 'Abono registrado correctamente.', 'ph-check-circle text-emerald-500');
+                } catch(e) { window.closeConfirm(); window.showCustomAlert('Error', 'Fallo al procesar el pago.', 'ph-warning-circle text-rose-500'); }
             }, true);
         }
 
